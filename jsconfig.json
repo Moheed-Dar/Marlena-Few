@@ -1,7 +1,12 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
+      "@/*": ["./src/*"],
+      "@/backend/*": ["./backend/*"]
+    },
+    "ignoreDeprecations": "6.0"
+  },
+  "include": ["src/**/*", "backend/**/*", "next-env.d.ts"],
+  "exclude": ["node_modules", ".next"]
 }
