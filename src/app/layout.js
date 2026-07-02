@@ -15,7 +15,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${poppins.variable} antialiased`}>
-      <body className="min-h-screen font-(family-name:--font-poppins)">
+      <body 
+        className="min-h-screen font-(family-name:--font-poppins)"
+        suppressHydrationWarning
+      >
         {children}
       </body>
     </html>

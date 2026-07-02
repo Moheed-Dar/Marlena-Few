@@ -3,8 +3,8 @@ import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 
 export const metadata = {
-  title: "Havana Properties",
-  description: "Premium Real Estate",
+  title: "COLDWELL BANKER",
+  description: "Premium Real Estate Services",
 };
 
 export default function RootLayout({ children }) {

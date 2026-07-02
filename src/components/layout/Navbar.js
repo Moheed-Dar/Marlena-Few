@@ -22,7 +22,7 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 w-full z-[999] transition-all duration-500 ${
+        className={`fixed top-0 left-0 w-full z-999 transition-all duration-500 ${
           scrolled 
             ? "bg-[#97b4f8]/10 backdrop-blur-sm " 
             : "bg-transparent"
