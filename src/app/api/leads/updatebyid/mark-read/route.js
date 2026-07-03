@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/database";
-import Lead from "@/models/lead";
+import { connectDB } from "@/backend/lib/database";
+import Lead from "@/backend/models/lead";
 
 // ✅ PATCH: Mark Single Lead as Read by ID
 export async function PATCH(request, { params }) {
