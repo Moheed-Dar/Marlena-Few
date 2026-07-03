@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { connectDB } from "@/backend/lib/database";
+import { connectDB } from "@/backend/lib/db";
 import Contact from "@/backend/models/contact";
 
 // ✅ PATCH: Mark Single Contact as Read by ID

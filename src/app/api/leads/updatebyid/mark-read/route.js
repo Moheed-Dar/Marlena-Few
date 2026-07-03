@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { connectDB } from "@/backend/lib/database";
+import { connectDB } from "@/backend/lib/db";
 import Lead from "@/backend/models/lead";
 
 // ✅ PATCH: Mark Single Lead as Read by ID
