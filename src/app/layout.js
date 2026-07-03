@@ -1,5 +1,6 @@
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import SmoothScroll from "@/components/ui/SmoothScroll";
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
@@ -15,10 +16,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${poppins.variable} antialiased`}>
-      <body 
+      <body
         className="min-h-screen font-(family-name:--font-poppins)"
         suppressHydrationWarning
       >
+        <SmoothScroll />
         {children}
       </body>
     </html>
