@@ -690,24 +690,24 @@ export default function HeroSection() {
         duration: 1.2,
         ease: "power3.out",
       })
-      .to(letsTalkRef.current, {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        ease: "power3.out",
-      }, "-=0.6")
-      .to(rotatingBadgeRef.current, {
-        opacity: 1,
-        scale: 1,
-        duration: 0.8,
-        ease: "back.out(1.7)",
-      }, "-=0.4")
-      .to(bottomOverlayRef.current, {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        ease: "power3.out",
-      }, "-=0.2");
+        .to(letsTalkRef.current, {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power3.out",
+        }, "-=0.6")
+        .to(rotatingBadgeRef.current, {
+          opacity: 1,
+          scale: 1,
+          duration: 0.8,
+          ease: "back.out(1.7)",
+        }, "-=0.4")
+        .to(bottomOverlayRef.current, {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: "power3.out",
+        }, "-=0.2");
 
       gsap.to(ringTextRef.current, {
         rotation: 360,
@@ -819,9 +819,8 @@ export default function HeroSection() {
         {heroImages.map((img, index) => (
           <div
             key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              index === currentImageIndex ? "opacity-100" : "opacity-0"
-            }`}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentImageIndex ? "opacity-100" : "opacity-0"
+              }`}
           >
             <Image
               src={img.url}
@@ -829,7 +828,7 @@ export default function HeroSection() {
               fill
               className="object-cover"
               priority={index === 0}
-               loading={index === 0 ? "eager" : "lazy"} 
+              loading={index === 0 ? "eager" : "lazy"}
               quality={90}
               sizes="100vw"
             />
@@ -857,7 +856,7 @@ export default function HeroSection() {
 
         <div className="relative flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-12 mb-8 md:mb-10">
 
-          <div 
+          <div
             ref={titleContainerRef}
             className="relative"
             style={{ cursor: 'none' }}
@@ -909,8 +908,8 @@ export default function HeroSection() {
           ref={rotatingBadgeRef}
           onMouseEnter={() => setIsRingHovered(true)}
           onMouseLeave={() => setIsRingHovered(false)}
-          className="relative w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 xl:w-44 xl:h-44 cursor-pointer"
-          style={{ perspective: '1000px' }}
+          className="relative w-28 h-28 mt-30 md:mt-0 top-10 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 xl:w-44 xl:h-44 cursor-pointer"
+          style={{ perspective: "1000px" }}
         >
           {/* Outer Pulse Ring */}
           <div
@@ -930,7 +929,7 @@ export default function HeroSection() {
           />
 
           {/* Rotating SVG Text Ring */}
-          <div 
+          <div
             ref={ringTextRef}
             className="absolute inset-0 w-full h-full"
           >
@@ -985,16 +984,16 @@ export default function HeroSection() {
             ref={arrowRef}
             className="absolute inset-0 flex items-center justify-center"
           >
-            <div 
+            <div
               className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-16 lg:h-16 bg-white rounded-full flex items-center justify-center shadow-2xl transition-all duration-500"
               style={{
-                boxShadow: isRingHovered 
-                  ? '0 0 40px rgba(151, 180, 248, 0.6), 0 0 80px rgba(151, 180, 248, 0.3)' 
+                boxShadow: isRingHovered
+                  ? '0 0 40px rgba(151, 180, 248, 0.6), 0 0 80px rgba(151, 180, 248, 0.3)'
                   : '0 10px 40px rgba(0,0,0,0.3)',
               }}
             >
               {/* Inner glow ring */}
-              <div 
+              <div
                 className="absolute inset-0 rounded-full border-2 transition-all duration-500"
                 style={{
                   borderColor: isRingHovered ? brandBlue : 'transparent',
@@ -1015,11 +1014,11 @@ export default function HeroSection() {
           </div>
 
           {/* Hover glow effect */}
-          <div 
+          <div
             className="absolute inset-0 rounded-full transition-all duration-500 pointer-events-none"
             style={{
-              background: isRingHovered 
-                ? 'radial-gradient(circle, rgba(151,180,248,0.15) 0%, transparent 70%)' 
+              background: isRingHovered
+                ? 'radial-gradient(circle, rgba(151,180,248,0.15) 0%, transparent 70%)'
                 : 'transparent',
             }}
           />
@@ -1071,17 +1070,16 @@ export default function HeroSection() {
                 <button
                   key={index}
                   onClick={() => goToImage(index)}
-                  className={`relative w-32 lg:w-40 h-20 cursor-pointer lg:h-24 rounded-xl overflow-hidden group transition-all duration-500 ${
-                    index === currentImageIndex
+                  className={`relative w-32 lg:w-40 h-20 cursor-pointer lg:h-24 rounded-xl overflow-hidden group transition-all duration-500 ${index === currentImageIndex
                       ? "shadow-lg"
                       : "hover:scale-105"
-                  }`}
+                    }`}
                   style={{
-                    border: index === currentImageIndex 
-                      ? `2px solid ${brandBlue}` 
+                    border: index === currentImageIndex
+                      ? `2px solid ${brandBlue}`
                       : "2px solid transparent",
-                    boxShadow: index === currentImageIndex 
-                      ? `0 0 20px ${brandBlue}40` 
+                    boxShadow: index === currentImageIndex
+                      ? `0 0 20px ${brandBlue}40`
                       : "none",
                   }}
                 >
@@ -1098,7 +1096,7 @@ export default function HeroSection() {
                       <h3 className="text-white text-[11px] font-bold">
                         {img.title}
                       </h3>
-                      <span 
+                      <span
                         className="text-[10px] font-bold"
                         style={{ color: brandBlue }}
                       >
@@ -1111,7 +1109,7 @@ export default function HeroSection() {
                     </div>
                   </div>
                   {index === currentImageIndex && (
-                    <div 
+                    <div
                       className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full animate-pulse"
                       style={{ backgroundColor: brandBlue }}
                     />
@@ -1127,8 +1125,8 @@ export default function HeroSection() {
                   onClick={() => goToImage(index)}
                   className="relative flex-1 h-24 rounded-xl overflow-hidden group transition-all duration-500 hover:scale-105"
                   style={{
-                    border: index === currentImageIndex 
-                      ? `2px solid ${brandBlue}` 
+                    border: index === currentImageIndex
+                      ? `2px solid ${brandBlue}`
                       : "2px solid transparent",
                   }}
                 >
@@ -1142,7 +1140,7 @@ export default function HeroSection() {
                   <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent" />
                   <div className="absolute inset-0 p-2 flex flex-col justify-end">
                     <h3 className="text-white text-[10px] font-bold">{img.title}</h3>
-                    <span 
+                    <span
                       className="text-[9px] font-bold"
                       style={{ color: brandBlue }}
                     >
