@@ -19,7 +19,6 @@ import Image from "next/image";
 import { gsap } from "gsap";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Default links with icons
 const DEFAULT_NAV_LINKS = [
   { label: "Home", href: "/", icon: Home },
   { label: "About", href: "/about", icon: User },
@@ -36,6 +35,18 @@ export default function FullscreenMenu({ isOpen, onClose }) {
   const circleRef = useRef(null);
   const menuRef = useRef(null);
 
+  // Proper close handler: scroll to top + close menu
+  const handleClose = () => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+    onClose();
+  };
+
+  // Link click handler with scroll to top
+  const handleLinkClick = (e) => {
+    e.stopPropagation();
+    handleClose();
+  };
+
   // Lock body scroll when menu is open
   useEffect(() => {
     if (isOpen) {
@@ -48,10 +59,9 @@ export default function FullscreenMenu({ isOpen, onClose }) {
     };
   }, [isOpen]);
 
-  // GSAP Pulse Animation for blue circle
+  // GSAP Pulse Animation
   useEffect(() => {
     if (!isOpen || !circleRef.current) return;
-
     const ctx = gsap.context(() => {
       gsap.to(circleRef.current, {
         scale: 1.3,
@@ -68,14 +78,12 @@ export default function FullscreenMenu({ isOpen, onClose }) {
         ease: "power1.inOut",
       });
     });
-
     return () => ctx.revert();
   }, [isOpen]);
 
-  // GSAP slide-in animation for desktop menu
+  // GSAP slide-in for desktop
   useEffect(() => {
     if (!isOpen || !menuRef.current) return;
-
     const ctx = gsap.context(() => {
       gsap.fromTo(
         menuRef.current,
@@ -83,7 +91,6 @@ export default function FullscreenMenu({ isOpen, onClose }) {
         { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" },
       );
     });
-
     return () => ctx.revert();
   }, [isOpen]);
 
@@ -91,19 +98,18 @@ export default function FullscreenMenu({ isOpen, onClose }) {
 
   return (
     <>
-      {/* Backdrop overlay */}
+      {/* ===== DESKTOP BACKDROP — sirf md+ ===== */}
       <div
-        className="fixed inset-0 z-998 bg-black/60 backdrop-blur-md"
-        onClick={onClose}
+        className="hidden md:block fixed inset-0 z-998 bg-black/50 backdrop-blur-sm"
+        onClick={handleClose}
       />
 
-      {/* ========== DESKTOP MENU (md and above) - Same as original ========== */}
+      {/* ========== DESKTOP MENU (md and above) ========== */}
       <div
         ref={menuRef}
         className="hidden md:flex fixed top-25 left-0 right-0 z-999 justify-center px-4 lg:px-8"
       >
         <div className="w-full max-w-3xl bg-white rounded-2xl overflow-hidden shadow-2xl">
-          {/* Top Section: Preview + Navigation */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
             {/* Left: Hero Preview Image */}
             <div className="relative h-44 lg:h-auto lg:min-h-70">
@@ -116,7 +122,6 @@ export default function FullscreenMenu({ isOpen, onClose }) {
               />
               <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent" />
 
-              {/* Preview Logo with Animated Blue Circle */}
               <div className="absolute top-3 left-3">
                 <div className="relative w-24 h-8 flex items-center justify-center">
                   <div className="relative z-10 mt-10 w-50 h-20">
@@ -131,7 +136,6 @@ export default function FullscreenMenu({ isOpen, onClose }) {
                 </div>
               </div>
 
-              {/* Preview Title */}
               <div className="absolute bottom-3 left-3">
                 <h2 className="text-2xl lg:text-3xl font-bold text-white tracking-tight">
                   Marlena Few
@@ -142,7 +146,6 @@ export default function FullscreenMenu({ isOpen, onClose }) {
             {/* Right: Navigation Links */}
             <div className="p-5 lg:p-6 bg-white">
               <div className="grid grid-cols-2 gap-6">
-                {/* Main Pages */}
                 <div>
                   <h3 className="text-gray-400 text-xs font-bold tracking-widest uppercase mb-3">
                     Main Pages
@@ -152,7 +155,7 @@ export default function FullscreenMenu({ isOpen, onClose }) {
                       <Link
                         key={index}
                         href={link.href}
-                        onClick={onClose}
+                        onClick={handleLinkClick}
                         className="group relative py-1.5 text-gray-600 hover:text-[#012169] transition-colors text-sm font-medium"
                       >
                         <span className="relative">
@@ -164,7 +167,6 @@ export default function FullscreenMenu({ isOpen, onClose }) {
                   </div>
                 </div>
 
-                {/* CMS Pages */}
                 <div>
                   <h3 className="text-gray-400 text-xs font-bold tracking-widest uppercase mb-3">
                     CMS Pages
@@ -174,7 +176,7 @@ export default function FullscreenMenu({ isOpen, onClose }) {
                       <Link
                         key={index}
                         href={link.href}
-                        onClick={onClose}
+                        onClick={handleLinkClick}
                         className="group relative py-1.5 text-gray-600 hover:text-[#012169] transition-colors text-sm font-medium"
                       >
                         <span className="relative">
@@ -189,7 +191,7 @@ export default function FullscreenMenu({ isOpen, onClose }) {
             </div>
           </div>
 
-          {/* Bottom Section: Email + Buttons */}
+          {/* Bottom Section */}
           <div className="border-t border-gray-100 p-4 flex items-center justify-between gap-3">
             <a
               href="mailto:marlena-few@coldwellbanker.ca"
@@ -204,7 +206,7 @@ export default function FullscreenMenu({ isOpen, onClose }) {
             <div className="flex items-center gap-2">
               <Link
                 href="/admin/login"
-                onClick={onClose}
+                onClick={handleLinkClick}
                 className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 border border-amber-200 text-amber-700 text-sm font-semibold rounded-lg hover:bg-amber-100 hover:border-amber-300 transition-colors"
               >
                 <ShieldCheck size={16} />
@@ -212,13 +214,13 @@ export default function FullscreenMenu({ isOpen, onClose }) {
               </Link>
               <Link
                 href="/properties"
-                onClick={onClose}
+                onClick={handleLinkClick}
                 className="px-4 py-2 bg-[#0a1628] text-white text-sm font-semibold rounded-lg hover:bg-[#012169] transition-colors"
               >
                 All Properties
               </Link>
               <button
-                onClick={onClose}
+                onClick={handleClose}
                 className="w-9 h-9 flex items-center justify-center bg-[#0a1628] text-white rounded-lg hover:bg-[#012169] transition-colors"
               >
                 <ArrowRight size={16} />
@@ -232,17 +234,17 @@ export default function FullscreenMenu({ isOpen, onClose }) {
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Mobile Backdrop */}
+            {/* Mobile Backdrop — halka opacity */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="md:hidden fixed inset-0 z-998 bg-black/70 backdrop-blur-md"
-              onClick={onClose}
+              className="md:hidden fixed inset-0 z-998 bg-black/50 backdrop-blur-[2px]"
+              onClick={handleClose}
             />
 
-            {/* Mobile Sidebar - Slides from Right */}
+            {/* Mobile Sidebar — w-80 = 320px fixed width */}
             <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
@@ -252,27 +254,28 @@ export default function FullscreenMenu({ isOpen, onClose }) {
                 stiffness: 300,
                 damping: 30,
               }}
-              className="md:hidden fixed top-0 right-0 bottom-0 z-999 w-75px bg-white shadow-2xl flex flex-col"
+              className="md:hidden fixed top-0 right-0 bottom-0 z-999 w-80 bg-white shadow-2xl flex flex-col"
+              onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}
               <motion.button
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: "spring" }}
-                onClick={onClose}
+                onClick={handleClose}
                 className="absolute top-3 right-3 z-50 w-9 h-9 flex items-center justify-center rounded-full bg-[#012169] text-white hover:bg-[#0a1628] transition-colors shadow-lg"
               >
                 <X size={18} />
               </motion.button>
 
               {/* Hero Image */}
-              <div className="relative h-36 shrink-0">
+              <div className="relative h-40 shrink-0">
                 <Image
                   src="/banner/banner2.jpg"
                   alt="Marlena"
                   fill
                   className="object-cover"
-                  sizes="100vw"
+                  sizes="320px"
                   priority
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
@@ -280,9 +283,7 @@ export default function FullscreenMenu({ isOpen, onClose }) {
                 <div className="absolute top-3 left-3">
                   <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md rounded-full px-3 py-1.5 border border-white/30">
                     <div className="w-6 h-6 rounded-full bg-[#012169] flex items-center justify-center">
-                      <span className="text-white text-[10px] font-bold">
-                        M
-                      </span>
+                      <span className="text-white text-[10px] font-bold">M</span>
                     </div>
                     <span className="text-white font-semibold text-xs">
                       Marlena Few
@@ -301,29 +302,29 @@ export default function FullscreenMenu({ isOpen, onClose }) {
               </div>
 
               {/* Navigation */}
-              <div className="flex-1 px-4 py-3 overflow-hidden">
+              <div className="flex-1 px-4 py-4 overflow-y-auto">
                 {/* Main Pages */}
-                <div className="mb-2">
+                <div className="mb-3">
                   <h3 className="text-gray-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">
                     Main Pages
                   </h3>
-                  <div className="flex flex-col gap-0.5">
+                  <div className="flex flex-col gap-1">
                     {DEFAULT_NAV_LINKS.map((link, index) => {
                       const Icon = link.icon;
                       return (
                         <Link
                           key={index}
                           href={link.href}
-                          onClick={onClose}
-                          className="group flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#f0f4ff] transition-all duration-300"
+                          onClick={handleLinkClick}
+                          className="group flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-[#f0f4ff] active:bg-[#e0e8ff] transition-all duration-200"
                         >
-                          <div className="w-8 h-8 rounded-md bg-[#f0f4ff] group-hover:bg-[#012169] flex items-center justify-center transition-all duration-300">
+                          <div className="w-9 h-9 rounded-lg bg-[#f0f4ff] group-hover:bg-[#012169] flex items-center justify-center transition-all duration-200">
                             <Icon
-                              size={15}
-                              className="text-[#012169] group-hover:text-white transition-colors duration-300"
+                              size={16}
+                              className="text-[#012169] group-hover:text-white transition-colors duration-200"
                             />
                           </div>
-                          <span className="text-gray-700 group-hover:text-[#012169] font-medium text-sm transition-colors duration-300">
+                          <span className="text-gray-700 group-hover:text-[#012169] font-medium text-sm transition-colors duration-200">
                             {link.label}
                           </span>
                         </Link>
@@ -332,30 +333,30 @@ export default function FullscreenMenu({ isOpen, onClose }) {
                   </div>
                 </div>
 
-                <div className="h-px bg-gray-100 my-2" />
+                <div className="h-px bg-gray-100 my-3" />
 
                 {/* CMS Pages */}
                 <div>
                   <h3 className="text-gray-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">
                     Explore
                   </h3>
-                  <div className="flex flex-col gap-0.5">
+                  <div className="flex flex-col gap-1">
                     {CMS_LINKS.map((link, index) => {
                       const Icon = link.icon;
                       return (
                         <Link
                           key={index}
                           href={link.href}
-                          onClick={onClose}
-                          className="group flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#f0f4ff] transition-all duration-300"
+                          onClick={handleLinkClick}
+                          className="group flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-[#f0f4ff] active:bg-[#e0e8ff] transition-all duration-200"
                         >
-                          <div className="w-8 h-8 rounded-md bg-gray-50 group-hover:bg-[#012169] flex items-center justify-center transition-all duration-300">
+                          <div className="w-9 h-9 rounded-lg bg-gray-50 group-hover:bg-[#012169] flex items-center justify-center transition-all duration-200">
                             <Icon
-                              size={15}
-                              className="text-[#012169] group-hover:text-white transition-colors duration-300"
+                              size={16}
+                              className="text-[#012169] group-hover:text-white transition-colors duration-200"
                             />
                           </div>
-                          <span className="text-gray-700 group-hover:text-[#012169] font-medium text-sm transition-colors duration-300">
+                          <span className="text-gray-700 group-hover:text-[#012169] font-medium text-sm transition-colors duration-200">
                             {link.label}
                           </span>
                         </Link>
@@ -365,11 +366,12 @@ export default function FullscreenMenu({ isOpen, onClose }) {
                 </div>
               </div>
 
-              {/* Bottom Section - Under Contact Us */}
-              <div className="border-t border-gray-100 px-4 py-3 shrink-0">
+              {/* Bottom Section */}
+              <div className="border-t border-gray-100 px-4 py-4 shrink-0 bg-gray-50/50">
                 {/* Email */}
                 <a
                   href="mailto:marlena-few@coldwellbanker.ca"
+                  onClick={(e) => e.stopPropagation()}
                   className="flex items-center justify-center gap-1.5 text-gray-400 hover:text-[#012169] transition-colors mb-3"
                 >
                   <Mail size={12} />
@@ -378,23 +380,20 @@ export default function FullscreenMenu({ isOpen, onClose }) {
                   </span>
                 </a>
 
-                {/* Centered Buttons */}
                 <div className="flex flex-col items-center gap-2">
-                  {/* Admin Login */}
                   <Link
                     href="/admin/login"
-                    onClick={onClose}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-50 border border-amber-200 text-amber-700 text-sm font-semibold rounded-xl hover:bg-amber-100 transition-all duration-300"
+                    onClick={handleLinkClick}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-50 border border-amber-200 text-amber-700 text-sm font-semibold rounded-xl hover:bg-amber-100 active:bg-amber-200 transition-all duration-200"
                   >
                     <ShieldCheck size={16} />
                     <span>Admin Login</span>
                   </Link>
 
-                  {/* All Properties - Blue Color */}
                   <Link
                     href="/properties"
-                    onClick={onClose}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#012169] text-white text-sm font-semibold rounded-xl hover:bg-[#0a1628] transition-all duration-300"
+                    onClick={handleLinkClick}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#012169] text-white text-sm font-semibold rounded-xl hover:bg-[#0a1628] active:bg-[0d1f3c] transition-all duration-200"
                   >
                     <FileText size={16} />
                     <span>All Properties</span>
