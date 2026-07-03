@@ -908,7 +908,7 @@ export default function HeroSection() {
           ref={rotatingBadgeRef}
           onMouseEnter={() => setIsRingHovered(true)}
           onMouseLeave={() => setIsRingHovered(false)}
-          className="relative w-28 h-28 mt-30 md:mt-0 top-10 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 xl:w-44 xl:h-44 cursor-pointer"
+          className="relative w-28 h-28 mt-15 md:mt-0 top-10 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 xl:w-44 xl:h-44 cursor-pointer"
           style={{ perspective: "1000px" }}
         >
           {/* Outer Pulse Ring */}
