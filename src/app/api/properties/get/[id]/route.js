@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/backend/lib/db';
+import User from '@/backend/models/user';  
 import Property from '@/backend/models/property';
 import ApiError from '@/backend/utils/apierror';
 import { getSecurityHeaders, securityLog } from '@/backend/lib/security';
@@ -49,7 +50,7 @@ const getPropertyById = async (request, context) => {
       },
       { $inc: { viewsCount: 1 } }, // ✅ Safe View Counting
       { 
-        new: true, // Return updated document
+        returnDocument: 'after', // Return updated document
         runValidators: false 
       }
     )

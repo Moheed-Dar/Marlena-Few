@@ -179,7 +179,7 @@ propertySchema.index({
 propertySchema.index({ city: 1, propertyType: 1, priceType: 1 });
 propertySchema.index({ status: 1, isPublished: 1 });
 propertySchema.index({ addedBy: 1 });
-propertySchema.index({ propertyCode: 1 }, { unique: true });
+// propertySchema.index({ propertyCode: 1 }, { unique: true });
 
 // ✅ YE LINE ZAROORI HAI - ISKE BINA YE ERROR AYEGA
 export default mongoose.models.Property || mongoose.model('Property', propertySchema);

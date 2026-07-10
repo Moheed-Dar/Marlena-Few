@@ -3,12 +3,16 @@ const nextConfig = {
   reactCompiler: true,
   
   images: {
-    qualities: [75, 90],  // ← Yeh add karo
+    qualities: [75, 90],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
       },
     ],
   },

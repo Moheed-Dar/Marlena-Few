@@ -159,6 +159,7 @@
 
 import { NextResponse } from 'next/server';
 import connectDB from '@/backend/lib/db';
+import User from '@/backend/models/user';
 import Property from '@/backend/models/property';
 import ApiError from '@/backend/utils/apierror';
 import { getSecurityHeaders, securityLog, sanitizeInput } from '@/backend/lib/security';
@@ -189,6 +190,9 @@ const ALLOWED_SORT_ORDERS = ['asc', 'desc'];
 // ✅ MAIN HANDLER
 // ==========================================
 const getProperties = async (request) => {
+  // console.log("=== ROUTE HIT ===");
+  // console.log("URL:", request.url);
+  // console.log("Headers:", JSON.stringify(Object.fromEntries(request.headers)));
   const startTime = Date.now();
   const requestId = crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
@@ -394,7 +398,7 @@ const getProperties = async (request) => {
     });
 
     const statusCode = error.statusCode || 500;
-    const message = error.message || 'Internal Server Error';
+   const message = error.message;
     
     return NextResponse.json(
       {
@@ -432,3 +436,6 @@ export const POST = methodNotAllowed;
 export const PUT = methodNotAllowed;
 export const DELETE = methodNotAllowed;
 export const PATCH = methodNotAllowed;
+
+
+
