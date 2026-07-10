@@ -1405,11 +1405,13 @@ export default function PropertyDetailPage() {
         </div>
       </div>
 
-      {/* ===== MAIN CONTENT ===== */}
+        {/* ===== MAIN CONTENT ===== */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+        {/* ✅ FIX: md:grid-cols-3 added for tablets, lg:gap-8 for desktop */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+          
           {/* ===== LEFT ===== */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="md:col-span-2 space-y-6">
             {/* Meta */}
             {property.propertyCode && (
               <div className="detail-item flex flex-wrap items-center gap-4 text-xs text-white/30">
@@ -1591,8 +1593,9 @@ export default function PropertyDetailPage() {
           </div>
 
           {/* ===== RIGHT SIDEBAR ===== */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-24 space-y-4">
+          <div className="md:col-span-1">
+            {/* ✅ GLITCH FIX: lg:self-start lagane se sidebar stretch nahi karega aur sticky smoothly kaam karega */}
+            <div className="space-y-4 lg:sticky lg:top-24 lg:self-start">
               {/* Price + CTA */}
               <div className="relative bg-linear-to-br from-white/[0.07] to-white/8 rounded-2xl border border-white/8 overflow-hidden">
                 <div className="absolute inset-0 bg-linear-to-br from-[#2B7FFF]/5 via-transparent to-[#2B7FFF]/3 pointer-events-none" />
