@@ -928,6 +928,9 @@
 
 
 
+
+
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -1193,13 +1196,13 @@ export default function PropertyDetailPage() {
             </div>
             <div className="flex items-center gap-2">
               {property.isFeatured && (
-                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#2B7FFF]/15 text-[#6BABFF] text-[11px] font-bold rounded-full border border-[#2B7FFF]/25 ">
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#2B7FFF]/15 text-[#6BABFF] text-[11px] font-bold rounded-full border border-[#2B7FFF]/25 backdrop-blur-sm">
                   <Crown size={11} className="fill-[#2B7FFF] text-[#2B7FFF]" />
                   Featured
                 </span>
               )}
               <span
-                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold rounded-full border  ${
+                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold rounded-full border backdrop-blur-sm ${
                   property.status === "available"
                     ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/25"
                     : property.status === "sold"
@@ -1210,7 +1213,7 @@ export default function PropertyDetailPage() {
                 <ShieldCheck size={11} />
                 {property.status}
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/5 text-white/70 text-[11px] font-bold rounded-full border border-white/10 ">
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/5 text-white/70 text-[11px] font-bold rounded-full border border-white/10 backdrop-blur-sm">
                 <Tag size={11} />
                 {property.priceType}
               </span>
@@ -1267,7 +1270,6 @@ export default function PropertyDetailPage() {
                     fill
                     className="object-cover"
                     sizes="(max-width: 1024px) 100vw, 66vw"
-                    // priority removed to fix preload warning
                   />
                   <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
                   <div className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ring-1 ring-white/20">
@@ -1306,7 +1308,6 @@ export default function PropertyDetailPage() {
                         fill
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 75vw, 66vw"
-                        // priority removed to fix preload warning with Framer Motion opacity 0
                       />
                     </motion.div>
                   </AnimatePresence>
@@ -1342,7 +1343,7 @@ export default function PropertyDetailPage() {
               </div>
 
               {/* Side Thumbnails - Limited to 4 with See More */}
-              <div className="md:col-span-3 lg:col-span-4 grid grid-cols-4 md:grid-cols-2 md:grid-rows-2 gap-2 h-full">
+              <div className="md:col-span-3 lg:col-span-4 grid grid-cols-4 md:grid-cols-2 md:grid-rows-2 gap-2">
                 {images.slice(0, 4).map((img, index) => {
                   const safeImg = getSafeImage(img);
                   if (!safeImg) return null;
@@ -1373,7 +1374,6 @@ export default function PropertyDetailPage() {
                         fill
                         className="object-cover"
                         sizes="(max-width: 768px) 25vw, (max-width: 1024px) 20vw, 15vw"
-                        // priority removed to fix preload warning
                       />
 
                       {/* Proper Bold Visible Tick */}
@@ -1405,13 +1405,11 @@ export default function PropertyDetailPage() {
         </div>
       </div>
 
-        {/* ===== MAIN CONTENT ===== */}
+      {/* ===== MAIN CONTENT ===== */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
-        {/* ✅ FIX: md:grid-cols-3 added for tablets, lg:gap-8 for desktop */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-          
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* ===== LEFT ===== */}
-          <div className="md:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-6">
             {/* Meta */}
             {property.propertyCode && (
               <div className="detail-item flex flex-wrap items-center gap-4 text-xs text-white/30">
@@ -1593,9 +1591,9 @@ export default function PropertyDetailPage() {
           </div>
 
           {/* ===== RIGHT SIDEBAR ===== */}
-          <div className="md:col-span-1">
-            {/* ✅ GLITCH FIX: lg:self-start lagane se sidebar stretch nahi karega aur sticky smoothly kaam karega */}
-            <div className="space-y-4 lg:sticky lg:top-24 lg:self-start">
+          <div className="lg:col-span-1">
+            {/* ✅ FIX: lg:sticky lg:top-24 applied to stop glitch on mobile screens */}
+            <div className="lg:sticky lg:top-24 space-y-4">
               {/* Price + CTA */}
               <div className="relative bg-linear-to-br from-white/[0.07] to-white/8 rounded-2xl border border-white/8 overflow-hidden">
                 <div className="absolute inset-0 bg-linear-to-br from-[#2B7FFF]/5 via-transparent to-[#2B7FFF]/3 pointer-events-none" />
@@ -1771,7 +1769,6 @@ export default function PropertyDetailPage() {
                     fill
                     className="object-contain"
                     sizes="100vw"
-                    // priority removed because lightbox is initially hidden
                   />
                 </motion.div>
               </AnimatePresence>
