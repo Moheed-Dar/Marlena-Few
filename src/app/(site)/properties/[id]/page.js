@@ -1193,13 +1193,13 @@ export default function PropertyDetailPage() {
             </div>
             <div className="flex items-center gap-2">
               {property.isFeatured && (
-                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#2B7FFF]/15 text-[#6BABFF] text-[11px] font-bold rounded-full border border-[#2B7FFF]/25 backdrop-blur-sm">
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#2B7FFF]/15 text-[#6BABFF] text-[11px] font-bold rounded-full border border-[#2B7FFF]/25 ">
                   <Crown size={11} className="fill-[#2B7FFF] text-[#2B7FFF]" />
                   Featured
                 </span>
               )}
               <span
-                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold rounded-full border backdrop-blur-sm ${
+                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold rounded-full border  ${
                   property.status === "available"
                     ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/25"
                     : property.status === "sold"
@@ -1210,7 +1210,7 @@ export default function PropertyDetailPage() {
                 <ShieldCheck size={11} />
                 {property.status}
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/5 text-white/70 text-[11px] font-bold rounded-full border border-white/10 backdrop-blur-sm">
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/5 text-white/70 text-[11px] font-bold rounded-full border border-white/10 ">
                 <Tag size={11} />
                 {property.priceType}
               </span>
