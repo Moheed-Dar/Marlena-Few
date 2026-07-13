@@ -926,11 +926,6 @@
 //   );
 // }
 
-
-
-
-
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -1038,7 +1033,7 @@ export default function PropertyDetailPage() {
       gsap.fromTo(
         heroRef.current,
         { opacity: 0, scale: 1.02 },
-        { opacity: 1, scale: 1, duration: 0.6, ease: "power2.out" }
+        { opacity: 1, scale: 1, duration: 0.6, ease: "power2.out" },
       );
       gsap.fromTo(
         ".detail-item",
@@ -1050,7 +1045,7 @@ export default function PropertyDetailPage() {
           stagger: 0.07,
           ease: "power2.out",
           delay: 0.2,
-        }
+        },
       );
     });
     return () => ctx.revert();
@@ -1536,7 +1531,6 @@ export default function PropertyDetailPage() {
               </div>
             )}
 
-
             {/* Address */}
             {property.address && (
               <div className="detail-item relative bg-linear-to-br from-white/6 to-white/2 rounded-2xl p-6 sm:p-7 border border-white/8 overflow-hidden">
@@ -1561,35 +1555,38 @@ export default function PropertyDetailPage() {
             )}
           </div>
 
-                      {/* Features */}
-            {(property.features?.length > 0 || property.amenities?.length > 0) && (
-              <div className="detail-item relative bg-linear-to-br from-white/6 to-white/2 rounded-2xl p-6 sm:p-7 border border-white/8 overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#2B7FFF]/5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
-                <div className="relative">
-                  <h3
-                    className={`text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}
-                  >
-                    Features & Amenities
-                  </h3>
-                  <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-5" />
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                    {[...(property.features || []), ...(property.amenities || [])].map(
-                      (item, i) => (
-                        <div
-                          key={i}
-                          className="flex items-center gap-2.5 text-sm text-white/60 bg-white/3 rounded-xl px-3 py-2.5 border border-white/6 hover:bg-[#2B7FFF]/5 hover:border-[#2B7FFF]/15 transition-colors group"
-                        >
-                          <div className="w-5 h-5 rounded-full bg-[#2B7FFF]/10 flex items-center justify-center shrink-0 group-hover:bg-[#2B7FFF]/20 transition-colors">
-                            <CheckCircle2 size={12} className="text-[#2B7FFF]/70" />
-                          </div>
-                          <span className="capitalize">{item}</span>
-                        </div>
-                      )
-                    )}
-                  </div>
+          {/* Features */}
+          {(property.features?.length > 0 ||
+            property.amenities?.length > 0) && (
+            <div className="detail-item relative bg-linear-to-br from-white/6 to-white/2 rounded-2xl p-4 sm:p-7 border border-white/8 overflow-hidden">
+              {/* Reduced blur size for mobile + smaller blur value */}
+              <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-[#2B7FFF]/5 rounded-full blur-xl sm:blur-3xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+              <div className="relative">
+                <h3
+                  className={`text-lg sm:text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}
+                >
+                  Features & Amenities
+                </h3>
+                <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-4 sm:mb-5" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-2.5">
+                  {[
+                    ...(property.features || []),
+                    ...(property.amenities || []),
+                  ].map((item, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center gap-2 sm:gap-2.5 text-sm text-white/60 bg-white/3 rounded-xl px-3 py-2.5 border border-white/6 hover:bg-[#2B7FFF]/5 hover:border-[#2B7FFF]/15 transition-colors group min-w-0"
+                    >
+                      <div className="w-5 h-5 rounded-full bg-[#2B7FFF]/10 flex items-center justify-center shrink-0 group-hover:bg-[#2B7FFF]/20 transition-colors">
+                        <CheckCircle2 size={12} className="text-[#2B7FFF]/70" />
+                      </div>
+                      <span className="capitalize truncate">{item}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
           {/* ===== RIGHT SIDEBAR ===== */}
           <div className="lg:col-span-1">
