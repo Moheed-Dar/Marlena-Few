@@ -18,9 +18,11 @@ import {
   Building2,
   Briefcase,
   PhoneCall,
+  X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Playfair_Display, Inter } from "next/font/google";
+import { submitContact } from "@/lib/api";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -119,32 +121,46 @@ export default function ContactPage() {
       setSubmitting(true);
       setError("");
       setApiDown(false);
-
-      // Simulate API call - replace with your actual submitContact
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      setSubmitted(true);
-      setForm({ name: "", email: "", phone: "", message: "" });
-      setTimeout(() => setSubmitted(false), 5000);
+      const result = await submitContact({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim() || undefined,
+        message: form.message.trim(),
+      });
+      if (result.success) {
+        setSubmitted(true);
+        setForm({ name: "", email: "", phone: "", message: "" });
+        setTimeout(() => setSubmitted(false), 5000);
+      } else {
+        setError(result.message || "Something went wrong. Please try again.");
+      }
     } catch (err) {
-      setError("Something went wrong. Please try again.");
+      const status = err?.response?.status;
+      if (status === 404) {
+        setApiDown(true);
+        setError(
+          "Service is temporarily unavailable. Please try again later or contact us directly via phone.",
+        );
+      } else {
+        setError(
+          err?.response?.data?.message ||
+            "Network error. Please check your connection and try again.",
+        );
+      }
     } finally {
       setSubmitting(false);
     }
   };
 
+  // --- FIXED: Input classes with better visibility on mobile ---
   const inputClass = (hasError) =>
-    `w-full px-4 py-3.5 bg-white/[0.04] border rounded-xl text-sm text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-[#3D8BFD]/20 focus:border-[#3D8BFD]/30 transition-all ${
-      hasError ? "border-red-500/50" : "border-white/[0.08]"
+    `w-full px-4 py-3.5 bg-white/10 border rounded-xl text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#3D8BFD]/20 focus:border-[#3D8BFD]/30 transition-all ${
+      hasError ? "border-red-500/50" : "border-white/15"
     }`;
 
-  // ============================================
-  // RENDER
-  // ============================================
   return (
     <div
-      className={`min-h-screen bg-[#0b1120] relative overflow-x-hidden ${inter.variable}`}
-      style={{ fontFamily: "var(--font-inter), system-ui, sans-serif" }}
+      className={`min-h-screen bg-[#0b1120] relative overflow-x-hidden ${inter.variable} font-(family-name:--font-inter)`}
     >
       {/* ===== BACKGROUND ===== */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -161,9 +177,9 @@ export default function ContactPage() {
       </div>
 
       {/* ===== HERO SECTION ===== */}
-      <div className="relative z-10 pt-24 sm:pt-28 md:pt-32 pb-10 sm:pb-14">
+      <div className="relative z-10 pt-28 sm:pt-32 pb-12 sm:pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center gap-2 text-sm text-white/30 mb-6 sm:mb-8">
+          <div className="flex items-center gap-2 text-sm text-white/30 mb-8">
             <Link href="/" className="hover:text-[#3D8BFD] transition-colors">
               Home
             </Link>
@@ -172,15 +188,14 @@ export default function ContactPage() {
           </div>
 
           <div className="max-w-2xl">
-            <div className="flex items-center gap-3 mb-3 sm:mb-4">
-              <div className="w-8 h-px bg-gradient-to-r from-[#3D8BFD] to-transparent" />
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-px bg-linear-to-r from-[#3D8BFD] to-transparent" />
               <span className="text-[10px] font-bold text-[#3D8BFD]/60 uppercase tracking-[0.25em]">
                 Get In Touch
               </span>
             </div>
             <h1
-              className={`text-3xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-[1.15] mb-3 sm:mb-4 ${playfair.variable}`}
-              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+              className={`text-3xl sm:text-4xl lg:text-[4.25rem] text-white tracking-tight leading-[1.15] mb-4 ${playfair.variable} font-(family-name:--font-playfair)`}
             >
               Contact Us
             </h1>
@@ -193,23 +208,24 @@ export default function ContactPage() {
       </div>
 
       {/* ===== FORM + SIDEBAR ===== */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-6">
-          {/* ===== LEFT - FORM ===== */}
+          {/* ===== LEFT — FORM ===== */}
           <div className="lg:col-span-2">
-            <div className="relative bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl border border-white/[0.06] overflow-hidden">
+            <div className="relative bg-linear-to-br from-white/5 to-white/2 rounded-2xl border border-white/6 overflow-hidden">
+              {/* Blur effects: ensure they don't block interaction */}
               <div className="absolute top-0 left-0 w-48 h-48 bg-[#3D8BFD]/4 rounded-full blur-3xl -translate-x-1/3 -translate-y-1/2 pointer-events-none" />
+              <div className="absolute bottom-0 right-0 w-48 h-48 bg-[#3D8BFD]/4 rounded-full blur-3xl translate-x-1/3 translate-y-1/2 pointer-events-none" />
 
-              <div className="relative p-5 sm:p-7">
-                {/* Header */}
+              {/* Content wrapper with higher z-index */}
+              <div className="relative z-10 p-5 sm:p-7">
                 <div className="flex items-center gap-3 mb-5">
-                  <div className="w-10 h-10 rounded-xl bg-[#3D8BFD]/10 flex items-center justify-center border border-[#3D8BFD]/15 shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-[#3D8BFD]/10 flex items-center justify-center border border-[#3D8BFD]/15">
                     <MessageSquare size={16} className="text-[#3D8BFD]" />
                   </div>
-                  <div className="min-w-0">
+                  <div>
                     <h2
-                      className={`text-lg text-white ${playfair.variable}`}
-                      style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+                      className={`text-lg text-white ${playfair.variable} font-(family-name:--font-playfair)`}
                     >
                       Send Us a Message
                     </h2>
@@ -219,7 +235,7 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div className="w-full h-px bg-gradient-to-r from-white/[0.06] via-white/[0.03] to-transparent mb-6" />
+                <div className="w-full h-px bg-linear-to-r from-white/6 via-white/3 to-transparent mb-6" />
 
                 <AnimatePresence mode="wait">
                   {submitted ? (
@@ -253,8 +269,7 @@ export default function ContactPage() {
                         </div>
                       </div>
                       <h3
-                        className={`text-xl text-white mt-5 mb-1.5 ${playfair.variable}`}
-                        style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+                        className={`text-xl text-white mt-5 mb-1.5 ${playfair.variable} font-(family-name:--font-playfair)`}
                       >
                         Message Sent!
                       </h3>
@@ -266,15 +281,15 @@ export default function ContactPage() {
                   ) : (
                     <motion.form
                       key="form"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.2 }}
                       onSubmit={handleSubmit}
                       className="space-y-4"
-                      autoComplete="off"
                     >
                       {/* Name */}
-                      <div className="block">
+                      <div>
                         <label className="flex items-center gap-1.5 text-[10px] font-bold text-white/25 uppercase tracking-[0.2em] mb-1.5">
                           <User size={10} /> Full Name{" "}
                           <span className="text-[#3D8BFD]">*</span>
@@ -282,19 +297,15 @@ export default function ContactPage() {
                         <input
                           type="text"
                           name="name"
-                          id="contact-name"
                           value={form.name}
                           onChange={handleChange}
                           placeholder="Enter Your Name"
-                          required
-                          autoComplete="name"
                           className={inputClass(!!error && !form.name.trim())}
-                          style={{ WebkitAppearance: "none", appearance: "none" }}
                         />
                       </div>
 
                       {/* Email */}
-                      <div className="block">
+                      <div>
                         <label className="flex items-center gap-1.5 text-[10px] font-bold text-white/25 uppercase tracking-[0.2em] mb-1.5">
                           <Mail size={10} /> Email{" "}
                           <span className="text-[#3D8BFD]">*</span>
@@ -302,51 +313,41 @@ export default function ContactPage() {
                         <input
                           type="email"
                           name="email"
-                          id="contact-email"
                           value={form.email}
                           onChange={handleChange}
                           placeholder="email@example.com"
-                          required
-                          autoComplete="email"
                           className={inputClass(!!error && !form.email.trim())}
-                          style={{ WebkitAppearance: "none", appearance: "none" }}
                         />
                       </div>
 
                       {/* Phone */}
-                      <div className="block">
+                      <div>
                         <label className="flex items-center gap-1.5 text-[10px] font-bold text-white/25 uppercase tracking-[0.2em] mb-1.5">
                           <Phone size={10} /> Phone Number
                         </label>
                         <input
                           type="tel"
                           name="phone"
-                          id="contact-phone"
                           value={form.phone}
                           onChange={handleChange}
                           placeholder="Your Phone Number (Optional)"
-                          autoComplete="tel"
                           className={inputClass(false)}
-                          style={{ WebkitAppearance: "none", appearance: "none" }}
                         />
                       </div>
 
                       {/* Message */}
-                      <div className="block">
+                      <div>
                         <label className="flex items-center gap-1.5 text-[10px] font-bold text-white/25 uppercase tracking-[0.2em] mb-1.5">
                           <MessageSquare size={10} /> Message{" "}
                           <span className="text-[#3D8BFD]">*</span>
                         </label>
                         <textarea
                           name="message"
-                          id="contact-message"
                           value={form.message}
                           onChange={handleChange}
                           rows={5}
                           placeholder="Enter your message here..."
-                          required
                           className={`${inputClass(!!error && !form.message.trim())} resize-none`}
-                          style={{ WebkitAppearance: "none", appearance: "none" }}
                         />
                       </div>
 
@@ -369,7 +370,7 @@ export default function ContactPage() {
                                 className="text-[#3D8BFD] shrink-0 mt-0.5"
                               />
                             ) : (
-                              <AlertCircle
+                              <X
                                 size={14}
                                 className="text-red-400 shrink-0 mt-0.5"
                               />
@@ -379,6 +380,14 @@ export default function ContactPage() {
                             >
                               {error}
                             </p>
+                            {apiDown && (
+                              <p className="text-[11px] text-white/20 mt-1">
+                                Call us:{" "}
+                                <span className="text-[#3D8BFD]">
+                                  +12269325002
+                                </span>
+                              </p>
+                            )}
                           </motion.div>
                         )}
                       </AnimatePresence>
@@ -387,7 +396,7 @@ export default function ContactPage() {
                       <button
                         type="submit"
                         disabled={submitting}
-                        className="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 bg-[#3D8BFD] text-white text-sm font-bold rounded-xl hover:bg-[#5BA2FF] disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98] transition-all shadow-lg shadow-[#3D8BFD]/20"
+                        className="w-full flex cursor-pointer items-center justify-center gap-2.5 px-6 py-3.5 bg-[#3D8BFD] text-white text-sm font-bold rounded-xl hover:bg-[#5BA2FF] disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98] transition-all shadow-lg shadow-[#3D8BFD]/20"
                       >
                         {submitting ? (
                           <>
@@ -414,18 +423,17 @@ export default function ContactPage() {
 
           {/* ===== RIGHT SIDEBAR ===== */}
           <div className="lg:col-span-1">
-            <div className="lg:sticky lg:top-28 space-y-4">
+            <div className="sticky top-28 space-y-4">
               {/* Why Contact Us */}
-              <div className="relative bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-5 border border-white/[0.06] overflow-hidden">
+              <div className="relative bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden">
                 <div className="absolute top-0 right-0 w-28 h-28 bg-[#3D8BFD]/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-                <div className="relative">
+                <div className="relative z-10">
                   <h3
-                    className={`text-base text-white mb-1 ${playfair.variable}`}
-                    style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+                    className={`text-base text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}
                   >
                     Why Contact Us?
                   </h3>
-                  <div className="w-10 h-0.5 bg-gradient-to-r from-[#3D8BFD] to-transparent rounded-full mb-4" />
+                  <div className="w-10 h-0.5 bg-linear-to-r from-[#3D8BFD] to-transparent rounded-full mb-4" />
                   <div className="space-y-3">
                     {[
                       {
@@ -467,9 +475,9 @@ export default function ContactPage() {
               </div>
 
               {/* Our Services */}
-              <div className="relative bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-5 border border-white/[0.06] overflow-hidden">
+              <div className="relative bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden">
                 <div className="absolute top-0 left-0 w-28 h-28 bg-[#3D8BFD]/4 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-                <div className="relative">
+                <div className="relative z-10">
                   <div className="flex items-center gap-2 mb-3">
                     <Building2 size={13} className="text-[#3D8BFD]/70" />
                     <h4 className="text-[9px] font-bold text-white/25 uppercase tracking-[0.25em]">
@@ -481,7 +489,7 @@ export default function ContactPage() {
                       <Link
                         key={i}
                         href="/services"
-                        className="flex items-center gap-3 p-2 bg-white/[0.03] rounded-lg border border-white/[0.05] hover:bg-[#3D8BFD]/5 hover:border-[#3D8BFD]/15 hover:scale-[1.02] transition-all"
+                        className="flex items-center gap-3 p-2 bg-white/3 rounded-lg border border-white/5 hover:bg-[#3D8BFD]/5 hover:border-[#3D8BFD]/15 hover:scale-[1.02] transition-all"
                       >
                         <div className="w-7 h-7 rounded-lg bg-[#3D8BFD]/10 flex items-center justify-center shrink-0">
                           <item.icon size={13} className="text-[#3D8BFD]/70" />
@@ -508,15 +516,14 @@ export default function ContactPage() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24">
         <div className="text-center mb-10">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-12 h-px bg-gradient-to-r from-transparent via-[#3D8BFD]/30 to-transparent" />
+            <div className="w-12 h-px bg-linear-to-r from-transparent via-[#3D8BFD]/30 to-transparent" />
             <span className="text-[10px] font-bold text-[#3D8BFD]/70 uppercase tracking-[0.25em]">
               More Info
             </span>
-            <div className="w-12 h-px bg-gradient-to-r from-transparent via-[#3D8BFD]/30 to-transparent" />
+            <div className="w-12 h-px bg-linear-to-r from-transparent via-[#3D8BFD]/30 to-transparent" />
           </div>
           <h2
-            className={`text-2xl sm:text-3xl text-white ${playfair.variable}`}
-            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+            className={`text-2xl sm:text-3xl text-white ${playfair.variable} font-(family-name:--font-playfair)`}
           >
             Quick Access
           </h2>
@@ -524,9 +531,9 @@ export default function ContactPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Emergency Contact */}
-          <div className="relative bg-gradient-to-br from-red-500/[0.08] to-red-500/[0.03] rounded-2xl p-5 border border-red-500/20 overflow-hidden group hover:border-red-500/30 transition-colors">
+          <div className="relative bg-linear-to-br from-red-500/8 to-red-500/3 rounded-2xl p-5 border border-red-500/20 overflow-hidden group hover:border-red-500/30 transition-colors">
             <div className="absolute top-0 right-0 w-20 h-20 bg-red-500/10 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-            <div className="relative">
+            <div className="relative z-10">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-8 h-8 rounded-full bg-red-500/15 flex items-center justify-center shrink-0 border border-red-500/20">
                   <PhoneCall size={15} className="text-red-400" />
@@ -538,22 +545,19 @@ export default function ContactPage() {
                   </p>
                 </div>
               </div>
-              <a
-                href="tel:+12269325002"
-                className="flex items-center gap-2 px-3 py-2 bg-red-500/10 rounded-lg border border-red-500/15 hover:bg-red-500/15 transition-colors"
-              >
+              <div className="flex items-center gap-2 px-3 py-2 bg-red-500/10 rounded-lg border border-red-500/15">
                 <Phone size={12} className="text-red-400/70" />
                 <span className="text-xs font-semibold text-red-300">
                   +1 226 932 5002
                 </span>
-              </a>
+              </div>
             </div>
           </div>
 
           {/* Office Hours */}
-          <div className="relative bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-5 border border-white/[0.06] overflow-hidden hover:border-[#3D8BFD]/15 transition-colors">
+          <div className="relative bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden hover:border-[#3D8BFD]/15 transition-colors">
             <div className="absolute bottom-0 left-0 w-20 h-20 bg-[#3D8BFD]/3 rounded-full blur-2xl -translate-x-1/2 translate-y-1/2 pointer-events-none" />
-            <div className="relative">
+            <div className="relative z-10">
               <div className="flex items-center gap-2 mb-3">
                 <Clock size={14} className="text-[#3D8BFD]/70" />
                 <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">
@@ -591,9 +595,9 @@ export default function ContactPage() {
           </div>
 
           {/* Quick Links */}
-          <div className="relative bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-5 border border-white/[0.06] overflow-hidden hover:border-[#3D8BFD]/15 transition-colors">
+          <div className="relative bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden hover:border-[#3D8BFD]/15 transition-colors">
             <div className="absolute top-0 right-0 w-20 h-20 bg-emerald-500/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-            <div className="relative">
+            <div className="relative z-10">
               <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mb-3">
                 Quick Links
               </h4>
@@ -618,9 +622,9 @@ export default function ContactPage() {
           </div>
 
           {/* Trusted Agency */}
-          <div className="relative bg-[#3D8BFD]/[0.05] rounded-2xl p-5 border border-[#3D8BFD]/15 overflow-hidden hover:border-[#3D8BFD]/25 transition-colors">
+          <div className="relative bg-[#3D8BFD]/5 rounded-2xl p-5 border border-[#3D8BFD]/15 overflow-hidden hover:border-[#3D8BFD]/25 transition-colors">
             <div className="absolute top-0 right-0 w-20 h-20 bg-[#3D8BFD]/5 rounded-full blur-2xl translate-x-1/3 -translate-y-1/3 pointer-events-none" />
-            <div className="relative">
+            <div className="relative z-10">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-9 h-9 rounded-full bg-[#3D8BFD]/15 flex items-center justify-center shrink-0 border border-[#3D8BFD]/20">
                   <ShieldCheck size={16} className="text-[#3D8BFD]" />
@@ -653,15 +657,14 @@ export default function ContactPage() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24">
         <div className="text-center mb-10">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-12 h-px bg-gradient-to-r from-transparent via-[#3D8BFD]/30 to-transparent" />
+            <div className="w-12 h-px bg-linear-to-r from-transparent via-[#3D8BFD]/30 to-transparent" />
             <span className="text-[10px] font-bold text-[#3D8BFD]/70 uppercase tracking-[0.25em]">
               Common Questions
             </span>
-            <div className="w-12 h-px bg-gradient-to-r from-transparent via-[#3D8BFD]/30 to-transparent" />
+            <div className="w-12 h-px bg-linear-to-r from-transparent via-[#3D8BFD]/30 to-transparent" />
           </div>
           <h2
-            className={`text-2xl sm:text-3xl text-white ${playfair.variable}`}
-            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+            className={`text-2xl sm:text-3xl text-white ${playfair.variable} font-(family-name:--font-playfair)`}
           >
             Frequently Asked Questions
           </h2>
@@ -675,18 +678,17 @@ export default function ContactPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="relative bg-gradient-to-br from-white/[0.05] to-white/[0.02] rounded-2xl p-6 border border-white/[0.06] overflow-hidden hover:border-[#3D8BFD]/15 transition-colors group"
+              className="relative bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-6 border border-white/6 overflow-hidden hover:border-[#3D8BFD]/15 transition-colors group"
             >
               <div className="absolute top-0 right-0 w-20 h-20 bg-[#3D8BFD]/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-              <div className="relative">
+              <div className="relative z-10">
                 <div className="w-8 h-8 rounded-lg bg-[#3D8BFD]/10 flex items-center justify-center mb-3 border border-[#3D8BFD]/15">
                   <span className="text-[#3D8BFD] font-bold text-sm">
                     {index + 1}
                   </span>
                 </div>
                 <h3
-                  className={`text-base text-white mb-2 leading-snug ${playfair.variable}`}
-                  style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+                  className={`text-base text-white mb-2 leading-snug ${playfair.variable} font-(family-name:--font-playfair)`}
                 >
                   {faq.q}
                 </h3>
