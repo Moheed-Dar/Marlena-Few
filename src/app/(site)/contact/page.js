@@ -1,28 +1,22 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import {
   Phone,
   Mail,
-  Send,
   MessageSquare,
-  User,
   Clock,
   CheckCircle2,
-  Loader2,
   ArrowRight,
   ShieldCheck,
-  AlertCircle,
   Home,
   Building2,
   Briefcase,
   PhoneCall,
-  X,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Playfair_Display, Inter } from "next/font/google";
-import { submitContact } from "@/lib/api";
+import ContactForm from "@/components/forms/ContactForm"; // adjust path as needed
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -93,71 +87,6 @@ const QUICK_LINKS = [
 // MAIN COMPONENT
 // ============================================
 export default function ContactPage() {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
-  });
-
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState("");
-  const [apiDown, setApiDown] = useState(false);
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    if (error) setError("");
-    if (apiDown) setApiDown(false);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
-      setError("Please fill in all required fields");
-      return;
-    }
-    try {
-      setSubmitting(true);
-      setError("");
-      setApiDown(false);
-      const result = await submitContact({
-        name: form.name.trim(),
-        email: form.email.trim(),
-        phone: form.phone.trim() || undefined,
-        message: form.message.trim(),
-      });
-      if (result.success) {
-        setSubmitted(true);
-        setForm({ name: "", email: "", phone: "", message: "" });
-        setTimeout(() => setSubmitted(false), 5000);
-      } else {
-        setError(result.message || "Something went wrong. Please try again.");
-      }
-    } catch (err) {
-      const status = err?.response?.status;
-      if (status === 404) {
-        setApiDown(true);
-        setError(
-          "Service is temporarily unavailable. Please try again later or contact us directly via phone.",
-        );
-      } else {
-        setError(
-          err?.response?.data?.message ||
-            "Network error. Please check your connection and try again.",
-        );
-      }
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  // --- FIXED: Input classes with better visibility on mobile ---
-  const inputClass = (hasError) =>
-    `w-full px-4 py-3.5 bg-white/10 border rounded-xl text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#3D8BFD]/20 focus:border-[#3D8BFD]/30 transition-all ${
-      hasError ? "border-red-500/50" : "border-white/15"
-    }`;
-
   return (
     <div
       className={`min-h-screen bg-[#0b1120] relative overflow-x-hidden ${inter.variable} font-(family-name:--font-inter)`}
@@ -210,227 +139,27 @@ export default function ContactPage() {
       {/* ===== FORM + SIDEBAR ===== */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-6">
-          {/* ===== LEFT — FORM ===== */}
+          {/* ===== LEFT — FORM (now using ContactForm) ===== */}
           <div className="lg:col-span-2">
             <div className="relative bg-linear-to-br from-white/5 to-white/2 rounded-2xl border border-white/6 overflow-hidden">
-              {/* Blur effects: ensure they don't block interaction */}
+              {/* Blur effects */}
               <div className="absolute top-0 left-0 w-48 h-48 bg-[#3D8BFD]/4 rounded-full blur-3xl -translate-x-1/3 -translate-y-1/2 pointer-events-none" />
               <div className="absolute bottom-0 right-0 w-48 h-48 bg-[#3D8BFD]/4 rounded-full blur-3xl translate-x-1/3 translate-y-1/2 pointer-events-none" />
 
-              {/* Content wrapper with higher z-index */}
               <div className="relative z-10 p-5 sm:p-7">
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-10 h-10 rounded-xl bg-[#3D8BFD]/10 flex items-center justify-center border border-[#3D8BFD]/15">
-                    <MessageSquare size={16} className="text-[#3D8BFD]" />
-                  </div>
-                  <div>
-                    <h2
-                      className={`text-lg text-white ${playfair.variable} font-(family-name:--font-playfair)`}
-                    >
-                      Send Us a Message
-                    </h2>
-                    <p className="text-white/25 text-xs mt-0.5">
-                      We&apos;d love to hear from you
-                    </p>
-                  </div>
-                </div>
-
-                <div className="w-full h-px bg-linear-to-r from-white/6 via-white/3 to-transparent mb-6" />
-
-                <AnimatePresence mode="wait">
-                  {submitted ? (
-                    <motion.div
-                      key="success"
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      className="flex flex-col items-center justify-center py-14"
-                    >
-                      <div className="relative">
-                        <div className="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/15">
-                          <CheckCircle2
-                            size={36}
-                            className="text-emerald-400"
-                          />
-                        </div>
-                        <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center animate-bounce">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="w-3 h-3 text-white"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="3"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <polyline points="20 6 9 17 4 12" />
-                          </svg>
-                        </div>
-                      </div>
-                      <h3
-                        className={`text-xl text-white mt-5 mb-1.5 ${playfair.variable} font-(family-name:--font-playfair)`}
-                      >
-                        Message Sent!
-                      </h3>
-                      <p className="text-white/35 text-sm text-center max-w-xs">
-                        Thank you for reaching out. We&apos;ll get back to you
-                        within 24 hours.
-                      </p>
-                    </motion.div>
-                  ) : (
-                    <motion.form
-                      key="form"
-                      initial={{ opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -4 }}
-                      transition={{ duration: 0.2 }}
-                      onSubmit={handleSubmit}
-                      className="space-y-4"
-                    >
-                      {/* Name */}
-                      <div>
-                        <label className="flex items-center gap-1.5 text-[10px] font-bold text-white/25 uppercase tracking-[0.2em] mb-1.5">
-                          <User size={10} /> Full Name{" "}
-                          <span className="text-[#3D8BFD]">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="name"
-                          value={form.name}
-                          onChange={handleChange}
-                          placeholder="Enter Your Name"
-                          className={inputClass(!!error && !form.name.trim())}
-                        />
-                      </div>
-
-                      {/* Email */}
-                      <div>
-                        <label className="flex items-center gap-1.5 text-[10px] font-bold text-white/25 uppercase tracking-[0.2em] mb-1.5">
-                          <Mail size={10} /> Email{" "}
-                          <span className="text-[#3D8BFD]">*</span>
-                        </label>
-                        <input
-                          type="email"
-                          name="email"
-                          value={form.email}
-                          onChange={handleChange}
-                          placeholder="email@example.com"
-                          className={inputClass(!!error && !form.email.trim())}
-                        />
-                      </div>
-
-                      {/* Phone */}
-                      <div>
-                        <label className="flex items-center gap-1.5 text-[10px] font-bold text-white/25 uppercase tracking-[0.2em] mb-1.5">
-                          <Phone size={10} /> Phone Number
-                        </label>
-                        <input
-                          type="tel"
-                          name="phone"
-                          value={form.phone}
-                          onChange={handleChange}
-                          placeholder="Your Phone Number (Optional)"
-                          className={inputClass(false)}
-                        />
-                      </div>
-
-                      {/* Message */}
-                      <div>
-                        <label className="flex items-center gap-1.5 text-[10px] font-bold text-white/25 uppercase tracking-[0.2em] mb-1.5">
-                          <MessageSquare size={10} /> Message{" "}
-                          <span className="text-[#3D8BFD]">*</span>
-                        </label>
-                        <textarea
-                          name="message"
-                          value={form.message}
-                          onChange={handleChange}
-                          rows={5}
-                          placeholder="Enter your message here..."
-                          className={`${inputClass(!!error && !form.message.trim())} resize-none`}
-                        />
-                      </div>
-
-                      {/* Error Message */}
-                      <AnimatePresence>
-                        {error && (
-                          <motion.div
-                            initial={{ opacity: 0, y: -5 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -5 }}
-                            className={`flex items-start gap-2.5 px-4 py-3 rounded-xl border ${
-                              apiDown
-                                ? "bg-[#3D8BFD]/5 border-[#3D8BFD]/15"
-                                : "bg-red-500/10 border-red-500/20"
-                            }`}
-                          >
-                            {apiDown ? (
-                              <AlertCircle
-                                size={16}
-                                className="text-[#3D8BFD] shrink-0 mt-0.5"
-                              />
-                            ) : (
-                              <X
-                                size={14}
-                                className="text-red-400 shrink-0 mt-0.5"
-                              />
-                            )}
-                            <p
-                              className={`text-sm leading-relaxed ${apiDown ? "text-[#7BB5FF]" : "text-red-300"}`}
-                            >
-                              {error}
-                            </p>
-                            {apiDown && (
-                              <p className="text-[11px] text-white/20 mt-1">
-                                Call us:{" "}
-                                <span className="text-[#3D8BFD]">
-                                  +12269325002
-                                </span>
-                              </p>
-                            )}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-
-                      {/* Submit Button */}
-                      <button
-                        type="submit"
-                        disabled={submitting}
-                        className="w-full flex cursor-pointer items-center justify-center gap-2.5 px-6 py-3.5 bg-[#3D8BFD] text-white text-sm font-bold rounded-xl hover:bg-[#5BA2FF] disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98] transition-all shadow-lg shadow-[#3D8BFD]/20"
-                      >
-                        {submitting ? (
-                          <>
-                            <Loader2 size={16} className="animate-spin" />{" "}
-                            Sending...
-                          </>
-                        ) : (
-                          <>
-                            <Send size={16} /> Send Message{" "}
-                            <ArrowRight size={14} className="opacity-60" />
-                          </>
-                        )}
-                      </button>
-
-                      <p className="text-center text-[10px] text-white/15 mt-2">
-                        By submitting, you agree to our privacy policy.
-                      </p>
-                    </motion.form>
-                  )}
-                </AnimatePresence>
+                <ContactForm />
               </div>
             </div>
           </div>
 
-          {/* ===== RIGHT SIDEBAR ===== */}
+          {/* ===== RIGHT SIDEBAR (unchanged) ===== */}
           <div className="lg:col-span-1">
             <div className="sticky top-28 space-y-4">
               {/* Why Contact Us */}
               <div className="relative bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden">
                 <div className="absolute top-0 right-0 w-28 h-28 bg-[#3D8BFD]/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
                 <div className="relative z-10">
-                  <h3
-                    className={`text-base text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}
-                  >
+                  <h3 className="text-base text-white mb-1 font-playfair">
                     Why Contact Us?
                   </h3>
                   <div className="w-10 h-0.5 bg-linear-to-r from-[#3D8BFD] to-transparent rounded-full mb-4" />
@@ -455,10 +184,7 @@ export default function ContactPage() {
                     ].map((item, i) => (
                       <div key={i} className="flex items-start gap-2.5">
                         <div className="w-5 h-5 rounded-full bg-[#3D8BFD]/10 flex items-center justify-center shrink-0 mt-0.5 border border-[#3D8BFD]/15">
-                          <CheckCircle2
-                            size={11}
-                            className="text-[#3D8BFD]/70"
-                          />
+                          <CheckCircle2 size={11} className="text-[#3D8BFD]/70" />
                         </div>
                         <div>
                           <p className="text-[13px] font-semibold text-white/80">
@@ -522,9 +248,7 @@ export default function ContactPage() {
             </span>
             <div className="w-12 h-px bg-linear-to-r from-transparent via-[#3D8BFD]/30 to-transparent" />
           </div>
-          <h2
-            className={`text-2xl sm:text-3xl text-white ${playfair.variable} font-(family-name:--font-playfair)`}
-          >
+          <h2 className="text-2xl sm:text-3xl text-white font-playfair">
             Quick Access
           </h2>
         </div>
@@ -540,16 +264,12 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <p className="text-sm font-bold text-red-300">Emergency</p>
-                  <p className="text-[11px] text-white/30 mt-0.5">
-                    Urgent inquiries
-                  </p>
+                  <p className="text-[11px] text-white/30 mt-0.5">Urgent inquiries</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 px-3 py-2 bg-red-500/10 rounded-lg border border-red-500/15">
                 <Phone size={12} className="text-red-400/70" />
-                <span className="text-xs font-semibold text-red-300">
-                  +1 226 932 5002
-                </span>
+                <span className="text-xs font-semibold text-red-300">+1 226 932 5002</span>
               </div>
             </div>
           </div>
@@ -570,13 +290,8 @@ export default function ContactPage() {
                   { day: "Saturday", time: "10 AM - 5 PM", active: true },
                   { day: "Sunday", time: "Closed", active: false },
                 ].map((item, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between py-1.5"
-                  >
-                    <span
-                      className={`text-xs ${item.active ? "text-white/60" : "text-white/25"}`}
-                    >
+                  <div key={i} className="flex items-center justify-between py-1.5">
+                    <span className={`text-xs ${item.active ? "text-white/60" : "text-white/25"}`}>
                       {item.day}
                     </span>
                     <span
@@ -630,23 +345,19 @@ export default function ContactPage() {
                   <ShieldCheck size={16} className="text-[#3D8BFD]" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-[#3D8BFD]">
-                    Trusted Agency
-                  </p>
+                  <p className="text-sm font-bold text-[#3D8BFD]">Trusted Agency</p>
                   <p className="text-[11px] text-white/25">Since 2020</p>
                 </div>
               </div>
               <div className="space-y-2">
-                {["Verified Listings", "Secure Deals", "Happy Clients"].map(
-                  (tag, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <div className="w-4 h-4 rounded-full bg-[#3D8BFD]/10 flex items-center justify-center shrink-0">
-                        <CheckCircle2 size={9} className="text-[#3D8BFD]/70" />
-                      </div>
-                      <span className="text-[11px] text-white/40">{tag}</span>
+                {["Verified Listings", "Secure Deals", "Happy Clients"].map((tag, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded-full bg-[#3D8BFD]/10 flex items-center justify-center shrink-0">
+                      <CheckCircle2 size={9} className="text-[#3D8BFD]/70" />
                     </div>
-                  ),
-                )}
+                    <span className="text-[11px] text-white/40">{tag}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -663,9 +374,7 @@ export default function ContactPage() {
             </span>
             <div className="w-12 h-px bg-linear-to-r from-transparent via-[#3D8BFD]/30 to-transparent" />
           </div>
-          <h2
-            className={`text-2xl sm:text-3xl text-white ${playfair.variable} font-(family-name:--font-playfair)`}
-          >
+          <h2 className="text-2xl sm:text-3xl text-white font-playfair">
             Frequently Asked Questions
           </h2>
         </div>
@@ -683,13 +392,9 @@ export default function ContactPage() {
               <div className="absolute top-0 right-0 w-20 h-20 bg-[#3D8BFD]/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
               <div className="relative z-10">
                 <div className="w-8 h-8 rounded-lg bg-[#3D8BFD]/10 flex items-center justify-center mb-3 border border-[#3D8BFD]/15">
-                  <span className="text-[#3D8BFD] font-bold text-sm">
-                    {index + 1}
-                  </span>
+                  <span className="text-[#3D8BFD] font-bold text-sm">{index + 1}</span>
                 </div>
-                <h3
-                  className={`text-base text-white mb-2 leading-snug ${playfair.variable} font-(family-name:--font-playfair)`}
-                >
+                <h3 className="text-base text-white mb-2 leading-snug font-playfair">
                   {faq.q}
                 </h3>
                 <p className="text-white/35 text-sm leading-relaxed">{faq.a}</p>
