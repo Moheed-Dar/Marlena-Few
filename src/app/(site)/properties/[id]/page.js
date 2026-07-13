@@ -1536,7 +1536,32 @@ export default function PropertyDetailPage() {
               </div>
             )}
 
-            {/* Features */}
+
+            {/* Address */}
+            {property.address && (
+              <div className="detail-item relative bg-linear-to-br from-white/6 to-white/2 rounded-2xl p-6 sm:p-7 border border-white/8 overflow-hidden">
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#2B7FFF]/5 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2" />
+                <div className="relative">
+                  <h3
+                    className={`text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}
+                  >
+                    Address
+                  </h3>
+                  <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-5" />
+                  <div className="flex items-start gap-3 bg-[#2B7FFF]/5 rounded-xl p-4 border border-[#2B7FFF]/10">
+                    <div className="w-8 h-8 rounded-lg bg-[#2B7FFF]/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <MapPin size={14} className="text-[#2B7FFF]/80" />
+                    </div>
+                    <p className="text-white/60 text-sm leading-relaxed">
+                      {property.address}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+                      {/* Features */}
             {(property.features?.length > 0 || property.amenities?.length > 0) && (
               <div className="detail-item relative bg-linear-to-br from-white/6 to-white/2 rounded-2xl p-6 sm:p-7 border border-white/8 overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#2B7FFF]/5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
@@ -1565,30 +1590,6 @@ export default function PropertyDetailPage() {
                 </div>
               </div>
             )}
-
-            {/* Address */}
-            {property.address && (
-              <div className="detail-item relative bg-linear-to-br from-white/6 to-white/2 rounded-2xl p-6 sm:p-7 border border-white/8 overflow-hidden">
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#2B7FFF]/5 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2" />
-                <div className="relative">
-                  <h3
-                    className={`text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}
-                  >
-                    Address
-                  </h3>
-                  <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-5" />
-                  <div className="flex items-start gap-3 bg-[#2B7FFF]/5 rounded-xl p-4 border border-[#2B7FFF]/10">
-                    <div className="w-8 h-8 rounded-lg bg-[#2B7FFF]/10 flex items-center justify-center shrink-0 mt-0.5">
-                      <MapPin size={14} className="text-[#2B7FFF]/80" />
-                    </div>
-                    <p className="text-white/60 text-sm leading-relaxed">
-                      {property.address}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
 
           {/* ===== RIGHT SIDEBAR ===== */}
           <div className="lg:col-span-1">
