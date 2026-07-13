@@ -1176,6 +1176,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ArrowUpRight, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
+import Link from "next/link";
 
 export default function HeroSection() {
   const containerRef = useRef(null);
@@ -1483,6 +1484,7 @@ export default function HeroSection() {
         </div>
 
         {/* ========== ENLARGED ROTATING BADGE WITH ANIMATIONS ========== */}
+        <Link href="/properties" passHref>
         <div
           ref={rotatingBadgeRef}
           onMouseEnter={() => setIsRingHovered(true)}
@@ -1613,6 +1615,7 @@ export default function HeroSection() {
             }}
           />
         </div>
+        </Link>
         {/* ========== END ENLARGED BADGE ========== */}
       </div>
 
