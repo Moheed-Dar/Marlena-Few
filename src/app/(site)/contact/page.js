@@ -166,8 +166,8 @@ export default function ContactPage() {
           <div className="lg:col-span-1">
             <div className="sticky top-28 space-y-4">
               {/* Why Contact Us */}
-              <div className="relative  isolate bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden">
-                <div className=" absolute top-0 right-0 w-28 h-28 bg-[#3D8BFD]/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+              <div className="relative hidden md:block isolate bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden">
+                <div className="hidden md:block absolute top-0 right-0 w-28 h-28 bg-[#3D8BFD]/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
                 <div className="relative z-10">
                   <h3 className="text-base text-white mb-1 font-playfair">
                     Why Contact Us?
@@ -212,7 +212,7 @@ export default function ContactPage() {
 
               {/* Our Services */}
               <div className="relative isolate bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden">
-                <div className=" absolute top-0 left-0 w-28 h-28 bg-[#3D8BFD]/4 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+                <div className="hidden md:block absolute top-0 left-0 w-28 h-28 bg-[#3D8BFD]/4 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
                 <div className="relative z-10">
                   <div className="flex items-center gap-2 mb-3">
                     <Building2 size={13} className="text-[#3D8BFD]/70" />
