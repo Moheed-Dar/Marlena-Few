@@ -375,7 +375,7 @@ export default function ContactPage() {
       </div>
 
       {/* ===== FAQ SECTION ===== */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24">
+      <div className="relative md:block hidden z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24">
         <div className="text-center mb-10">
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="w-12 h-px bg-linear-to-r from-transparent via-[#3D8BFD]/30 to-transparent" />
