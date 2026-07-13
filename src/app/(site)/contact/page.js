@@ -156,7 +156,7 @@ export default function ContactPage() {
           <div className="lg:col-span-1">
             <div className="sticky top-28 space-y-4">
               {/* Why Contact Us */}
-              <div className="relative bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden">
+              <div className="relative hidden md:block bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden">
                 <div className="absolute top-0 right-0 w-28 h-28 bg-[#3D8BFD]/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
                 <div className="relative z-10">
                   <h3 className="text-base text-white mb-1 font-playfair">
@@ -255,7 +255,7 @@ export default function ContactPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Emergency Contact */}
-          <div className="relative bg-linear-to-br from-red-500/8 to-red-500/3 rounded-2xl p-5 border border-red-500/20 overflow-hidden group hover:border-red-500/30 transition-colors">
+          <div className="relative hidden md:block bg-linear-to-br from-red-500/8 to-red-500/3 rounded-2xl p-5 border border-red-500/20 overflow-hidden group hover:border-red-500/30 transition-colors">
             <div className="absolute top-0 right-0 w-20 h-20 bg-red-500/10 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-3">
@@ -275,7 +275,7 @@ export default function ContactPage() {
           </div>
 
           {/* Office Hours */}
-          <div className="relative bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden hover:border-[#3D8BFD]/15 transition-colors">
+          <div className="relative hidden md:block bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden hover:border-[#3D8BFD]/15 transition-colors">
             <div className="absolute bottom-0 left-0 w-20 h-20 bg-[#3D8BFD]/3 rounded-full blur-2xl -translate-x-1/2 translate-y-1/2 pointer-events-none" />
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-3">
@@ -337,7 +337,7 @@ export default function ContactPage() {
           </div>
 
           {/* Trusted Agency */}
-          <div className="relative bg-[#3D8BFD]/5 rounded-2xl p-5 border border-[#3D8BFD]/15 overflow-hidden hover:border-[#3D8BFD]/25 transition-colors">
+          <div className="relative hidden md:block bg-[#3D8BFD]/5 rounded-2xl p-5 border border-[#3D8BFD]/15 overflow-hidden hover:border-[#3D8BFD]/25 transition-colors">
             <div className="absolute top-0 right-0 w-20 h-20 bg-[#3D8BFD]/5 rounded-full blur-2xl translate-x-1/3 -translate-y-1/3 pointer-events-none" />
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-3">
