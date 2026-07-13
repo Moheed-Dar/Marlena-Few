@@ -91,8 +91,11 @@ export default function ContactPage() {
     <div
       className={`min-h-screen bg-[#0b1120] relative overflow-x-hidden ${inter.variable} font-(family-name:--font-inter)`}
     >
-      {/* ===== BACKGROUND ===== */}
-      <div className="fixed inset-0 pointer-events-none z-0">
+      {/* ===== BACKGROUND =====
+          FIX: Changed from `fixed` to `absolute` — prevents per-frame GPU repaint
+          on scroll which was causing mobile glitch/tearing artifact.
+      ===== */}
+      <div className="absolute inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(61,139,253,0.06)_0%,transparent_40%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(61,139,253,0.04)_0%,transparent_50%)]" />
         <div
@@ -139,12 +142,19 @@ export default function ContactPage() {
       {/* ===== FORM + SIDEBAR ===== */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-6">
-          {/* ===== LEFT — FORM (now using ContactForm) ===== */}
+          {/* ===== LEFT — FORM ===== */}
           <div className="lg:col-span-2">
-            <div className="relative bg-linear-to-br from-white/5 to-white/2 rounded-2xl border border-white/6 overflow-hidden">
-              {/* Blur effects */}
-              <div className="absolute top-0 left-0 w-48 h-48 bg-[#3D8BFD]/4 rounded-full blur-3xl -translate-x-1/3 -translate-y-1/2 pointer-events-none" />
-              <div className="absolute bottom-0 right-0 w-48 h-48 bg-[#3D8BFD]/4 rounded-full blur-3xl translate-x-1/3 translate-y-1/2 pointer-events-none" />
+            {/*
+              FIX: Added `isolate` — creates a stacking context so blur layers
+              inside do not bleed into sibling layers, preventing tearing on mobile.
+            */}
+            <div className="relative isolate bg-linear-to-br from-white/5 to-white/2 rounded-2xl border border-white/6 overflow-hidden">
+              {/*
+                FIX: `hidden md:block` on blur decorators — heavy blur layers are
+                removed on mobile entirely, eliminating GPU compositing overload.
+              */}
+              <div className="hidden md:block absolute top-0 left-0 w-48 h-48 bg-[#3D8BFD]/4 rounded-full blur-3xl -translate-x-1/3 -translate-y-1/2 pointer-events-none" />
+              <div className="hidden md:block absolute bottom-0 right-0 w-48 h-48 bg-[#3D8BFD]/4 rounded-full blur-3xl translate-x-1/3 translate-y-1/2 pointer-events-none" />
 
               <div className="relative z-10 p-5 sm:p-7">
                 <ContactForm />
@@ -152,12 +162,12 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* ===== RIGHT SIDEBAR (unchanged) ===== */}
+          {/* ===== RIGHT SIDEBAR ===== */}
           <div className="lg:col-span-1">
             <div className="sticky top-28 space-y-4">
               {/* Why Contact Us */}
-              <div className="relative hidden md:block bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden">
-                <div className="absolute top-0 right-0 w-28 h-28 bg-[#3D8BFD]/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+              <div className="relative hidden md:block isolate bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden">
+                <div className="hidden md:block absolute top-0 right-0 w-28 h-28 bg-[#3D8BFD]/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
                 <div className="relative z-10">
                   <h3 className="text-base text-white mb-1 font-playfair">
                     Why Contact Us?
@@ -201,8 +211,8 @@ export default function ContactPage() {
               </div>
 
               {/* Our Services */}
-              <div className="relative bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden">
-                <div className="absolute top-0 left-0 w-28 h-28 bg-[#3D8BFD]/4 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+              <div className="relative isolate bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden">
+                <div className="hidden md:block absolute top-0 left-0 w-28 h-28 bg-[#3D8BFD]/4 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
                 <div className="relative z-10">
                   <div className="flex items-center gap-2 mb-3">
                     <Building2 size={13} className="text-[#3D8BFD]/70" />
@@ -255,8 +265,8 @@ export default function ContactPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Emergency Contact */}
-          <div className="relative hidden md:block bg-linear-to-br from-red-500/8 to-red-500/3 rounded-2xl p-5 border border-red-500/20 overflow-hidden group hover:border-red-500/30 transition-colors">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-red-500/10 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+          <div className="relative hidden md:block isolate bg-linear-to-br from-red-500/8 to-red-500/3 rounded-2xl p-5 border border-red-500/20 overflow-hidden group hover:border-red-500/30 transition-colors">
+            <div className="hidden md:block absolute top-0 right-0 w-20 h-20 bg-red-500/10 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-8 h-8 rounded-full bg-red-500/15 flex items-center justify-center shrink-0 border border-red-500/20">
@@ -275,8 +285,8 @@ export default function ContactPage() {
           </div>
 
           {/* Office Hours */}
-          <div className="relative hidden md:block bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden hover:border-[#3D8BFD]/15 transition-colors">
-            <div className="absolute bottom-0 left-0 w-20 h-20 bg-[#3D8BFD]/3 rounded-full blur-2xl -translate-x-1/2 translate-y-1/2 pointer-events-none" />
+          <div className="relative hidden md:block isolate bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden hover:border-[#3D8BFD]/15 transition-colors">
+            <div className="hidden md:block absolute bottom-0 left-0 w-20 h-20 bg-[#3D8BFD]/3 rounded-full blur-2xl -translate-x-1/2 translate-y-1/2 pointer-events-none" />
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-3">
                 <Clock size={14} className="text-[#3D8BFD]/70" />
@@ -310,8 +320,8 @@ export default function ContactPage() {
           </div>
 
           {/* Quick Links */}
-          <div className="relative bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden hover:border-[#3D8BFD]/15 transition-colors">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-emerald-500/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+          <div className="relative isolate bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-5 border border-white/6 overflow-hidden hover:border-[#3D8BFD]/15 transition-colors">
+            <div className="hidden md:block absolute top-0 right-0 w-20 h-20 bg-emerald-500/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
             <div className="relative z-10">
               <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mb-3">
                 Quick Links
@@ -337,8 +347,8 @@ export default function ContactPage() {
           </div>
 
           {/* Trusted Agency */}
-          <div className="relative hidden md:block bg-[#3D8BFD]/5 rounded-2xl p-5 border border-[#3D8BFD]/15 overflow-hidden hover:border-[#3D8BFD]/25 transition-colors">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-[#3D8BFD]/5 rounded-full blur-2xl translate-x-1/3 -translate-y-1/3 pointer-events-none" />
+          <div className="relative hidden md:block isolate bg-[#3D8BFD]/5 rounded-2xl p-5 border border-[#3D8BFD]/15 overflow-hidden hover:border-[#3D8BFD]/25 transition-colors">
+            <div className="hidden md:block absolute top-0 right-0 w-20 h-20 bg-[#3D8BFD]/5 rounded-full blur-2xl translate-x-1/3 -translate-y-1/3 pointer-events-none" />
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-9 h-9 rounded-full bg-[#3D8BFD]/15 flex items-center justify-center shrink-0 border border-[#3D8BFD]/20">
@@ -387,9 +397,9 @@ export default function ContactPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="relative bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-6 border border-white/6 overflow-hidden hover:border-[#3D8BFD]/15 transition-colors group"
+              className="relative isolate bg-linear-to-br from-white/5 to-white/2 rounded-2xl p-6 border border-white/6 overflow-hidden hover:border-[#3D8BFD]/15 transition-colors group"
             >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-[#3D8BFD]/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+              <div className="hidden md:block absolute top-0 right-0 w-20 h-20 bg-[#3D8BFD]/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
               <div className="relative z-10">
                 <div className="w-8 h-8 rounded-lg bg-[#3D8BFD]/10 flex items-center justify-center mb-3 border border-[#3D8BFD]/15">
                   <span className="text-[#3D8BFD] font-bold text-sm">{index + 1}</span>

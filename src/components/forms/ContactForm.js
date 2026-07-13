@@ -76,13 +76,19 @@ export default function ContactForm() {
     }
   };
 
-  // --- Input classes with better mobile visibility ---
   const inputClass = (hasError) =>
     `w-full px-4 py-3.5 bg-white/10 border rounded-xl text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#3D8BFD]/20 focus:border-[#3D8BFD]/30 transition-all ${
       hasError ? "border-red-500/50" : "border-white/15"
     }`;
 
   return (
+    /*
+      FIX: Removed all blur-2xl / blur-3xl decorative divs from inside ContactForm.
+      These were causing GPU compositing overload on mobile (Adreno/Mali chips),
+      producing the static/glitch artifact seen in the screenshot.
+      Blur decorators are now only rendered in the parent page.jsx wrapper
+      and only on md+ screens via `hidden md:block`.
+    */
     <div>
       <div className="flex items-center gap-3 mb-5">
         <div className="w-10 h-10 rounded-xl bg-[#3D8BFD]/10 flex items-center justify-center border border-[#3D8BFD]/15">
@@ -219,14 +225,16 @@ export default function ContactForm() {
                   ) : (
                     <X size={14} className="text-red-400 shrink-0 mt-0.5" />
                   )}
-                  <p className={`text-sm leading-relaxed ${apiDown ? "text-[#7BB5FF]" : "text-red-300"}`}>
-                    {error}
-                  </p>
-                  {apiDown && (
-                    <p className="text-[11px] text-white/20 mt-1">
-                      Call us: <span className="text-[#3D8BFD]">+12269325002</span>
+                  <div>
+                    <p className={`text-sm leading-relaxed ${apiDown ? "text-[#7BB5FF]" : "text-red-300"}`}>
+                      {error}
                     </p>
-                  )}
+                    {apiDown && (
+                      <p className="text-[11px] text-white/20 mt-1">
+                        Call us: <span className="text-[#3D8BFD]">+12269325002</span>
+                      </p>
+                    )}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
