@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
@@ -23,15 +23,10 @@ import {
   Building2,
   Crown,
   Gem,
+  RefreshCw,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Playfair_Display, Inter } from "next/font/google";
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
-  display: "swap",
-});
+import { Inter } from "next/font/google";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -92,19 +87,19 @@ const HighlightText = ({ text, query }) => {
 };
 
 // ============================================
-// REUSABLE: SELECT WITH CUSTOM ARROW
+// REUSABLE: SELECT WITH CUSTOM STYLING
 // ============================================
 const DarkSelect = ({ value, onChange, options, className = "" }) => (
   <div className={`relative ${className}`}>
     <select
       value={value}
       onChange={onChange}
-      className="appearance-none w-full pl-3 pr-7 py-2 bg-[#1b3454] border border-white/15 text-white/80 text-xs font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2B7FFF]/30 cursor-pointer"
+      className="appearance-none w-full pl-4 pr-8 py-2.5 bg-[#1b3454]/80 backdrop-blur-sm border border-white/15 text-white/90 text-xs font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2B7FFF]/40 focus:border-[#2B7FFF]/40 transition-all duration-200 hover:bg-[#1b3454] cursor-pointer shadow-lg shadow-black/10"
       style={{ colorScheme: "dark" }}
     >
       {options}
     </select>
-    <ChevronDown size={13} strokeWidth={2.5} className="absolute right-2 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none" />
+    <ChevronDown size={14} strokeWidth={2.5} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none transition-transform duration-200" />
   </div>
 );
 
@@ -223,6 +218,13 @@ export default function PropertiesPage() {
   };
 
   // ============================================
+  // REFRESH HANDLER
+  // ============================================
+  const handleRefresh = () => {
+    fetchProperties(page);
+  };
+
+  // ============================================
   // SKELETONS
   // ============================================
   const SkeletonCard = () => (
@@ -246,7 +248,7 @@ export default function PropertiesPage() {
   );
 
   // ============================================
-  // PROPERTY CARD (GRID) — LUXURY
+  // PROPERTY CARD (GRID)
   // ============================================
   const PropertyCard = ({ property }) => {
     const img = getSafeImg(property.thumbnail) || getSafeImg(property.images?.[0]) || PLACEHOLDER;
@@ -260,7 +262,15 @@ export default function PropertiesPage() {
           transition={{ duration: 0.5 }}
           className="relative h-105 sm:h-110px rounded-2xl overflow-hidden border border-white/10 shadow-xl shadow-black/30 bg-[#1b3454] cursor-pointer hover:shadow-2xl hover:shadow-[#2B7FFF]/15 hover:border-[#2B7FFF]/30 transition-all duration-500"
         >
-          <Image src={img} alt={property.title} fill priority className="object-cover group-hover:scale-105 transition-transform duration-700" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
+          <Image
+            src={img}
+            alt={property.title}
+            fill
+            priority
+            unoptimized
+            className="object-cover group-hover:scale-105 transition-transform duration-700"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
           <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-black/10 pointer-events-none" />
           <div className="absolute inset-0 bg-linear-to-r from-black/30 via-transparent to-transparent pointer-events-none" />
 
@@ -303,7 +313,7 @@ export default function PropertiesPage() {
               )}
             </div>
 
-            <h3 className={`text-xl text-white mb-1.5 leading-tight line-clamp-1 drop-shadow-lg ${playfair.variable} font-(family-name:--font-playfair)`}>
+            <h3 className="text-xl text-white mb-1.5 leading-tight line-clamp-1 drop-shadow-lg font-inter">
               {property.title}
             </h3>
 
@@ -314,7 +324,7 @@ export default function PropertiesPage() {
 
             <div className="flex items-end justify-between">
               <div>
-                <p className={`text-2xl text-transparent bg-clip-text bg-linear-to-r from-[#8DC5FF] via-[#5AA8FF] to-[#2B7FFF] leading-none ${playfair.variable} font-(family-name:--font-playfair)`}>
+                <p className="text-2xl text-transparent bg-clip-text bg-linear-to-r from-[#8DC5FF] via-[#5AA8FF] to-[#2B7FFF] leading-none font-inter">
                   {property.currency === "PKR" ? "Rs" : "$"} {Number(property.price)?.toLocaleString()}
                 </p>
                 <div className="flex items-center gap-2 mt-1">
@@ -334,7 +344,7 @@ export default function PropertiesPage() {
   };
 
   // ============================================
-  // PROPERTY CARD (LIST) — LUXURY
+  // PROPERTY CARD (LIST)
   // ============================================
   const PropertyListItem = ({ property }) => {
     const img = getSafeImg(property.thumbnail) || getSafeImg(property.images?.[0]) || PLACEHOLDER;
@@ -348,7 +358,14 @@ export default function PropertiesPage() {
           transition={{ duration: 0.4 }}
           className="relative h-52 sm:h-56 rounded-2xl overflow-hidden border border-white/10 shadow-lg shadow-black/30 bg-[#1b3454] cursor-pointer hover:shadow-2xl hover:shadow-[#2B7FFF]/15 hover:border-[#2B7FFF]/30 transition-all duration-500"
         >
-          <Image src={img} alt={property.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700" sizes="(max-width: 1024px) 100vw" priority />
+          <Image
+            src={img}
+            alt={property.title}
+            fill
+            unoptimized
+            className="object-cover group-hover:scale-105 transition-transform duration-700"
+            sizes="(max-width: 1024px) 100vw"
+          />
           <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
 
           <div className="absolute top-3 left-3 right-3 flex items-start justify-between z-10">
@@ -373,7 +390,7 @@ export default function PropertiesPage() {
           <div className="absolute bottom-0 left-0 right-0 z-10 p-4">
             <div className="flex items-end justify-between">
               <div>
-                <h3 className={`text-lg text-white mb-0.5 leading-tight drop-shadow-lg line-clamp-1 ${playfair.variable} font-(family-name:--font-playfair)`}>
+                <h3 className="text-lg text-white mb-0.5 leading-tight drop-shadow-lg line-clamp-1 font-inter">
                   {property.title}
                 </h3>
                 <div className="flex items-center gap-1.5 text-white/60 text-xs">
@@ -387,7 +404,7 @@ export default function PropertiesPage() {
                   </div>
                 </div>
               </div>
-              <p className={`text-xl text-transparent bg-clip-text bg-linear-to-r from-[#8DC5FF] to-[#2B7FFF] leading-none ${playfair.variable} font-(family-name:--font-playfair)`}>
+              <p className="text-xl text-transparent bg-clip-text bg-linear-to-r from-[#8DC5FF] to-[#2B7FFF] leading-none font-inter">
                 {property.currency === "PKR" ? "Rs" : "$"} {Number(property.price)?.toLocaleString()}
               </p>
             </div>
@@ -410,12 +427,29 @@ export default function PropertiesPage() {
   // RENDER
   // ============================================
   return (
-    <div className={`min-h-screen bg-[#13273f] ${inter.variable} font-(family-name:--font-inter)`}>
-      {/* Luxury BG – lighter version */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(43,127,255,0.08)_0%,transparent_40%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(43,127,255,0.05)_0%,transparent_50%)]" />
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "50px 50px" }} />
+    <div className={`min-h-screen bg-[#39518A] font-inter`}>
+      {/* Background Texture + Watermark */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
+            backgroundSize: '40px 40px',
+          }}
+        />
+        <div className="absolute inset-0 flex items-center justify-center opacity-[0.06]">
+          <div className="relative w-[300px] h-[300px] sm:w-[400px] sm:h-[400px]">
+            <Image
+              src="/images/logo1.png"
+              alt="Watermark"
+              fill
+              className="object-contain"
+              unoptimized
+            />
+          </div>
+        </div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(43,127,255,0.12)_0%,transparent_40%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(43,127,255,0.08)_0%,transparent_50%)]" />
       </div>
 
       {/* ===== HERO — z-50 ===== */}
@@ -429,227 +463,275 @@ export default function PropertiesPage() {
                 Explore Listings
               </p>
             </div>
-            <h1 className={`text-3xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-[1.1] mb-4 ${playfair.variable} font-(family-name:--font-playfair)`}>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-[1.1] mb-4 font-inter">
               Our Properties
             </h1>
-            <p className="text-white/60 text-sm sm:text-base leading-relaxed mb-8">
+            <p className="text-white/70 text-sm sm:text-base leading-relaxed mb-8">
               Discover your perfect property from our curated collection of premium real estate listings.
             </p>
           </div>
 
-          {/* ===== SEARCH BAR WITH SUGGESTIONS ===== */}
-          <div className="max-w-2xl relative">
-            <form onSubmit={handleSearch}>
-              <div className="relative flex items-center bg-white/10 border border-white/15 rounded-2xl focus-within:border-[#2B7FFF]/50 focus-within:ring-2 focus-within:ring-[#2B7FFF]/20 transition-all">
-                <Search size={18} className="absolute left-4 text-white/40" />
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  value={searchInput}
-                  onChange={(e) => { setSearchInput(e.target.value); setShowSuggestions(true); }}
-                  onFocus={() => { if (searchInput.trim()) setShowSuggestions(true); }}
-                  placeholder="Search by title or location..."
-                  className="w-full pl-11 pr-20 py-4 bg-transparent text-white placeholder-white/30 text-sm focus:outline-none"
-                  autoComplete="off"
-                />
-                {searchInput && (
-                  <button type="button" onClick={handleClearSearch} className="absolute right-14 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors">
-                    <X size={14} className="text-white/40" />
-                  </button>
-                )}
-                <button type="submit" className="absolute right-1.5 top-1/2 -translate-y-1/2 px-5 py-2 bg-[#2B7FFF] text-white text-sm font-semibold rounded-xl hover:bg-[#4D94FF] transition-colors shadow-lg shadow-[#2B7FFF]/25">
-                  Search
-                </button>
-              </div>
-            </form>
-
-            {/* ===== SUGGESTIONS DROPDOWN ===== */}
-            <AnimatePresence>
-              {showSuggestions && suggestions.length > 0 && (
-                <motion.div
-                  ref={suggestionsRef}
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute top-full left-0 right-0 mt-2 bg-[#1b3454]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden"
-                >
-                  <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/5">
-                    <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.15em]">
-                      {suggestions.length} suggestion{suggestions.length !== 1 ? "s" : ""} found
-                    </span>
-                    <button onClick={() => setShowSuggestions(false)} className="w-5 h-5 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors">
-                      <X size={11} className="text-white/30" />
-                    </button>
-                  </div>
-
-                  <div className="max-h-80 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(43,127,255,0.3) transparent" }}>
-                    {suggestions.map((property) => {
-                      const img = getSafeImg(property.thumbnail) || getSafeImg(property.images?.[0]) || PLACEHOLDER;
-                      return (
-                        <Link key={property._id} href={`/properties/${property._id}`} onClick={handleSuggestionClick} className="flex items-center gap-3.5 px-4 py-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-b-0">
-                          <div className="relative w-16 h-12 rounded-lg overflow-hidden shrink-0 bg-white/5 shadow-lg shadow-black/30 ring-1 ring-white/10">
-                            <Image src={img} alt="" fill className="object-cover" sizes="64px" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className={`text-sm font-semibold text-white leading-tight line-clam-1 ${playfair.variable} font-(family-name:--font-playfair)`}>
-                              <HighlightText text={property.title} query={searchInput} />
-                            </p>
-                            <div className="flex items-center gap-1.5 mt-1">
-                              <MapPin size={10} className="text-[#2B7FFF]/70 shrink-0" />
-                              <span className="text-[11px] text-white/50 truncate">
-                                <HighlightText text={property.location || property.city || "N/A"} query={searchInput} />
-                              </span>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2.5 shrink-0">
-                            <span className="text-xs font-bold text-white/70">{property.currency === "PKR" ? "Rs" : "$"} {Number(property.price)?.toLocaleString()}</span>
-                            <div className="w-6 h-6 rounded-md bg-[#2B7FFF]/10 flex items-center justify-center">
-                              <ArrowUpRight size={11} className="text-[#2B7FFF]/60" />
-                            </div>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-
-                  <div className="border-t border-white/5">
+          {/* ===== SEARCH BAR + CONTROLS ===== */}
+          <div className="flex flex-col gap-3">
+            {/* Row 1: Search + Controls */}
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Search Bar (slightly smaller) */}
+              <div className="relative flex-1 min-w-[180px]">
+                <form onSubmit={handleSearch}>
+                  <div className="relative flex items-center bg-white/10 border border-white/15 rounded-2xl focus-within:border-[#2B7FFF]/50 focus-within:ring-2 focus-within:ring-[#2B7FFF]/20 transition-all">
+                    <Search size={16} className="absolute left-3.5 text-white/40" />
+                    <input
+                      ref={searchInputRef}
+                      type="text"
+                      value={searchInput}
+                      onChange={(e) => { setSearchInput(e.target.value); setShowSuggestions(true); }}
+                      onFocus={() => { if (searchInput.trim()) setShowSuggestions(true); }}
+                      placeholder="Search by title or location..."
+                      className="w-full pl-9 pr-20 py-3 text-sm bg-transparent text-white placeholder-white/30 focus:outline-none"
+                      autoComplete="off"
+                    />
+                    {/* Clear button */}
+                    {searchInput && (
+                      <button
+                        type="button"
+                        onClick={handleClearSearch}
+                        className="absolute right-12 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/15 transition-colors group"
+                        title="Clear search"
+                      >
+                        <X size={14} className="text-white/50 group-hover:text-white/80 transition-colors" />
+                      </button>
+                    )}
+                    {/* Submit button with Search icon */}
                     <button
-                      onClick={() => { setSearch(searchInput); setShowSuggestions(false); }}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold text-[#2B7FFF] hover:bg-[#2B7FFF]/10 transition-colors"
+                      type="submit"
+                      className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-[#2B7FFF] text-white rounded-xl hover:bg-[#4D94FF] transition-colors shadow-lg shadow-[#2B7FFF]/25"
+                      title="Search"
                     >
-                      <Search size={12} />
-                      View all results for &quot;{searchInput.slice(0, 30)}{searchInput.length > 30 ? "..." : ""}&quot;
+                      <Search size={16} />
                     </button>
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                </form>
 
-            <AnimatePresence>
-              {showSuggestions && searchInput.trim().length > 0 && suggestions.length === 0 && !loading && (
-                <motion.div
-                  ref={suggestionsRef}
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute top-full left-0 right-0 mt-2 bg-[#1b3454]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden"
-                >
-                  <div className="flex flex-col items-center justify-center py-8 px-4">
-                    <div className="w-10 h-10 rounded-full bg-[#2B7FFF]/5 flex items-center justify-center mb-3 border border-[#2B7FFF]/10">
-                      <Search size={16} className="text-[#2B7FFF]/40" />
-                    </div>
-                    <p className="text-sm text-white/50 font-medium">No matches found</p>
-                    <p className="text-[11px] text-white/30 mt-1">Try different keywords</p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-      </div>
+                {/* Suggestions */}
+                <AnimatePresence>
+                  {showSuggestions && suggestions.length > 0 && (
+                    <motion.div
+                      ref={suggestionsRef}
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full left-0 right-0 mt-2 bg-[#1b3454]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden z-50"
+                    >
+                      <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/5">
+                        <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.15em]">
+                          {suggestions.length} suggestion{suggestions.length !== 1 ? "s" : ""} found
+                        </span>
+                        <button onClick={() => setShowSuggestions(false)} className="w-5 h-5 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors">
+                          <X size={11} className="text-white/30" />
+                        </button>
+                      </div>
+                      <div className="max-h-80 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(43,127,255,0.3) transparent" }}>
+                        {suggestions.map((property) => {
+                          const img = getSafeImg(property.thumbnail) || getSafeImg(property.images?.[0]) || PLACEHOLDER;
+                          return (
+                            <Link key={property._id} href={`/properties/${property._id}`} onClick={handleSuggestionClick} className="flex items-center gap-3.5 px-4 py-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-b-0">
+                              <div className="relative w-16 h-12 rounded-lg overflow-hidden shrink-0 bg-white/5 shadow-lg shadow-black/30 ring-1 ring-white/10">
+                                <Image src={img} alt="" fill className="object-cover" sizes="64px" unoptimized />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-semibold text-white leading-tight line-clam-1 font-inter">
+                                  <HighlightText text={property.title} query={searchInput} />
+                                </p>
+                                <div className="flex items-center gap-1.5 mt-1">
+                                  <MapPin size={10} className="text-[#2B7FFF]/70 shrink-0" />
+                                  <span className="text-[11px] text-white/50 truncate">
+                                    <HighlightText text={property.location || property.city || "N/A"} query={searchInput} />
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2.5 shrink-0">
+                                <span className="text-xs font-bold text-white/70">{property.currency === "PKR" ? "Rs" : "$"} {Number(property.price)?.toLocaleString()}</span>
+                                <div className="w-6 h-6 rounded-md bg-[#2B7FFF]/10 flex items-center justify-center">
+                                  <ArrowUpRight size={11} className="text-[#2B7FFF]/60" />
+                                </div>
+                              </div>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                      <div className="border-t border-white/5">
+                        <button
+                          onClick={() => { setSearch(searchInput); setShowSuggestions(false); }}
+                          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold text-[#2B7FFF] hover:bg-[#2B7FFF]/10 transition-colors"
+                        >
+                          <Search size={12} />
+                          View all results for &quot;{searchInput.slice(0, 30)}{searchInput.length > 30 ? "..." : ""}&quot;
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-      {/* ===== TOOLBAR ===== */}
-      <div className="sticky top-0 z-40 bg-[#1b3454]/90 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-14 gap-3">
-            <div className="flex items-center gap-3 min-w-0">
+                <AnimatePresence>
+                  {showSuggestions && searchInput.trim().length > 0 && suggestions.length === 0 && !loading && (
+                    <motion.div
+                      ref={suggestionsRef}
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full left-0 right-0 mt-2 bg-[#1b3454]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden z-50"
+                    >
+                      <div className="flex flex-col items-center justify-center py-8 px-4">
+                        <div className="w-10 h-10 rounded-full bg-[#2B7FFF]/5 flex items-center justify-center mb-3 border border-[#2B7FFF]/10">
+                          <Search size={16} className="text-[#2B7FFF]/40" />
+                        </div>
+                        <p className="text-sm text-white/50 font-medium">No matches found</p>
+                        <p className="text-[11px] text-white/30 mt-1">Try different keywords</p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Total Count Badge */}
+              <div className="shrink-0 px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full border border-white/10 text-white/80 text-xs font-medium whitespace-nowrap">
+                {filteredProperties.length} {filteredProperties.length === 1 ? 'property' : 'properties'}
+              </div>
+
+              {/* Refresh */}
+              <button
+                onClick={handleRefresh}
+                disabled={loading}
+                className="p-2.5 rounded-xl bg-white/10 border border-white/15 text-white/60 hover:text-white hover:bg-white/20 transition-all disabled:opacity-40 shrink-0"
+                title="Refresh listings"
+              >
+                <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
+              </button>
+
+              {/* Filters Toggle */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-lg transition-colors shrink-0 ${
+                className={`flex items-center gap-2 px-3 py-2.5 text-xs font-semibold rounded-xl transition-colors shrink-0 ${
                   showFilters || hasActiveFilters
                     ? "bg-[#2B7FFF] text-white shadow-lg shadow-[#2B7FFF]/25"
-                    : "bg-white/10 text-white/60 hover:bg-white/20 border border-white/10"
+                    : "bg-white/10 text-white/70 hover:bg-white/20 border border-white/15"
                 }`}
               >
-                <SlidersHorizontal size={14} />
-                <span className="hidden sm:inline">Filters</span>
+                <SlidersHorizontal size={15} />
+                <span>Filters</span>
                 {hasActiveFilters && (
                   <span className="w-4 h-4 flex items-center justify-center bg-white text-[#2B7FFF] text-[10px] font-black rounded-full">!</span>
                 )}
               </button>
 
-              {hasActiveFilters && (
-                <div className="hidden md:flex items-center gap-1.5 overflow-x-auto">
-                  {propertyType !== "all" && (
-                    <span className="shrink-0 flex items-center gap-1 px-2.5 py-1 bg-[#2B7FFF]/20 text-[#6BABFF] text-[11px] font-semibold rounded-full capitalize border border-[#2B7FFF]/25">
-                      {propertyType}
-                      <button onClick={() => setPropertyType("all")}><X size={9} /></button>
-                    </span>
-                  )}
-                  {priceType && (
-                    <span className="shrink-0 flex items-center gap-1 px-2.5 py-1 bg-[#2B7FFF]/20 text-[#6BABFF] text-[11px] font-semibold rounded-full capitalize border border-[#2B7FFF]/25">
-                      {priceType}
-                      <button onClick={() => setPriceType("")}><X size={9} /></button>
-                    </span>
-                  )}
-                  {search && (
-                    <span className="shrink-0 flex items-center gap-1 px-2.5 py-1 bg-[#2B7FFF]/20 text-[#6BABFF] text-[11px] font-semibold rounded-full border border-[#2B7FFF]/25">
-                      &quot;{search.slice(0, 12)}&quot;
-                      <button onClick={handleClearSearch}><X size={9} /></button>
-                    </span>
-                  )}
-                  <button onClick={clearAllFilters} className="shrink-0 text-[11px] text-red-400 font-semibold hover:underline">Clear</button>
-                </div>
-              )}
+              {/* Grid/List Toggle */}
+              <div className="flex items-center bg-white/10 rounded-xl p-1 border border-white/10 shrink-0">
+                <button onClick={() => setViewMode("grid")} className={`p-1.5 rounded-lg transition-colors ${viewMode === "grid" ? "bg-[#2B7FFF] text-white shadow-lg shadow-[#2B7FFF]/25" : "text-white/40 hover:text-white/70"}`}>
+                  <Grid3X3 size={15} />
+                </button>
+                <button onClick={() => setViewMode("list")} className={`p-1.5 rounded-lg transition-colors ${viewMode === "list" ? "bg-[#2B7FFF] text-white shadow-lg shadow-[#2B7FFF]/25" : "text-white/40 hover:text-white/70"}`}>
+                  <List size={15} />
+                </button>
+              </div>
 
-              {!loading && (
-                <span className="hidden sm:block text-xs text-white/40 shrink-0">
-                  {filteredProperties.length} result{filteredProperties.length !== 1 ? "s" : ""}
-                </span>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0">
+              {/* Sort Dropdown */}
               <DarkSelect
-                className="hidden sm:block w-44"
+                className="w-36 shrink-0"
                 value={`${sortBy}-${sortOrder}`}
                 onChange={(e) => { const [f, o] = e.target.value.split("-"); setSortBy(f); setSortOrder(o); }}
                 options={SORT_OPTIONS.map((opt) => (
                   <option key={opt.value} value={`${opt.value}-${opt.value === "price" ? "asc" : "desc"}`} style={darkOptionStyle}>{opt.label}</option>
                 ))}
               />
-
-              <div className="flex items-center bg-white/10 rounded-lg p-0.5 border border-white/10">
-                <button onClick={() => setViewMode("grid")} className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-[#2B7FFF] text-white shadow-lg shadow-[#2B7FFF]/25" : "text-white/40 hover:text-white/70"}`}>
-                  <Grid3X3 size={15} />
-                </button>
-                <button onClick={() => setViewMode("list")} className={`p-1.5 rounded-md transition-colors ${viewMode === "list" ? "bg-[#2B7FFF] text-white shadow-lg shadow-[#2B7FFF]/25" : "text-white/40 hover:text-white/70"}`}>
-                  <List size={15} />
-                </button>
-              </div>
             </div>
+
+            {/* Row 2: Active filter chips */}
+            {hasActiveFilters && (
+              <div className="flex flex-wrap items-center gap-2 mt-1">
+                {propertyType !== "all" && (
+                  <span className="flex items-center gap-1 px-2.5 py-1 bg-[#2B7FFF]/20 text-[#6BABFF] text-[11px] font-semibold rounded-full capitalize border border-[#2B7FFF]/25">
+                    {propertyType}
+                    <button onClick={() => setPropertyType("all")}><X size={9} /></button>
+                  </span>
+                )}
+                {priceType && (
+                  <span className="flex items-center gap-1 px-2.5 py-1 bg-[#2B7FFF]/20 text-[#6BABFF] text-[11px] font-semibold rounded-full capitalize border border-[#2B7FFF]/25">
+                    {priceType}
+                    <button onClick={() => setPriceType("")}><X size={9} /></button>
+                  </span>
+                )}
+                {search && (
+                  <span className="flex items-center gap-1 px-2.5 py-1 bg-[#2B7FFF]/20 text-[#6BABFF] text-[11px] font-semibold rounded-full border border-[#2B7FFF]/25">
+                    &quot;{search.slice(0, 15)}&quot;
+                    <button onClick={handleClearSearch}><X size={9} /></button>
+                  </span>
+                )}
+                <button onClick={clearAllFilters} className="text-[11px] text-red-400 font-semibold hover:underline">Clear all</button>
+              </div>
+            )}
           </div>
         </div>
+      </div>
 
-        {/* Filter Panel */}
-        <AnimatePresence>
-          {showFilters && (
-            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden border-t border-white/5">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div>
-                    <label className="block text-[11px] font-bold text-white/40 uppercase tracking-wider mb-1.5">Property Type</label>
-                    <DarkSelect className="w-full [&>select]:py-2.5 [&>select]:rounded-xl [&>select]:text-sm [&>select]:text-white/80" value={propertyType} onChange={(e) => setPropertyType(e.target.value)} options={PROPERTY_TYPES.map((t) => (<option key={t} value={t} style={darkOptionStyle} className="capitalize">{t === "all" ? "All Types" : t}</option>))} />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold text-white/40 uppercase tracking-wider mb-1.5">Listing Type</label>
-                    <DarkSelect className="w-full [&>select]:py-2.5 [&>select]:rounded-xl [&>select]:text-sm [&>select]:text-white/80" value={priceType} onChange={(e) => setPriceType(e.target.value)} options={PRICE_TYPES.map((t) => (<option key={t.value} value={t.value} style={darkOptionStyle}>{t.label}</option>))} />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold text-white/40 uppercase tracking-wider mb-1.5">Sort By</label>
-                    <DarkSelect className="w-full [&>select]:py-2.5 [&>select]:rounded-xl [&>select]:text-sm [&>select]:text-white/80" value={`${sortBy}-${sortOrder}`} onChange={(e) => { const [f, o] = e.target.value.split("-"); setSortBy(f); setSortOrder(o); }} options={SORT_OPTIONS.map((opt) => (<option key={opt.value} value={`${opt.value}-${opt.value === "price" ? "asc" : "desc"}`} style={darkOptionStyle}>{opt.label}</option>))} />
-                  </div>
-                  <div className="flex items-end">
-                    <button onClick={clearAllFilters} className="w-full px-4 py-2.5 border border-white/15 text-white/60 text-sm font-semibold rounded-xl hover:bg-white/10 transition-colors">Reset</button>
-                  </div>
+      {/* ===== FILTER PANEL (collapsible) ===== */}
+      <AnimatePresence>
+        {showFilters && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="relative z-40 overflow-hidden bg-[#2a4a7a]/95 backdrop-blur-xl border-b border-white/10 shadow-lg"
+          >
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-[11px] font-bold text-white/60 uppercase tracking-wider mb-1.5">Property Type</label>
+                  <DarkSelect
+                    className="w-full [&>select]:py-2.5 [&>select]:rounded-xl [&>select]:text-sm [&>select]:text-white/80"
+                    value={propertyType}
+                    onChange={(e) => setPropertyType(e.target.value)}
+                    options={PROPERTY_TYPES.map((t) => (
+                      <option key={t} value={t} style={darkOptionStyle} className="capitalize">
+                        {t === "all" ? "All Types" : t}
+                      </option>
+                    ))}
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-white/60 uppercase tracking-wider mb-1.5">Listing Type</label>
+                  <DarkSelect
+                    className="w-full [&>select]:py-2.5 [&>select]:rounded-xl [&>select]:text-sm [&>select]:text-white/80"
+                    value={priceType}
+                    onChange={(e) => setPriceType(e.target.value)}
+                    options={PRICE_TYPES.map((t) => (
+                      <option key={t.value} value={t.value} style={darkOptionStyle}>{t.label}</option>
+                    ))}
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-white/60 uppercase tracking-wider mb-1.5">Sort By</label>
+                  <DarkSelect
+                    className="w-full [&>select]:py-2.5 [&>select]:rounded-xl [&>select]:text-sm [&>select]:text-white/80"
+                    value={`${sortBy}-${sortOrder}`}
+                    onChange={(e) => { const [f, o] = e.target.value.split("-"); setSortBy(f); setSortOrder(o); }}
+                    options={SORT_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={`${opt.value}-${opt.value === "price" ? "asc" : "desc"}`} style={darkOptionStyle}>{opt.label}</option>
+                    ))}
+                  />
+                </div>
+                <div className="flex items-end">
+                  <button onClick={clearAllFilters} className="w-full px-4 py-2.5 border border-white/15 text-white/60 text-sm font-semibold rounded-xl hover:bg-white/10 transition-colors">
+                    Reset
+                  </button>
                 </div>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ===== GRID / LIST ===== */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
@@ -668,8 +750,8 @@ export default function PropertiesPage() {
             <div className="w-20 h-20 rounded-full bg-[#2B7FFF]/10 flex items-center justify-center mb-4 border border-[#2B7FFF]/15">
               <Search size={28} className="text-[#2B7FFF]/40" />
             </div>
-            <h3 className={`text-lg text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}>No Properties Found</h3>
-            <p className="text-white/50 text-sm max-w-sm mb-4">
+            <h3 className="text-lg text-white mb-1 font-inter">No Properties Found</h3>
+            <p className="text-white/60 text-sm max-w-sm mb-4">
               {hasActiveFilters ? `No match found for "${search}". Try different keywords or clear filters.` : "No properties listed yet."}
             </p>
             {hasActiveFilters && (

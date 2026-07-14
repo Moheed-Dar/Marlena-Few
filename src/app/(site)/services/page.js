@@ -435,10 +435,451 @@
 
 
 
+// "use client";
+
+// import { useEffect, useRef } from "react";
+// import Link from "next/link";
+// import {
+//   ShieldCheck,
+//   BarChart3,
+//   Target,
+//   Check,
+//   ArrowRight,
+//   BookOpen,
+//   Download,
+//   FileText,
+//   Users,
+//   TrendingUp,
+//   Home,
+//   Search,
+//   Scale,
+//   Star,
+// } from "lucide-react";
+// import gsap from "gsap";
+// import { ScrollTrigger } from "gsap/ScrollTrigger";
+// import { Playfair_Display, Inter } from "next/font/google";
+// import GuideForm from "@/components/forms/GuideForm";
+
+// gsap.registerPlugin(ScrollTrigger);
+
+// const playfair = Playfair_Display({
+//   subsets: ["latin"],
+//   variable: "--font-playfair",
+//   display: "swap",
+// });
+
+// const inter = Inter({
+//   subsets: ["latin"],
+//   variable: "--font-inter",
+//   display: "swap",
+// });
+
+// // ============================================
+// // SERVICES DATA
+// // ============================================
+// const services = [
+//   {
+//     icon: ShieldCheck,
+//     title: "Buyer & Seller Representation",
+//     description:
+//       "Expert legal and strategic representation through every stage of your property transaction. We protect your interests from first offer to final closing.",
+//     features: [
+//       "Skilled negotiation on your behalf",
+//       "Legal documentation & compliance",
+//       "Market-driven pricing strategy",
+//       "End-to-end closing support",
+//     ],
+//     color: "#2B7FFF",
+//   },
+//   {
+//     icon: BarChart3,
+//     title: "Home Valuations",
+//     description:
+//       "Accurate, data-driven property valuations backed by comprehensive market analysis. Know the true worth of your asset before making any decision.",
+//     features: [
+//       "Comparative market analysis (CMA)",
+//       "Current market trend evaluation",
+//       "Detailed valuation report",
+//       "Fair & transparent pricing",
+//     ],
+//     color: "#8B5CF6",
+//   },
+//   {
+//     icon: Target,
+//     title: "Investment Advisory",
+//     description:
+//       "Strategic real estate investment guidance to help you identify high-return opportunities and build a profitable property portfolio with managed risk.",
+//     features: [
+//       "Portfolio diversification strategy",
+//       "ROI projection & analysis",
+//       "Emerging market identification",
+//       "Risk assessment & mitigation",
+//     ],
+//     color: "#F59E0B",
+//   },
+// ];
+
+// // ============================================
+// // GUIDE DATA
+// // ============================================
+// const guides = [
+//   {
+//     type: "buyer",
+//     title: "Buyer's Guide",
+//     description:
+//       "Everything you need to know before purchasing your dream property. A step-by-step roadmap for first-time and experienced buyers.",
+//     contents: [
+//       "Complete buying process explained",
+//       "Financing options & mortgage tips",
+//       "Property inspection checklist",
+//       "Common mistakes to avoid",
+//       "Negotiation strategies that work",
+//     ],
+//     color: "#2B7FFF",
+//     icon: Home,
+//   },
+//   {
+//     type: "seller",
+//     title: "Seller's Guide",
+//     description:
+//       "Maximize your property's value with our proven selling strategies. Learn how to attract the right buyers and close at the best price.",
+//     contents: [
+//       "How to price your property right",
+//       "Home staging & preparation tips",
+//       "Marketing strategies that sell",
+//       "Negotiation tactics for sellers",
+//       "Legal requirements simplified",
+//     ],
+//     color: "#10B981",
+//     icon: TrendingUp,
+//   },
+// ];
+
+// // ============================================
+// // MAIN PAGE
+// // ============================================
+// export default function ServicesPage() {
+//   const pageRef = useRef(null);
+//   const servicesRef = useRef(null);
+//   const guidesRef = useRef(null);
+
+//   // ---- GSAP Animations ----
+//   useEffect(() => {
+//     const ctx = gsap.context(() => {
+//       // Hero
+//       gsap.fromTo(
+//         ".hero-title",
+//         { opacity: 0, y: 30 },
+//         { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }
+//       );
+//       gsap.fromTo(
+//         ".hero-sub",
+//         { opacity: 0, y: 20 },
+//         { opacity: 1, y: 0, duration: 0.6, ease: "power2.out", delay: 0.2 }
+//       );
+//       gsap.fromTo(
+//         ".hero-line",
+//         { scaleX: 0 },
+//         { scaleX: 1, duration: 0.8, ease: "power2.out", delay: 0.1 }
+//       );
+
+//       // Service Cards
+//       gsap.fromTo(
+//         ".service-card",
+//         { opacity: 0, y: 40 },
+//         {
+//           opacity: 1,
+//           y: 0,
+//           duration: 0.6,
+//           stagger: 0.15,
+//           ease: "power2.out",
+//           scrollTrigger: {
+//             trigger: servicesRef.current,
+//             start: "top 85%",
+//           },
+//         }
+//       );
+
+//       // Guide Cards
+//       gsap.fromTo(
+//         ".guide-card",
+//         { opacity: 0, y: 40 },
+//         {
+//           opacity: 1,
+//           y: 0,
+//           duration: 0.6,
+//           stagger: 0.15,
+//           ease: "power2.out",
+//           scrollTrigger: {
+//             trigger: guidesRef.current,
+//             start: "top 85%",
+//           },
+//         }
+//       );
+//     }, pageRef);
+
+//     return () => ctx.revert();
+//   }, []);
+
+//   return (
+//     <div
+//       ref={pageRef}
+//       className={`min-h-screen bg-[#13273f] relative overflow-x-hidden ${inter.variable} font-(family-name:--font-inter)`}
+//     >
+//       {/* ===== LIGHTER BACKGROUND EFFECTS ===== */}
+//       <div className="fixed inset-0 pointer-events-none z-0">
+//         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(43,127,255,0.08)_0%,transparent_40%)]" />
+//         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(43,127,255,0.05)_0%,transparent_50%)]" />
+//         <div
+//           className="absolute inset-0 opacity-[0.03]"
+//           style={{
+//             backgroundImage:
+//               "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
+//             backgroundSize: "50px 50px",
+//           }}
+//         />
+//       </div>
+
+//       {/* ===== HERO SECTION ===== */}
+//       <div className="relative z-10 mt-20">
+//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 text-center">
+//           <div className="max-w-3xl mx-auto">
+//             <div className="hero-line flex items-center justify-center gap-3 mb-6 origin-left">
+//               <div className="w-8 h-px bg-linear-to-r from-[#2B7FFF] to-transparent" />
+//               <span className="text-[10px] font-bold text-[#2B7FFF]/70 uppercase tracking-[0.3em]">
+//                 What We Offer
+//               </span>
+//               <div className="w-8 h-px bg-linear-to-l from-[#2B7FFF] to-transparent" />
+//             </div>
+
+//             <h1
+//               className={`hero-title text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-[1.1] mb-6 ${playfair.variable} font-(family-name:--font-playfair)`}
+//             >
+//               Our{" "}
+//               <span className="text-transparent bg-clip-text bg-linear-to-r from-[#8DC5FF] via-[#5AA8FF] to-[#2B7FFF]">
+//                 Services
+//               </span>
+//             </h1>
+
+//             <p className="hero-sub text-white/60 text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto">
+//               Comprehensive real estate solutions tailored to your needs. From
+//               finding your dream home to maximizing your investment returns.
+//             </p>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* ===== SERVICES SECTION ===== */}
+//       <div ref={servicesRef} className="relative z-10">
+//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+//           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+//             {services.map((service, index) => {
+//               const Icon = service.icon;
+//               return (
+//                 <div
+//                   key={index}
+//                   className="service-card group relative bg-[#1b3454] rounded-2xl p-7 sm:p-8 border border-white/10 hover:border-white/20 transition-all duration-500 overflow-hidden"
+//                 >
+//                   {/* Subtle glow - more opaque */}
+//                   <div
+//                     className="absolute top-0 right-0 w-40 h-40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-0 group-hover:opacity-40 transition-opacity duration-700 pointer-events-none"
+//                     style={{ backgroundColor: `${service.color}25` }}
+//                   />
+
+//                   <div
+//                     className="relative w-14 h-14 rounded-2xl flex items-center justify-center mb-6 border transition-all duration-500 group-hover:scale-110"
+//                     style={{
+//                       backgroundColor: `${service.color}15`,
+//                       borderColor: `${service.color}25`,
+//                     }}
+//                   >
+//                     <Icon
+//                       size={24}
+//                       style={{ color: service.color }}
+//                       className="transition-transform duration-500 group-hover:scale-110"
+//                     />
+//                   </div>
+
+//                   <h3
+//                     className={`relative text-xl text-white mb-3 leading-tight ${playfair.variable} font-(family-name:--font-playfair)`}
+//                   >
+//                     {service.title}
+//                   </h3>
+
+//                   <p className="relative text-white/60 text-sm leading-relaxed mb-6">
+//                     {service.description}
+//                   </p>
+
+//                   <ul className="relative space-y-2.5">
+//                     {service.features.map((feature, i) => (
+//                       <li
+//                         key={i}
+//                         className="flex items-start gap-2.5 text-sm text-white/60"
+//                       >
+//                         <div
+//                           className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 border transition-colors duration-300"
+//                           style={{
+//                             backgroundColor: `${service.color}15`,
+//                             borderColor: `${service.color}20`,
+//                           }}
+//                         >
+//                           <Check
+//                             size={10}
+//                             style={{ color: service.color }}
+//                           />
+//                         </div>
+//                         <span>{feature}</span>
+//                       </li>
+//                     ))}
+//                   </ul>
+
+//                   <div className="relative mt-7 pt-5 border-t border-white/10">
+//                     <Link
+//                       href="/contact"
+//                       className="inline-flex items-center gap-2 text-sm font-semibold transition-all duration-300 group/link"
+//                       style={{ color: service.color }}
+//                     >
+//                       Learn More
+//                       <ArrowRight
+//                         size={14}
+//                         className="transition-transform duration-300 group-hover/link:translate-x-1"
+//                       />
+//                     </Link>
+//                   </div>
+//                 </div>
+//               );
+//             })}
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* ===== GUIDES DOWNLOAD SECTION ===== */}
+//       <div ref={guidesRef} className="relative z-10">
+//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+//           <div className="text-center mb-14">
+//             <div className="flex items-center justify-center gap-3 mb-5">
+//               <div className="w-8 h-px bg-linear-to-r from-[#2B7FFF] to-transparent" />
+//               <span className="text-[10px] font-bold text-[#2B7FFF]/70 uppercase tracking-[0.3em]">
+//                 Free Resources
+//               </span>
+//               <div className="w-8 h-px bg-linear-to-l from-[#2B7FFF] to-transparent" />
+//             </div>
+
+//             <h2
+//               className={`text-3xl sm:text-4xl text-white tracking-tight leading-[1.1] mb-4 ${playfair.variable} font-(family-name:--font-playfair)`}
+//             >
+//               Download Our{" "}
+//               <span className="text-transparent bg-clip-text bg-linear-to-r from-[#8DC5FF] via-[#5AA8FF] to-[#2B7FFF]">
+//                 Free Guides
+//               </span>
+//             </h2>
+
+//             <p className="text-white/60 text-base max-w-xl mx-auto">
+//               Comprehensive resources to help you make informed real estate
+//               decisions. Download instantly after filling a quick form.
+//             </p>
+//           </div>
+
+//           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+//             {guides.map((guide) => {
+//               const GuideIcon = guide.icon;
+//               return (
+//                 <div
+//                   key={guide.type}
+//                   className="guide-card group relative bg-[#1b3454] rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-500"
+//                 >
+//                   {/* Subtle glow */}
+//                   <div
+//                     className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-0 group-hover:opacity-40 transition-opacity duration-700 pointer-events-none"
+//                     style={{ backgroundColor: `${guide.color}25` }}
+//                   />
+
+//                   <div className="relative p-7 sm:p-8">
+//                     <div className="flex items-start justify-between mb-5">
+//                       <div
+//                         className="w-12 h-12 rounded-xl flex items-center justify-center border transition-all duration-500 group-hover:scale-110"
+//                         style={{
+//                           backgroundColor: `${guide.color}15`,
+//                           borderColor: `${guide.color}25`,
+//                         }}
+//                       >
+//                         <GuideIcon size={22} style={{ color: guide.color }} />
+//                       </div>
+//                       <span
+//                         className="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border"
+//                         style={{
+//                           backgroundColor: `${guide.color}15`,
+//                           borderColor: `${guide.color}25`,
+//                           color: guide.color,
+//                         }}
+//                       >
+//                         Free PDF
+//                       </span>
+//                     </div>
+
+//                     <h3
+//                       className={`text-xl text-white mb-2 ${playfair.variable} font-(family-name:--font-playfair)`}
+//                     >
+//                       {guide.title}
+//                     </h3>
+//                     <p className="text-white/60 text-sm leading-relaxed mb-5">
+//                       {guide.description}
+//                     </p>
+
+//                     <ul className="space-y-2 mb-7">
+//                       {guide.contents.map((item, i) => (
+//                         <li
+//                           key={i}
+//                           className="flex items-center gap-2.5 text-xs text-white/50"
+//                         >
+//                           <div
+//                             className="w-1 h-1 rounded-full shrink-0"
+//                             style={{ backgroundColor: guide.color }}
+//                           />
+//                           {item}
+//                         </li>
+//                       ))}
+//                     </ul>
+
+//                     <GuideForm guideType={guide.type} />
+//                   </div>
+//                 </div>
+//               );
+//             })}
+//           </div>
+
+//           <div className="text-center mt-10">
+//             <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-full">
+//               <ShieldCheck size={14} className="text-[#2B7FFF]/60" />
+//               <span className="text-xs text-white/40">
+//                 Your information is secure. We never share your data.
+//               </span>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 "use client";
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ShieldCheck,
   BarChart3,
@@ -457,22 +898,9 @@ import {
 } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Playfair_Display, Inter } from "next/font/google";
 import GuideForm from "@/components/forms/GuideForm";
 
 gsap.registerPlugin(ScrollTrigger);
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 // ============================================
 // SERVICES DATA
@@ -624,20 +1052,32 @@ export default function ServicesPage() {
   return (
     <div
       ref={pageRef}
-      className={`min-h-screen bg-[#13273f] relative overflow-x-hidden ${inter.variable} font-(family-name:--font-inter)`}
+      className="min-h-screen bg-[#39518A] relative overflow-x-hidden"
     >
-      {/* ===== LIGHTER BACKGROUND EFFECTS ===== */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(43,127,255,0.08)_0%,transparent_40%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(43,127,255,0.05)_0%,transparent_50%)]" />
+      {/* ===== LIGHTER BACKGROUND EFFECTS + WATERMARK ===== */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.04]"
           style={{
             backgroundImage:
               "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
-            backgroundSize: "50px 50px",
+            backgroundSize: "40px 40px",
           }}
         />
+        {/* Watermark logo (subtle) */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-[0.04]">
+          <div className="relative w-[300px] h-[300px] sm:w-[400px] sm:h-[400px]">
+            <Image
+              src="/images/logo1.png"
+              alt="Watermark"
+              fill
+              className="object-contain"
+              unoptimized
+            />
+          </div>
+        </div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(43,127,255,0.12)_0%,transparent_40%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(43,127,255,0.08)_0%,transparent_50%)]" />
       </div>
 
       {/* ===== HERO SECTION ===== */}
@@ -646,22 +1086,20 @@ export default function ServicesPage() {
           <div className="max-w-3xl mx-auto">
             <div className="hero-line flex items-center justify-center gap-3 mb-6 origin-left">
               <div className="w-8 h-px bg-linear-to-r from-[#2B7FFF] to-transparent" />
-              <span className="text-[10px] font-bold text-[#2B7FFF]/70 uppercase tracking-[0.3em]">
+              <span className="text-[10px] font-bold text-[#2B7FFF] uppercase tracking-[0.3em]">
                 What We Offer
               </span>
               <div className="w-8 h-px bg-linear-to-l from-[#2B7FFF] to-transparent" />
             </div>
 
-            <h1
-              className={`hero-title text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-[1.1] mb-6 ${playfair.variable} font-(family-name:--font-playfair)`}
-            >
+            <h1 className="hero-title text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-[1.1] mb-6 font-bold">
               Our{" "}
               <span className="text-transparent bg-clip-text bg-linear-to-r from-[#8DC5FF] via-[#5AA8FF] to-[#2B7FFF]">
                 Services
               </span>
             </h1>
 
-            <p className="hero-sub text-white/60 text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto">
+            <p className="hero-sub text-white/70 text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto">
               Comprehensive real estate solutions tailored to your needs. From
               finding your dream home to maximizing your investment returns.
             </p>
@@ -680,7 +1118,7 @@ export default function ServicesPage() {
                   key={index}
                   className="service-card group relative bg-[#1b3454] rounded-2xl p-7 sm:p-8 border border-white/10 hover:border-white/20 transition-all duration-500 overflow-hidden"
                 >
-                  {/* Subtle glow - more opaque */}
+                  {/* Subtle glow */}
                   <div
                     className="absolute top-0 right-0 w-40 h-40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-0 group-hover:opacity-40 transition-opacity duration-700 pointer-events-none"
                     style={{ backgroundColor: `${service.color}25` }}
@@ -700,13 +1138,11 @@ export default function ServicesPage() {
                     />
                   </div>
 
-                  <h3
-                    className={`relative text-xl text-white mb-3 leading-tight ${playfair.variable} font-(family-name:--font-playfair)`}
-                  >
+                  <h3 className="relative text-xl text-white mb-3 leading-tight font-semibold">
                     {service.title}
                   </h3>
 
-                  <p className="relative text-white/60 text-sm leading-relaxed mb-6">
+                  <p className="relative text-white/70 text-sm leading-relaxed mb-6">
                     {service.description}
                   </p>
 
@@ -714,7 +1150,7 @@ export default function ServicesPage() {
                     {service.features.map((feature, i) => (
                       <li
                         key={i}
-                        className="flex items-start gap-2.5 text-sm text-white/60"
+                        className="flex items-start gap-2.5 text-sm text-white/70"
                       >
                         <div
                           className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 border transition-colors duration-300"
@@ -759,22 +1195,20 @@ export default function ServicesPage() {
           <div className="text-center mb-14">
             <div className="flex items-center justify-center gap-3 mb-5">
               <div className="w-8 h-px bg-linear-to-r from-[#2B7FFF] to-transparent" />
-              <span className="text-[10px] font-bold text-[#2B7FFF]/70 uppercase tracking-[0.3em]">
+              <span className="text-[10px] font-bold text-[#2B7FFF] uppercase tracking-[0.3em]">
                 Free Resources
               </span>
               <div className="w-8 h-px bg-linear-to-l from-[#2B7FFF] to-transparent" />
             </div>
 
-            <h2
-              className={`text-3xl sm:text-4xl text-white tracking-tight leading-[1.1] mb-4 ${playfair.variable} font-(family-name:--font-playfair)`}
-            >
+            <h2 className="text-3xl sm:text-4xl text-white tracking-tight leading-[1.1] mb-4 font-bold">
               Download Our{" "}
               <span className="text-transparent bg-clip-text bg-linear-to-r from-[#8DC5FF] via-[#5AA8FF] to-[#2B7FFF]">
                 Free Guides
               </span>
             </h2>
 
-            <p className="text-white/60 text-base max-w-xl mx-auto">
+            <p className="text-white/70 text-base max-w-xl mx-auto">
               Comprehensive resources to help you make informed real estate
               decisions. Download instantly after filling a quick form.
             </p>
@@ -817,12 +1251,10 @@ export default function ServicesPage() {
                       </span>
                     </div>
 
-                    <h3
-                      className={`text-xl text-white mb-2 ${playfair.variable} font-(family-name:--font-playfair)`}
-                    >
+                    <h3 className="text-xl text-white mb-2 font-semibold">
                       {guide.title}
                     </h3>
-                    <p className="text-white/60 text-sm leading-relaxed mb-5">
+                    <p className="text-white/70 text-sm leading-relaxed mb-5">
                       {guide.description}
                     </p>
 
@@ -830,7 +1262,7 @@ export default function ServicesPage() {
                       {guide.contents.map((item, i) => (
                         <li
                           key={i}
-                          className="flex items-center gap-2.5 text-xs text-white/50"
+                          className="flex items-center gap-2.5 text-xs text-white/60"
                         >
                           <div
                             className="w-1 h-1 rounded-full shrink-0"
@@ -851,7 +1283,7 @@ export default function ServicesPage() {
           <div className="text-center mt-10">
             <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-full">
               <ShieldCheck size={14} className="text-[#2B7FFF]/60" />
-              <span className="text-xs text-white/40">
+              <span className="text-xs text-white/50">
                 Your information is secure. We never share your data.
               </span>
             </div>

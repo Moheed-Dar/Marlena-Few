@@ -1865,11 +1865,6 @@
 
 
 
-
-
-
-
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -2046,7 +2041,7 @@ export default function PropertyDetailPage() {
   // ============================================
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#13273f] flex items-center justify-center">
+      <div className="min-h-screen bg-[#39518A] flex items-center justify-center">
         <div className="flex flex-col items-center gap-5">
           <div className="relative">
             <div className="w-14 h-14 border-2 border-[#2B7FFF]/20 border-t-[#2B7FFF] rounded-full animate-spin" />
@@ -2070,7 +2065,7 @@ export default function PropertyDetailPage() {
   // ============================================
   if (error || !property) {
     return (
-      <div className="min-h-screen bg-[#13273f] flex flex-col items-center justify-center gap-4 px-4">
+      <div className="min-h-screen bg-[#39518A] flex flex-col items-center justify-center gap-4 px-4">
         <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
           <X size={32} className="text-white/40" />
         </div>
@@ -2099,20 +2094,32 @@ export default function PropertyDetailPage() {
   // ============================================
   return (
     <div
-      className={`min-h-screen bg-[#13273f] relative overflow-x-hidden ${inter.variable} font-(family-name:--font-inter)}`}
+      className={`min-h-screen bg-[#39518A] relative overflow-x-hidden ${inter.variable} font-(family-name:--font-inter)}`}
     >
-      {/* ===== LIGHTER BACKGROUND EFFECTS ===== */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(43,127,255,0.08)_0%,transparent_40%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(43,127,255,0.05)_0%,transparent_50%)]" />
+      {/* ===== LIGHTER BACKGROUND EFFECTS + WATERMARK ===== */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.04]"
           style={{
             backgroundImage:
               "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
-            backgroundSize: "50px 50px",
+            backgroundSize: "40px 40px",
           }}
         />
+        {/* Watermark logo (subtle) */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-[0.04]">
+          <div className="relative w-[300px] h-[300px] sm:w-[400px] sm:h-[400px]">
+            <Image
+              src="/images/logo1.png"
+              alt="Watermark"
+              fill
+              className="object-contain"
+              unoptimized
+            />
+          </div>
+        </div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(43,127,255,0.12)_0%,transparent_40%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(43,127,255,0.08)_0%,transparent_50%)]" />
       </div>
 
       {/* ===== HERO GALLERY ===== */}
@@ -2120,21 +2127,21 @@ export default function PropertyDetailPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
           {/* Breadcrumb + Badges */}
           <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-            <div className="flex items-center gap-2 text-sm text-white/40">
+            <div className="flex items-center gap-2 text-sm text-white/60">
               <Link
                 href="/properties"
-                className="hover:text-[#2B7FFF] transition-colors"
+                className="hover:text-[#2B7FFF] transition-colors text-white/60 hover:text-white"
               >
                 Properties
               </Link>
-              <ChevronRight size={14} />
-              <span className="text-white/70 font-medium">
+              <ChevronRight size={14} className="text-white/30" />
+              <span className="text-white/90 font-medium">
                 {property.title}
               </span>
             </div>
             <div className="flex items-center gap-2">
               {property.isFeatured && (
-                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#2B7FFF]/20 text-[#6BABFF] text-[11px] font-bold rounded-full border border-[#2B7FFF]/30 backdrop-blur-sm">
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#2B7FFF]/20 text-[#8DC5FF] text-[11px] font-bold rounded-full border border-[#2B7FFF]/30 backdrop-blur-sm">
                   <Crown size={11} className="fill-[#2B7FFF] text-[#2B7FFF]" />
                   Featured
                 </span>
@@ -2162,7 +2169,7 @@ export default function PropertyDetailPage() {
           <div className="mb-7">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-8 h-px bg-linear-to-r from-[#2B7FFF] to-transparent" />
-              <span className="text-[10px] font-bold text-[#2B7FFF]/80 uppercase tracking-[0.25em]">
+              <span className="text-[10px] font-bold text-[#2B7FFF] uppercase tracking-[0.25em]">
                 Exclusive Listing
               </span>
             </div>
@@ -2180,13 +2187,13 @@ export default function PropertyDetailPage() {
                   {Number(property.price)?.toLocaleString()}
                 </p>
                 {property.priceType === "rent" && (
-                  <p className="text-white/40 text-xs mt-1">per month</p>
+                  <p className="text-white/50 text-xs mt-1">per month</p>
                 )}
               </div>
               <div className="h-10 w-px bg-white/15 hidden sm:block" />
-              <div className="flex items-center gap-2 text-white/60">
+              <div className="flex items-center gap-2 text-white/70">
                 <MapPin size={15} className="text-[#2B7FFF]/80" />
-                <span className="text-sm font-medium">
+                <span className="text-sm font-medium text-white/90">
                   {property.location || property.city}
                 </span>
               </div>
@@ -2206,6 +2213,7 @@ export default function PropertyDetailPage() {
                     src={currentDisplayImage}
                     alt={property.title || "Property"}
                     fill
+                    unoptimized
                     className="object-cover"
                     sizes="(max-width: 1024px) 100vw, 66vw"
                   />
@@ -2231,7 +2239,6 @@ export default function PropertyDetailPage() {
                   className="relative w-full aspect-video rounded-2xl overflow-hidden bg-[#1b3454] shadow-2xl shadow-black/50 cursor-zoom-in ring-1 ring-[#2B7FFF]/15"
                   onClick={() => setShowLightbox(true)}
                 >
-                  {/* Image swaps on key change with CSS transition */}
                   <div
                     key={activeImage}
                     className="absolute inset-0 transition-opacity duration-300 ease-in-out"
@@ -2240,6 +2247,7 @@ export default function PropertyDetailPage() {
                       src={currentDisplayImage}
                       alt={property.title || "Property"}
                       fill
+                      unoptimized
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 75vw, 66vw"
                     />
@@ -2275,7 +2283,7 @@ export default function PropertyDetailPage() {
                 </div>
               </div>
 
-              {/* Side Thumbnails - Limited to 4 with See More */}
+              {/* Side Thumbnails */}
               <div className="md:col-span-3 lg:col-span-4 grid grid-cols-4 md:grid-cols-2 md:grid-rows-2 gap-2">
                 {images.slice(0, 4).map((img, index) => {
                   const safeImg = getSafeImage(img);
@@ -2305,11 +2313,11 @@ export default function PropertyDetailPage() {
                         src={safeImg}
                         alt={`Property image ${index + 1}`}
                         fill
+                        unoptimized
                         className="object-cover"
                         sizes="(max-width: 768px) 25vw, (max-width: 1024px) 20vw, 15vw"
                       />
 
-                      {/* Tick */}
                       {isActive && !isSeeMore && (
                         <div className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-[#2B7FFF] flex items-center justify-center shadow-lg shadow-[#2B7FFF]/50 z-10 border-2 border-white">
                           <Check
@@ -2320,7 +2328,6 @@ export default function PropertyDetailPage() {
                         </div>
                       )}
 
-                      {/* See More Overlay */}
                       {isSeeMore && (
                         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center flex-col gap-1 z-10">
                           <Grid3x3 size={18} className="text-white" />
@@ -2345,18 +2352,18 @@ export default function PropertyDetailPage() {
           <div className="lg:col-span-2 space-y-6">
             {/* Meta */}
             {property.propertyCode && (
-              <div className="detail-item flex flex-wrap items-center gap-4 text-xs text-white/40">
-                <span className="flex items-center gap-1.5 px-3 py-1.5 bg-[#2B7FFF]/10 rounded-full text-[#2B7FFF]/80 font-semibold border border-[#2B7FFF]/20">
+              <div className="detail-item flex flex-wrap items-center gap-4 text-xs text-white/60">
+                <span className="flex items-center gap-1.5 px-3 py-1.5 bg-[#2B7FFF]/15 rounded-full text-[#8DC5FF] font-semibold border border-[#2B7FFF]/25">
                   <Building2 size={12} />
                   {property.propertyCode}
                 </span>
                 {property.viewsCount > 0 && (
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1 text-white/60">
                     <Eye size={12} /> {property.viewsCount} views
                   </span>
                 )}
                 {property.createdAt && (
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1 text-white/60">
                     <CalendarDays size={12} />
                     {new Date(property.createdAt).toLocaleDateString("en-US", {
                       month: "short",
@@ -2371,13 +2378,13 @@ export default function PropertyDetailPage() {
             {/* Quick Stats */}
             <div className="detail-item grid grid-cols-2 sm:grid-cols-4 gap-3">
               {property.bedrooms > 0 && (
-                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-4 border border-white/10 hover:border-[#2B7FFF]/25 transition-all group overflow-hidden">
+                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group overflow-hidden">
                   <div className="absolute top-0 right-0 w-16 h-16 bg-[#2B7FFF]/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:bg-[#2B7FFF]/20 transition-colors" />
                   <div className="w-11 h-11 rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
                     <Bed size={18} className="text-[#2B7FFF]/80" />
                   </div>
                   <div>
-                    <p className="text-[9px] text-white/40 uppercase tracking-[0.2em] font-bold">
+                    <p className="text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">
                       Beds
                     </p>
                     <p
@@ -2389,13 +2396,13 @@ export default function PropertyDetailPage() {
                 </div>
               )}
               {property.bathrooms > 0 && (
-                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-4 border border-white/10 hover:border-[#2B7FFF]/25 transition-all group overflow-hidden">
+                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group overflow-hidden">
                   <div className="absolute top-0 right-0 w-16 h-16 bg-[#2B7FFF]/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:bg-[#2B7FFF]/20 transition-colors" />
                   <div className="w-11 h-11 rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
                     <Bath size={18} className="text-[#2B7FFF]/80" />
                   </div>
                   <div>
-                    <p className="text-[9px] text-white/40 uppercase tracking-[0.2em] font-bold">
+                    <p className="text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">
                       Baths
                     </p>
                     <p
@@ -2407,13 +2414,13 @@ export default function PropertyDetailPage() {
                 </div>
               )}
               {(property.areaSize || property.area) > 0 && (
-                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-4 border border-white/10 hover:border-[#2B7FFF]/25 transition-all group overflow-hidden">
+                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group overflow-hidden">
                   <div className="absolute top-0 right-0 w-16 h-16 bg-[#2B7FFF]/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:bg-[#2B7FFF]/20 transition-colors" />
                   <div className="w-11 h-11 rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
                     <Ruler size={18} className="text-[#2B7FFF]/80" />
                   </div>
                   <div>
-                    <p className="text-[9px] text-white/40 uppercase tracking-[0.2em] font-bold">
+                    <p className="text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">
                       Area
                     </p>
                     <p
@@ -2428,13 +2435,13 @@ export default function PropertyDetailPage() {
                 </div>
               )}
               {property.propertyType && (
-                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-4 border border-white/10 hover:border-[#2B7FFF]/25 transition-all group overflow-hidden">
+                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group overflow-hidden">
                   <div className="absolute top-0 right-0 w-16 h-16 bg-[#2B7FFF]/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:bg-[#2B7FFF]/20 transition-colors" />
                   <div className="w-11 h-11 rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
                     <Home size={18} className="text-[#2B7FFF]/80" />
                   </div>
                   <div>
-                    <p className="text-[9px] text-white/40 uppercase tracking-[0.2em] font-bold">
+                    <p className="text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">
                       Type
                     </p>
                     <p className="text-sm font-bold text-white leading-tight capitalize">
@@ -2457,7 +2464,7 @@ export default function PropertyDetailPage() {
                   </h3>
                   <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-5" />
                   <div
-                    className="text-white/60 text-[15px] leading-[1.9] whitespace-pre-line max-h-80 overflow-y-auto pr-3"
+                    className="text-white/70 text-[15px] leading-[1.9] whitespace-pre-line max-h-80 overflow-y-auto pr-3"
                     style={{
                       scrollbarWidth: "thin",
                       scrollbarColor: "rgba(43,127,255,0.3) transparent",
@@ -2485,7 +2492,7 @@ export default function PropertyDetailPage() {
                       (item, i) => (
                         <div
                           key={i}
-                          className="flex items-center gap-2.5 text-sm text-white/60 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10 hover:bg-[#2B7FFF]/10 hover:border-[#2B7FFF]/20 transition-colors group"
+                          className="flex items-center gap-2.5 text-sm text-white/70 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10 hover:bg-[#2B7FFF]/10 hover:border-[#2B7FFF]/20 transition-colors group"
                         >
                           <div className="w-5 h-5 rounded-full bg-[#2B7FFF]/15 flex items-center justify-center shrink-0 group-hover:bg-[#2B7FFF]/25 transition-colors">
                             <CheckCircle2 size={12} className="text-[#2B7FFF]/80" />
@@ -2514,7 +2521,7 @@ export default function PropertyDetailPage() {
                     <div className="w-8 h-8 rounded-lg bg-[#2B7FFF]/15 flex items-center justify-center shrink-0 mt-0.5">
                       <MapPin size={14} className="text-[#2B7FFF]/80" />
                     </div>
-                    <p className="text-white/60 text-sm leading-relaxed">
+                    <p className="text-white/70 text-sm leading-relaxed">
                       {property.address}
                     </p>
                   </div>
@@ -2539,7 +2546,7 @@ export default function PropertyDetailPage() {
                     {property.currency === "PKR" ? "Rs" : "$"}{" "}
                     {Number(property.price)?.toLocaleString()}
                   </p>
-                  <p className="text-white/40 text-xs mt-1.5 capitalize tracking-wide">
+                  <p className="text-white/50 text-xs mt-1.5 capitalize tracking-wide">
                     {property.priceType} &bull; {property.propertyType}
                   </p>
                 </div>
@@ -2559,13 +2566,13 @@ export default function PropertyDetailPage() {
                   <div className="grid grid-cols-2 gap-2">
                     <a
                       href={`tel:${property.contact?.phone || ""}`}
-                      className="flex items-center justify-center gap-1.5 px-3 py-2.5 border border-white/15 text-white/60 text-xs font-semibold rounded-xl hover:bg-white/10 hover:border-white/25 transition-colors"
+                      className="flex items-center justify-center gap-1.5 px-3 py-2.5 border border-white/15 text-white/70 text-xs font-semibold rounded-xl hover:bg-white/10 hover:border-white/25 transition-colors hover:text-white"
                     >
                       <Phone size={13} /> Call
                     </a>
                     <a
                       href={`mailto:${property.contact?.email || ""}`}
-                      className="flex items-center justify-center gap-1.5 px-3 py-2.5 border border-white/15 text-white/60 text-xs font-semibold rounded-xl hover:bg-white/10 hover:border-white/25 transition-colors"
+                      className="flex items-center justify-center gap-1.5 px-3 py-2.5 border border-white/15 text-white/70 text-xs font-semibold rounded-xl hover:bg-white/10 hover:border-white/25 transition-colors hover:text-white"
                     >
                       <Mail size={13} /> Email
                     </a>
@@ -2576,7 +2583,7 @@ export default function PropertyDetailPage() {
               {/* Agent */}
               {property.addedBy && (
                 <div className="bg-[#1b3454] rounded-2xl p-5 border border-white/10">
-                  <h4 className="text-[9px] font-bold text-white/40 uppercase tracking-[0.25em] mb-3">
+                  <h4 className="text-[9px] font-bold text-white/50 uppercase tracking-[0.25em] mb-3">
                     Listed By
                   </h4>
                   <div className="flex items-center gap-3">
@@ -2595,7 +2602,7 @@ export default function PropertyDetailPage() {
                       <p className="text-sm font-bold text-white">
                         {property.addedBy?.name || "Agent"}
                       </p>
-                      <p className="text-xs text-white/40">Property Agent</p>
+                      <p className="text-xs text-white/50">Property Agent</p>
                     </div>
                   </div>
                 </div>
@@ -2603,13 +2610,13 @@ export default function PropertyDetailPage() {
 
               {/* Details */}
               <div className="bg-[#1b3454] rounded-2xl p-5 border border-white/10">
-                <h4 className="text-[9px] font-bold text-white/40 uppercase tracking-[0.25em] mb-3">
+                <h4 className="text-[9px] font-bold text-white/50 uppercase tracking-[0.25em] mb-3">
                   Property Details
                 </h4>
                 <div className="space-y-0">
                   {property.floors && (
                     <div className="flex items-center justify-between text-sm py-2.5 border-b border-white/10">
-                      <span className="text-white/40 flex items-center gap-2">
+                      <span className="text-white/60 flex items-center gap-2">
                         <Layers size={12} /> Floors
                       </span>
                       <span className="font-semibold text-white">
@@ -2619,7 +2626,7 @@ export default function PropertyDetailPage() {
                   )}
                   {property.kitchens && (
                     <div className="flex items-center justify-between text-sm py-2.5 border-b border-white/10">
-                      <span className="text-white/40">Kitchens</span>
+                      <span className="text-white/60">Kitchens</span>
                       <span className="font-semibold text-white">
                         {property.kitchens}
                       </span>
@@ -2627,7 +2634,7 @@ export default function PropertyDetailPage() {
                   )}
                   {property.yearBuilt && (
                     <div className="flex items-center justify-between text-sm py-2.5 border-b border-white/10">
-                      <span className="text-white/40">Year Built</span>
+                      <span className="text-white/60">Year Built</span>
                       <span className="font-semibold text-white">
                         {property.yearBuilt}
                       </span>
@@ -2635,7 +2642,7 @@ export default function PropertyDetailPage() {
                   )}
                   {property.leadsCount > 0 && (
                     <div className="flex items-center justify-between text-sm py-2.5">
-                      <span className="text-white/40">Interested Buyers</span>
+                      <span className="text-white/60">Interested Buyers</span>
                       <span className="font-semibold text-[#2B7FFF]">
                         {property.leadsCount}
                       </span>
@@ -2655,7 +2662,7 @@ export default function PropertyDetailPage() {
                     <p className="text-xs font-bold text-[#2B7FFF]">
                       Verified Listing
                     </p>
-                    <p className="text-[11px] text-white/40">
+                    <p className="text-[11px] text-white/50">
                       Verified by our team
                     </p>
                   </div>
@@ -2690,6 +2697,7 @@ export default function PropertyDetailPage() {
                 src={currentDisplayImage}
                 alt={property.title || "Property"}
                 fill
+                unoptimized
                 className="object-contain"
                 sizes="100vw"
               />
@@ -2742,6 +2750,7 @@ export default function PropertyDetailPage() {
                       src={safeImg}
                       alt=""
                       fill
+                      unoptimized
                       className="object-cover"
                       sizes="64px"
                     />
