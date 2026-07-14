@@ -2084,7 +2084,7 @@ export default function PropertyDetailPage() {
       </div>
 
       {/* ===== HERO GALLERY ===== */}
-      <div className="relative z-10 mt-20">
+      <div className="relative z-10 pt-20 ">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
           {/* Breadcrumb + Badges */}
           <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
