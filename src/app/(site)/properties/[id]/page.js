@@ -2084,7 +2084,7 @@
 //       </div>
 
 //       {/* ===== HERO GALLERY ===== */}
-//       <div className="relative z-10 pt-20 ">
+//       <div className="relative z-10 ">
 //         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
 //           {/* Breadcrumb + Badges */}
 //           <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
@@ -2826,6 +2826,11 @@
 
 
 
+
+
+
+
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -3040,7 +3045,7 @@ export default function PropertyDetailPage() {
     <div
       className={`min-h-screen bg-[#39518A] relative ${inter.variable} font-(family-name:--font-inter)`}
     >
-      {/* ===== LIGHTER BACKGROUND EFFECTS + WATERMARK ===== */}
+      {/* ===== BACKGROUND EFFECTS + WATERMARK ===== */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div
           className="absolute inset-0 opacity-[0.04]"
@@ -3082,15 +3087,15 @@ export default function PropertyDetailPage() {
                 {property.title}
               </span>
             </div>
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
               {property.isFeatured && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#2B7FFF]/20 text-[#8DC5FF] text-[11px] font-bold rounded-full border border-[#2B7FFF]/30 backdrop-blur-sm">
-                  <Crown size={11} className="fill-[#2B7FFF] text-[#2B7FFF]" />
+                <span className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 bg-[#2B7FFF]/20 text-[#8DC5FF] text-[10px] sm:text-[11px] font-bold rounded-full border border-[#2B7FFF]/30 backdrop-blur-sm">
+                  <Crown size={10} className="fill-[#2B7FFF] text-[#2B7FFF]" />
                   Featured
                 </span>
               )}
               <span
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold rounded-full border backdrop-blur-sm ${
+                className={`inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 text-[10px] sm:text-[11px] font-bold rounded-full border backdrop-blur-sm ${
                   property.status === "available"
                     ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
                     : property.status === "sold"
@@ -3098,18 +3103,18 @@ export default function PropertyDetailPage() {
                       : "bg-blue-500/20 text-blue-300 border-blue-500/30"
                 }`}
               >
-                <ShieldCheck size={11} />
+                <ShieldCheck size={10} />
                 {property.status}
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 text-white/80 text-[11px] font-bold rounded-full border border-white/15 backdrop-blur-sm">
-                <Tag size={11} />
+              <span className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 bg-white/10 text-white/80 text-[10px] sm:text-[11px] font-bold rounded-full border border-white/15 backdrop-blur-sm">
+                <Tag size={10} />
                 {property.priceType}
               </span>
             </div>
           </div>
 
           {/* Title & Price */}
-          <div className="mb-7">
+          <div className="mb-6 sm:mb-7">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-8 h-px bg-linear-to-r from-[#2B7FFF] to-transparent" />
               <span className="text-[10px] font-bold text-[#2B7FFF] uppercase tracking-[0.25em]">
@@ -3121,7 +3126,7 @@ export default function PropertyDetailPage() {
             >
               {property.title}
             </h1>
-            <div className="flex flex-wrap items-center gap-5 sm:gap-8">
+            <div className="flex flex-wrap items-center gap-4 sm:gap-8">
               <div>
                 <p
                   className={`text-2xl sm:text-4xl lg:text-[2.75rem] text-transparent bg-clip-text bg-linear-to-r from-[#8DC5FF] via-[#5AA8FF] to-[#2B7FFF] leading-none ${playfair.variable} font-(family-name:--font-playfair)`}
@@ -3167,12 +3172,12 @@ export default function PropertyDetailPage() {
                       priority
                     />
                     <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
-                    <div className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ring-1 ring-white/20">
-                      <ZoomIn size={18} className="text-white" />
+                    <div className="absolute top-3 right-3 sm:top-4 sm:right-4 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ring-1 ring-white/20">
+                      <ZoomIn size={16} className="text-white" />
                     </div>
-                    <div className="absolute bottom-4 left-4 px-3 py-1.5 bg-black/40 backdrop-blur-md rounded-full flex items-center gap-1.5 ring-1 ring-white/10">
-                      <ImageIcon size={12} className="text-white/80" />
-                      <span className="text-white text-xs font-semibold">
+                    <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 px-2.5 py-1.5 sm:px-3 bg-black/40 backdrop-blur-md rounded-full flex items-center gap-1.5 ring-1 ring-white/10">
+                      <ImageIcon size={11} className="text-white/80" />
+                      <span className="text-white text-[11px] sm:text-xs font-semibold">
                         1 Photo
                       </span>
                     </div>
@@ -3203,57 +3208,45 @@ export default function PropertyDetailPage() {
                       />
                     </div>
                     <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
-                    <div className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ring-1 ring-white/20">
-                      <ZoomIn size={18} className="text-white" />
+                    <div className="absolute top-3 right-3 sm:top-4 sm:right-4 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ring-1 ring-white/20">
+                      <ZoomIn size={16} className="text-white" />
                     </div>
-                    <div className="absolute bottom-4 left-4 px-3 py-1.5 bg-black/40 backdrop-blur-md rounded-full flex items-center gap-1.5 ring-1 ring-[#2B7FFF]/20">
-                      <Grid3x3 size={12} className="text-[#2B7FFF]/80" />
-                      <span className="text-white text-xs font-semibold">
+                    <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 px-2.5 py-1.5 sm:px-3 bg-black/40 backdrop-blur-md rounded-full flex items-center gap-1.5 ring-1 ring-[#2B7FFF]/20">
+                      <Grid3x3 size={11} className="text-[#2B7FFF]/80" />
+                      <span className="text-white text-[11px] sm:text-xs font-semibold">
                         {activeImage + 1} / {images.length}
                       </span>
                     </div>
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        prevImage();
-                      }}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md text-white hover:bg-black/60 hover:scale-105 transition-all shadow-lg ring-1 ring-white/20"
+                      onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 sm:left-3 sm:w-11 sm:h-11 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md text-white hover:bg-black/60 hover:scale-105 transition-all shadow-lg ring-1 ring-white/20"
                     >
-                      <ChevronLeft size={20} />
+                      <ChevronLeft size={18} />
                     </button>
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        nextImage();
-                      }}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md text-white hover:bg-black/60 hover:scale-105 transition-all shadow-lg ring-1 ring-white/20"
+                      onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 sm:right-3 sm:w-11 sm:h-11 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md text-white hover:bg-black/60 hover:scale-105 transition-all shadow-lg ring-1 ring-white/20"
                     >
-                      <ChevronRight size={20} />
+                      <ChevronRight size={18} />
                     </button>
                   </div>
                 </div>
 
                 {/* Side Thumbnails */}
-                <div className="md:col-span-3 lg:col-span-4 grid grid-cols-4 md:grid-cols-2 md:grid-rows-2 gap-2">
+                <div className="md:col-span-3 lg:col-span-4 grid grid-cols-4 md:grid-cols-2 md:grid-rows-2 gap-1.5 sm:gap-2">
                   {images.slice(0, 4).map((img, index) => {
                     const safeImg = getSafeImage(img);
                     if (!safeImg) return null;
-
                     const isSeeMore = images.length > 4 && index === 3;
                     const isActive = activeImage === index;
-
                     return (
                       <button
                         key={index}
                         onClick={() => {
-                          if (isSeeMore) {
-                            setActiveImage(3);
-                            setShowLightbox(true);
-                          } else {
-                            setActiveImage(index);
-                          }
+                          if (isSeeMore) { setActiveImage(3); setShowLightbox(true); }
+                          else { setActiveImage(index); }
                         }}
-                        className={`relative rounded-xl overflow-hidden transition-all duration-300 ring-1 ring-white/15 hover:ring-white/30 aspect-square md:aspect-auto ${
+                        className={`relative rounded-lg sm:rounded-xl overflow-hidden transition-all duration-300 ring-1 ring-white/15 hover:ring-white/30 aspect-square md:aspect-auto ${
                           isActive && !isSeeMore
                             ? "ring-2 ring-[#2B7FFF] shadow-lg shadow-[#2B7FFF]/30"
                             : "opacity-70 hover:opacity-100"
@@ -3267,21 +3260,15 @@ export default function PropertyDetailPage() {
                           className="object-cover"
                           sizes="(max-width: 768px) 25vw, (max-width: 1024px) 20vw, 15vw"
                         />
-
                         {isActive && !isSeeMore && (
-                          <div className="absolute top-1.5 right-1.5 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#2B7FFF] flex items-center justify-center shadow-lg shadow-[#2B7FFF]/50 z-10 border-2 border-white">
-                            <Check
-                              size={12}
-                              strokeWidth={3}
-                              className="text-white"
-                            />
+                          <div className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#2B7FFF] flex items-center justify-center shadow-lg shadow-[#2B7FFF]/50 z-10 border border-white">
+                            <Check size={10} strokeWidth={3} className="text-white" />
                           </div>
                         )}
-
                         {isSeeMore && (
-                          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center flex-col gap-1 z-10">
-                            <Grid3x3 size={18} className="text-white" />
-                            <span className="text-white text-[11px] sm:text-xs font-bold">
+                          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center flex-col gap-0.5 sm:gap-1 z-10">
+                            <Grid3x3 size={14} className="text-white" />
+                            <span className="text-white text-[10px] sm:text-xs font-bold">
                               +{images.length - 3} More
                             </span>
                           </div>
@@ -3297,38 +3284,35 @@ export default function PropertyDetailPage() {
       </div>
 
       {/* ===== MAIN CONTENT ===== */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
 
-          {/* ===== LEFT — no z-index, no stacking context issues ===== */}
-          <div className="lg:col-span-2 space-y-6">
+          {/* ===== LEFT COLUMN ===== */}
+          <div className="lg:col-span-2 space-y-5 sm:space-y-6">
+
             {/* Meta */}
             {property.propertyCode && (
               <div
                 className={`transition-all duration-500 ease-out ${
-                  isVisible
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-6"
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
                 }`}
                 style={{ transitionDelay: "50ms" }}
               >
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-white/60">
-                  <span className="flex items-center gap-1.5 px-3 py-1.5 bg-[#2B7FFF]/15 rounded-full text-[#8DC5FF] font-semibold border border-[#2B7FFF]/25">
-                    <Building2 size={12} />
+                <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-2 text-[11px] sm:text-xs text-white/60">
+                  <span className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-[#2B7FFF]/15 rounded-full text-[#8DC5FF] font-semibold border border-[#2B7FFF]/25">
+                    <Building2 size={11} />
                     {property.propertyCode}
                   </span>
                   {property.viewsCount > 0 && (
                     <span className="flex items-center gap-1 text-white/60">
-                      <Eye size={12} /> {property.viewsCount} views
+                      <Eye size={11} /> {property.viewsCount} views
                     </span>
                   )}
                   {property.createdAt && (
                     <span className="flex items-center gap-1 text-white/60">
-                      <CalendarDays size={12} />
+                      <CalendarDays size={11} />
                       {new Date(property.createdAt).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
+                        month: "short", day: "numeric", year: "numeric",
                       })}
                     </span>
                   )}
@@ -3338,61 +3322,47 @@ export default function PropertyDetailPage() {
 
             {/* Quick Stats */}
             <div
-              className={`grid grid-cols-2 sm:grid-cols-4 gap-3 transition-all duration-500 ease-out ${
-                isVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-6"
+              className={`grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 transition-all duration-500 ease-out ${
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
               }`}
               style={{ transitionDelay: "100ms" }}
             >
               {property.bedrooms > 0 && (
-                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-3.5 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group">
-                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
-                    <Bed size={18} className="text-[#2B7FFF]/80" />
+                <div className="flex items-center gap-2.5 sm:gap-3 bg-[#1b3454] rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group">
+                  <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
+                    <Bed size={16} className="text-[#2B7FFF]/80" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">
-                      Beds
-                    </p>
-                    <p
-                      className={`text-xl font-bold text-white leading-tight ${playfair.variable} font-(family-name:--font-playfair)`}
-                    >
+                    <p className="text-[8px] sm:text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">Beds</p>
+                    <p className={`text-lg sm:text-xl font-bold text-white leading-tight ${playfair.variable} font-(family-name:--font-playfair)`}>
                       {property.bedrooms}
                     </p>
                   </div>
                 </div>
               )}
               {property.bathrooms > 0 && (
-                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-3.5 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group">
-                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
-                    <Bath size={18} className="text-[#2B7FFF]/80" />
+                <div className="flex items-center gap-2.5 sm:gap-3 bg-[#1b3454] rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group">
+                  <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
+                    <Bath size={16} className="text-[#2B7FFF]/80" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">
-                      Baths
-                    </p>
-                    <p
-                      className={`text-xl font-bold text-white leading-tight ${playfair.variable} font-(family-name:--font-playfair)`}
-                    >
+                    <p className="text-[8px] sm:text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">Baths</p>
+                    <p className={`text-lg sm:text-xl font-bold text-white leading-tight ${playfair.variable} font-(family-name:--font-playfair)`}>
                       {property.bathrooms}
                     </p>
                   </div>
                 </div>
               )}
               {(property.areaSize || property.area) > 0 && (
-                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-3.5 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group">
-                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
-                    <Ruler size={18} className="text-[#2B7FFF]/80" />
+                <div className="flex items-center gap-2.5 sm:gap-3 bg-[#1b3454] rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group">
+                  <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
+                    <Ruler size={16} className="text-[#2B7FFF]/80" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">
-                      Area
-                    </p>
-                    <p
-                      className={`text-lg font-bold text-white leading-tight ${playfair.variable} font-(family-name:--font-playfair)`}
-                    >
+                    <p className="text-[8px] sm:text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">Area</p>
+                    <p className={`text-base sm:text-lg font-bold text-white leading-tight ${playfair.variable} font-(family-name:--font-playfair)`}>
                       {property.areaSize || property.area}
-                      <span className="text-[10px] font-normal text-white/40 ml-0.5">
+                      <span className="text-[9px] sm:text-[10px] font-normal text-white/40 ml-0.5">
                         {property.areaUnit || "sqft"}
                       </span>
                     </p>
@@ -3400,15 +3370,13 @@ export default function PropertyDetailPage() {
                 </div>
               )}
               {property.propertyType && (
-                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-3.5 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group">
-                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
-                    <Home size={18} className="text-[#2B7FFF]/80" />
+                <div className="flex items-center gap-2.5 sm:gap-3 bg-[#1b3454] rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group">
+                  <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
+                    <Home size={16} className="text-[#2B7FFF]/80" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">
-                      Type
-                    </p>
-                    <p className="text-sm font-bold text-white leading-tight capitalize truncate">
+                    <p className="text-[8px] sm:text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">Type</p>
+                    <p className="text-xs sm:text-sm font-bold text-white leading-tight capitalize truncate">
                       {property.propertyType}
                     </p>
                   </div>
@@ -3420,21 +3388,17 @@ export default function PropertyDetailPage() {
             {property.description && (
               <div
                 className={`transition-all duration-500 ease-out ${
-                  isVisible
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-6"
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
                 }`}
                 style={{ transitionDelay: "150ms" }}
               >
-                <div className="bg-[#1b3454] rounded-2xl p-5 sm:p-6 lg:p-7 border border-white/10">
-                  <h3
-                    className={`text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}
-                  >
+                <div className="bg-[#1b3454] rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-7 border border-white/10">
+                  <h3 className={`text-lg sm:text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}>
                     Description
                   </h3>
-                  <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-5" />
+                  <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-4 sm:mb-5" />
                   <div
-                    className="text-white/70 text-sm sm:text-[15px] leading-[1.9] whitespace-pre-line max-h-80 overflow-y-auto pr-2"
+                    className="text-white/70 text-sm sm:text-[15px] leading-[1.9] whitespace-pre-line max-h-72 sm:max-h-80 overflow-y-auto pr-2"
                     style={{
                       scrollbarWidth: "thin",
                       scrollbarColor: "rgba(43,127,255,0.3) transparent",
@@ -3450,28 +3414,24 @@ export default function PropertyDetailPage() {
             {(property.features?.length > 0 || property.amenities?.length > 0) && (
               <div
                 className={`hidden md:block transition-all duration-500 ease-out ${
-                  isVisible
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-6"
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
                 }`}
                 style={{ transitionDelay: "200ms" }}
               >
-                <div className="bg-[#1b3454] rounded-2xl p-6 sm:p-7 border border-white/10">
-                  <h3
-                    className={`text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}
-                  >
+                <div className="bg-[#1b3454] rounded-2xl p-5 sm:p-7 border border-white/10">
+                  <h3 className={`text-lg sm:text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}>
                     Features & Amenities
                   </h3>
-                  <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-5" />
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                  <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-4 sm:mb-5" />
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-2.5">
                     {[...(property.features || []), ...(property.amenities || [])].map(
                       (item, i) => (
                         <div
                           key={i}
-                          className="flex items-center gap-2.5 text-sm text-white/70 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10 hover:bg-[#2B7FFF]/10 hover:border-[#2B7FFF]/20 transition-colors group"
+                          className="flex items-center gap-2 sm:gap-2.5 text-xs sm:text-sm text-white/70 bg-white/5 rounded-lg sm:rounded-xl px-2.5 sm:px-3 py-2 sm:py-2.5 border border-white/10 hover:bg-[#2B7FFF]/10 hover:border-[#2B7FFF]/20 transition-colors group"
                         >
-                          <div className="w-5 h-5 rounded-full bg-[#2B7FFF]/15 flex items-center justify-center shrink-0 group-hover:bg-[#2B7FFF]/25 transition-colors">
-                            <CheckCircle2 size={12} className="text-[#2B7FFF]/80" />
+                          <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#2B7FFF]/15 flex items-center justify-center shrink-0 group-hover:bg-[#2B7FFF]/25 transition-colors">
+                            <CheckCircle2 size={10} className="text-[#2B7FFF]/80" />
                           </div>
                           <span className="capitalize truncate">{item}</span>
                         </div>
@@ -3482,28 +3442,24 @@ export default function PropertyDetailPage() {
               </div>
             )}
 
-            {/* Address — removed relative/blur that caused stacking issues */}
+            {/* Address */}
             {property.address && (
               <div
                 className={`transition-all duration-500 ease-out ${
-                  isVisible
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-6"
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
                 }`}
                 style={{ transitionDelay: "250ms" }}
               >
-                <div className="bg-[#1b3454] hidden md:block rounded-2xl p-5 sm:p-6 lg:p-7 border border-white/10">
-                  <h3
-                    className={`text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}
-                  >
+                <div className="bg-[#1b3454] rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-7 border border-white/10">
+                  <h3 className={`text-lg sm:text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}>
                     Address
                   </h3>
-                  <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-5" />
-                  <div className="flex items-start gap-3 bg-[rgba(43,127,255,0.1)] rounded-xl p-4 border border-[rgba(43,127,255,0.15)]">
-                    <div className="w-8 h-8 rounded-lg bg-[rgba(43,127,255,0.15)] flex items-center justify-center shrink-0 mt-0.5">
-                      <MapPin size={14} className="text-[#2B7FFF]/80" />
+                  <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-4 sm:mb-5" />
+                  <div className="flex items-start gap-2.5 sm:gap-3 bg-[rgba(43,127,255,0.1)] rounded-lg sm:rounded-xl p-3 sm:p-4 border border-[rgba(43,127,255,0.15)]">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-md sm:rounded-lg bg-[rgba(43,127,255,0.15)] flex items-center justify-center shrink-0 mt-0.5">
+                      <MapPin size={13} className="text-[#2B7FFF]/80" />
                     </div>
-                    <p className="text-white/70 text-sm leading-relaxed wrap-break-word">
+                    <p className="text-white/70 text-xs sm:text-sm leading-relaxed wrap-break-word">
                       {property.address}
                     </p>
                   </div>
@@ -3512,39 +3468,39 @@ export default function PropertyDetailPage() {
             )}
           </div>
 
-          {/* ===== RIGHT SIDEBAR — isolation creates clean stacking context ===== */}
+          {/* ===== RIGHT SIDEBAR — isolation fixes stacking ===== */}
           <div
             className="lg:col-span-1"
             style={{ isolation: "isolate" }}
           >
-            <div className="lg:sticky lg:top-24 space-y-4 relative z-10">
-              {/* Price + CTA */}
+            <div className="lg:sticky lg:top-24 space-y-3 sm:space-y-4">
+
+              {/* Price + CTA — overflow-visible so form can go above */}
               <div
                 className={`transition-all duration-500 ease-out ${
-                  isVisible
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-6"
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
                 }`}
                 style={{ transitionDelay: "300ms" }}
               >
-                <div className="bg-[#1b3454] rounded-2xl border border-white/10 overflow-visible">
-                  <div className="bg-linear-to-r from-[#2B7FFF]/15 via-[#2B7FFF]/8 to-transparent px-5 sm:px-6 py-5 border-b border-white/10 rounded-t-2xl">
-                    <p className="text-[10px] text-[#2B7FFF]/70 uppercase tracking-[0.2em] font-bold mb-1">
+                <div className="bg-[#1b3454] rounded-xl sm:rounded-2xl border border-white/10 overflow-visible">
+                  {/* Price Header */}
+                  <div className="bg-linear-to-r from-[#2B7FFF]/15 via-[#2B7FFF]/8 to-transparent px-4 sm:px-5 lg:px-6 py-4 sm:py-5 border-b border-white/10 rounded-t-xl sm:rounded-t-2xl">
+                    <p className="text-[9px] sm:text-[10px] text-[#2B7FFF]/70 uppercase tracking-[0.2em] font-bold mb-1">
                       Asking Price
                     </p>
                     <p
-                      className={`text-2xl sm:text-3xl text-transparent bg-clip-text bg-linear-to-r from-[#8DC5FF] via-[#5AA8FF] to-[#2B7FFF] ${playfair.variable} font-(family-name:--font-playfair)`}
+                      className={`text-xl sm:text-2xl lg:text-3xl text-transparent bg-clip-text bg-linear-to-r from-[#8DC5FF] via-[#5AA8FF] to-[#2B7FFF] leading-none ${playfair.variable} font-(family-name:--font-playfair)`}
                     >
                       {property.currency === "PKR" ? "Rs" : "$"}{" "}
                       {Number(property.price)?.toLocaleString()}
                     </p>
-                    <p className="text-white/50 text-xs mt-1.5 capitalize tracking-wide">
+                    <p className="text-white/50 text-[11px] sm:text-xs mt-1.5 capitalize tracking-wide">
                       {property.priceType} &bull; {property.propertyType}
                     </p>
                   </div>
 
-                  <div className="p-5 space-y-3">
-                    {/* LeadForm wrapped in high-z wrapper so it always stays on top */}
+                  {/* Form + Buttons — z-50 ensures form opens above everything */}
+                  <div className="p-4 sm:p-5 space-y-2.5 sm:space-y-3">
                     <div className="relative z-50">
                       <LeadForm
                         propertyId={property._id}
@@ -3561,15 +3517,15 @@ export default function PropertyDetailPage() {
                     <div className="grid grid-cols-2 gap-2">
                       <a
                         href={`tel:${property.contact?.phone || ""}`}
-                        className="flex items-center justify-center gap-1.5 px-3 py-2.5 border border-white/15 text-white/70 text-xs font-semibold rounded-xl hover:bg-white/10 hover:border-white/25 transition-colors hover:text-white"
+                        className="flex items-center justify-center gap-1.5 px-3 py-2 sm:py-2.5 border border-white/15 text-white/70 text-[11px] sm:text-xs font-semibold rounded-lg sm:rounded-xl hover:bg-white/10 hover:border-white/25 transition-colors hover:text-white"
                       >
-                        <Phone size={13} /> Call
+                        <Phone size={12} /> Call
                       </a>
                       <a
                         href={`mailto:${property.contact?.email || ""}`}
-                        className="flex items-center justify-center gap-1.5 px-3 py-2.5 border border-white/15 text-white/70 text-xs font-semibold rounded-xl hover:bg-white/10 hover:border-white/25 transition-colors hover:text-white"
+                        className="flex items-center justify-center gap-1.5 px-3 py-2 sm:py-2.5 border border-white/15 text-white/70 text-[11px] sm:text-xs font-semibold rounded-lg sm:rounded-xl hover:bg-white/10 hover:border-white/25 transition-colors hover:text-white"
                       >
-                        <Mail size={13} /> Email
+                        <Mail size={12} /> Email
                       </a>
                     </div>
                   </div>
@@ -3580,18 +3536,16 @@ export default function PropertyDetailPage() {
               {property.addedBy && (
                 <div
                   className={`transition-all duration-500 ease-out ${
-                    isVisible
-                      ? "opacity-100 translate-y-0"
-                      : "opacity-0 translate-y-6"
+                    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
                   }`}
                   style={{ transitionDelay: "350ms" }}
                 >
-                  <div className="bg-[#1b3454] rounded-2xl p-5 border border-white/10">
-                    <h4 className="text-[9px] font-bold text-white/50 uppercase tracking-[0.25em] mb-3">
+                  <div className="bg-[#1b3454] rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-white/10">
+                    <h4 className="text-[8px] sm:text-[9px] font-bold text-white/50 uppercase tracking-[0.25em] mb-2.5 sm:mb-3">
                       Listed By
                     </h4>
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-full bg-[#2B7FFF]/15 flex items-center justify-center shrink-0 overflow-hidden border-2 border-[#2B7FFF]/20 shadow-lg">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#2B7FFF]/15 flex items-center justify-center shrink-0 overflow-hidden border-2 border-[#2B7FFF]/20 shadow-lg">
                         {property.addedBy?.avatar ? (
                           <img
                             src={property.addedBy.avatar}
@@ -3599,14 +3553,14 @@ export default function PropertyDetailPage() {
                             className="w-full h-full rounded-full object-cover"
                           />
                         ) : (
-                          <User size={20} className="text-[#2B7FFF]/80" />
+                          <User size={18} className="text-[#2B7FFF]/80" />
                         )}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-bold text-white truncate">
+                        <p className="text-xs sm:text-sm font-bold text-white truncate">
                           {property.addedBy?.name || "Agent"}
                         </p>
-                        <p className="text-xs text-white/50">Property Agent</p>
+                        <p className="text-[11px] sm:text-xs text-white/50">Property Agent</p>
                       </div>
                     </div>
                   </div>
@@ -3616,49 +3570,39 @@ export default function PropertyDetailPage() {
               {/* Details */}
               <div
                 className={`transition-all duration-500 ease-out ${
-                  isVisible
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-6"
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
                 }`}
                 style={{ transitionDelay: "400ms" }}
               >
-                <div className="bg-[#1b3454] rounded-2xl p-5 border border-white/10">
-                  <h4 className="text-[9px] font-bold text-white/50 uppercase tracking-[0.25em] mb-3">
+                <div className="bg-[#1b3454] rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-white/10">
+                  <h4 className="text-[8px] sm:text-[9px] font-bold text-white/50 uppercase tracking-[0.25em] mb-2.5 sm:mb-3">
                     Property Details
                   </h4>
                   <div className="space-y-0">
                     {property.floors && (
-                      <div className="flex items-center justify-between text-sm py-2.5 border-b border-white/10">
-                        <span className="text-white/60 flex items-center gap-2">
-                          <Layers size={12} /> Floors
+                      <div className="flex items-center justify-between text-xs sm:text-sm py-2 sm:py-2.5 border-b border-white/10">
+                        <span className="text-white/60 flex items-center gap-1.5 sm:gap-2">
+                          <Layers size={11} /> Floors
                         </span>
-                        <span className="font-semibold text-white">
-                          {property.floors}
-                        </span>
+                        <span className="font-semibold text-white">{property.floors}</span>
                       </div>
                     )}
                     {property.kitchens && (
-                      <div className="flex items-center justify-between text-sm py-2.5 border-b border-white/10">
+                      <div className="flex items-center justify-between text-xs sm:text-sm py-2 sm:py-2.5 border-b border-white/10">
                         <span className="text-white/60">Kitchens</span>
-                        <span className="font-semibold text-white">
-                          {property.kitchens}
-                        </span>
+                        <span className="font-semibold text-white">{property.kitchens}</span>
                       </div>
                     )}
                     {property.yearBuilt && (
-                      <div className="flex items-center justify-between text-sm py-2.5 border-b border-white/10">
+                      <div className="flex items-center justify-between text-xs sm:text-sm py-2 sm:py-2.5 border-b border-white/10">
                         <span className="text-white/60">Year Built</span>
-                        <span className="font-semibold text-white">
-                          {property.yearBuilt}
-                        </span>
+                        <span className="font-semibold text-white">{property.yearBuilt}</span>
                       </div>
                     )}
                     {property.leadsCount > 0 && (
-                      <div className="flex items-center justify-between text-sm py-2.5">
+                      <div className="flex items-center justify-between text-xs sm:text-sm py-2 sm:py-2.5">
                         <span className="text-white/60">Interested Buyers</span>
-                        <span className="font-semibold text-[#2B7FFF]">
-                          {property.leadsCount}
-                        </span>
+                        <span className="font-semibold text-[#2B7FFF]">{property.leadsCount}</span>
                       </div>
                     )}
                   </div>
@@ -3668,24 +3612,18 @@ export default function PropertyDetailPage() {
               {/* Verified */}
               <div
                 className={`transition-all duration-500 ease-out ${
-                  isVisible
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-6"
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
                 }`}
                 style={{ transitionDelay: "450ms" }}
               >
-                <div className="bg-[rgba(43,127,255,0.1)] rounded-2xl p-4 border border-[rgba(43,127,255,0.2)]">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-[rgba(43,127,255,0.2)] flex items-center justify-center shrink-0 border border-[rgba(43,127,255,0.25)]">
-                      <ShieldCheck size={15} className="text-[#2B7FFF]" />
+                <div className="bg-[rgba(43,127,255,0.1)] rounded-xl sm:rounded-2xl p-3.5 sm:p-4 border border-[rgba(43,127,255,0.2)]">
+                  <div className="flex items-center gap-2.5 sm:gap-3">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[rgba(43,127,255,0.2)] flex items-center justify-center shrink-0 border border-[rgba(43,127,255,0.25)]">
+                      <ShieldCheck size={13} className="text-[#2B7FFF]" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-[#2B7FFF]">
-                        Verified Listing
-                      </p>
-                      <p className="text-[11px] text-white/50">
-                        Verified by our team
-                      </p>
+                      <p className="text-[11px] sm:text-xs font-bold text-[#2B7FFF]">Verified Listing</p>
+                      <p className="text-[10px] sm:text-[11px] text-white/50">Verified by our team</p>
                     </div>
                   </div>
                 </div>
@@ -3703,17 +3641,17 @@ export default function PropertyDetailPage() {
         >
           <button
             onClick={() => setShowLightbox(false)}
-            className="absolute top-4 right-4 sm:top-5 sm:right-5 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors z-10 ring-1 ring-white/20"
+            className="absolute top-3 right-3 sm:top-5 sm:right-5 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors z-10 ring-1 ring-white/20"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
           <div
-            className="relative w-full h-full flex items-center justify-center px-4 sm:px-16"
+            className="relative w-full h-full flex items-center justify-center px-3 sm:px-16"
             onClick={(e) => e.stopPropagation()}
           >
             <div
               key={activeImage}
-              className="relative max-w-5xl max-h-[80vh] w-full aspect-video transition-opacity duration-300"
+              className="relative max-w-5xl max-h-[75vh] sm:max-h-[80vh] w-full aspect-video transition-opacity duration-300"
             >
               <Image
                 src={currentDisplayImage}
@@ -3727,29 +3665,23 @@ export default function PropertyDetailPage() {
             {!hasSingleImage && (
               <>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    prevImage();
-                  }}
-                  className="absolute left-2 sm:left-5 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors ring-1 ring-white/20"
+                  onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                  className="absolute left-2 sm:left-5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors ring-1 ring-white/20"
                 >
-                  <ChevronLeft size={20} />
+                  <ChevronLeft size={18} />
                 </button>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    nextImage();
-                  }}
-                  className="absolute right-2 sm:right-5 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors ring-1 ring-white/20"
+                  onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                  className="absolute right-2 sm:right-5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors ring-1 ring-white/20"
                 >
-                  <ChevronRight size={20} />
+                  <ChevronRight size={18} />
                 </button>
               </>
             )}
           </div>
           {!hasSingleImage && (
             <div
-              className="absolute bottom-5 sm:bottom-6 left-1/2 -translate-x-1/2 flex gap-2 overflow-x-auto max-w-[90vw] px-4"
+              className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2 overflow-x-auto max-w-[92vw] sm:max-w-[90vw] px-3 sm:px-4"
               style={{ scrollbarWidth: "none" }}
             >
               {images.map((img, index) => {
@@ -3758,31 +3690,21 @@ export default function PropertyDetailPage() {
                 return (
                   <button
                     key={index}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveImage(index);
-                    }}
-                    className={`relative w-14 h-10 sm:w-16 sm:h-12 rounded-lg overflow-hidden shrink-0 transition-all duration-300 ring-1 ring-white/20 ${
+                    onClick={(e) => { e.stopPropagation(); setActiveImage(index); }}
+                    className={`relative w-12 h-9 sm:w-16 sm:h-12 rounded-md sm:rounded-lg overflow-hidden shrink-0 transition-all duration-300 ring-1 ring-white/20 ${
                       activeImage === index
                         ? "ring-2 ring-[#2B7FFF] scale-105"
                         : "opacity-50 hover:opacity-80"
                     }`}
                   >
-                    <Image
-                      src={safeImg}
-                      alt=""
-                      fill
-                      unoptimized
-                      className="object-cover"
-                      sizes="64px"
-                    />
+                    <Image src={safeImg} alt="" fill unoptimized className="object-cover" sizes="64px" />
                   </button>
                 );
               })}
             </div>
           )}
-          <div className="absolute top-4 left-4 sm:top-5 sm:left-5 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/10 backdrop-blur-md rounded-full ring-1 ring-white/20">
-            <span className="text-white text-xs sm:text-sm font-semibold">
+          <div className="absolute top-3 left-3 sm:top-5 sm:left-5 px-2.5 sm:px-4 py-1.5 sm:py-2 bg-white/10 backdrop-blur-md rounded-full ring-1 ring-white/20">
+            <span className="text-white text-[11px] sm:text-sm font-semibold">
               {activeImage + 1} / {images.length}
             </span>
           </div>

@@ -1505,7 +1505,7 @@ export default function ContactPage() {
                   <PhoneCall size={15} className="text-red-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-red-300">Emergency</p>
+                  <p className="text-sm font-bold text-red-300">Call Now</p>
                   <p className="text-[11px] text-white/50 mt-0.5">Urgent inquiries</p>
                 </div>
               </div>

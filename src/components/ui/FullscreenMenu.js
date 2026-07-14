@@ -147,9 +147,9 @@ export default function FullscreenMenu({ isOpen, onClose }) {
             <div className="p-5 lg:p-6 bg-white">
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-gray-400 text-xs font-bold tracking-widest uppercase mb-3">
+                  {/* <h3 className="text-gray-400 text-xs font-bold tracking-widest uppercase mb-3">
                     Main Pages
-                  </h3>
+                  </h3> */}
                   <div className="flex flex-col gap-1.5">
                     {DEFAULT_NAV_LINKS.map((link, index) => (
                       <Link
@@ -168,9 +168,9 @@ export default function FullscreenMenu({ isOpen, onClose }) {
                 </div>
 
                 <div>
-                  <h3 className="text-gray-400 text-xs font-bold tracking-widest uppercase mb-3">
+                  {/* <h3 className="text-gray-400 text-xs font-bold tracking-widest uppercase mb-3">
                     CMS Pages
-                  </h3>
+                  </h3> */}
                   <div className="flex flex-col gap-1.5">
                     {CMS_LINKS.map((link, index) => (
                       <Link

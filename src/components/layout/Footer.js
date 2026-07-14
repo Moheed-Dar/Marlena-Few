@@ -197,7 +197,7 @@ export default function Footer() {
                   />
                 </span>
                 <span className="group-hover:translate-x-1 transition-transform duration-300 mt-1.5">
-                  123 Luxury Lane, Beverly Hills, CA 90210
+                 780 Exmouth Street, Sarnia, ON, Canada
                 </span>
               </a>
 
@@ -212,7 +212,7 @@ export default function Footer() {
                   />
                 </span>
                 <span className="group-hover:translate-x-1 transition-transform duration-300">
-                  +1 (234) 567-890
+                  +1 226 932 5002
                 </span>
               </a>
 

@@ -9,7 +9,7 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: "Marlena - Coldwell Banker Southwest Realty",
+  title: "CB Southwest Realty",
   description: "Southwest Realty - Find your dream home",
 };
 
