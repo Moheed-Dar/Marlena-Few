@@ -227,7 +227,7 @@ export default function Footer() {
                   />
                 </span>
                 <span className="group-hover:translate-x-1 transition-transform duration-300">
-                  info@marlenafew.com
+                  marlena-few@coldwellbanker.ca
                 </span>
               </a>
             </div>
