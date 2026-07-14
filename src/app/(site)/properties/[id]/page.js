@@ -3492,7 +3492,7 @@ export default function PropertyDetailPage() {
                 }`}
                 style={{ transitionDelay: "250ms" }}
               >
-                <div className="bg-[#1b3454] rounded-2xl p-5 sm:p-6 lg:p-7 border border-white/10">
+                <div className="bg-[#1b3454] hidden md:block rounded-2xl p-5 sm:p-6 lg:p-7 border border-white/10">
                   <h3
                     className={`text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}
                   >
