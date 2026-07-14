@@ -1844,10 +1844,6 @@
 
 
 
-
-
-
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -1921,7 +1917,6 @@ export default function PropertyDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeImage, setActiveImage] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
   const [showLightbox, setShowLightbox] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -1950,10 +1945,9 @@ export default function PropertyDetailPage() {
   // ============================================
   useEffect(() => {
     if (!property || loading) return;
-    // Small delay to allow DOM render, then add visible class
     const timer = setTimeout(() => {
       setIsVisible(true);
-    }, 50);
+    }, 80);
     return () => clearTimeout(timer);
   }, [property, loading]);
 
@@ -2062,7 +2056,7 @@ export default function PropertyDetailPage() {
   // ============================================
   return (
     <div
-      className={`min-h-screen bg-[#39518A] relative overflow-x-hidden ${inter.variable} font-(family-name:--font-inter)}`}
+      className={`min-h-screen bg-[#39518A] relative ${inter.variable} font-(family-name:--font-inter)}`}
     >
       {/* ===== LIGHTER BACKGROUND EFFECTS + WATERMARK ===== */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
@@ -2074,7 +2068,6 @@ export default function PropertyDetailPage() {
             backgroundSize: "40px 40px",
           }}
         />
-        {/* Watermark logo (subtle) */}
         <div className="absolute inset-0 flex items-center justify-center opacity-[0.04]">
           <div className="relative w-75 h-75 sm:w-100 sm:h-100">
             <Image
@@ -2091,7 +2084,7 @@ export default function PropertyDetailPage() {
       </div>
 
       {/* ===== HERO GALLERY ===== */}
-      <div className="relative mt-20 z-10">
+      <div className="relative z-10 mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
           {/* Breadcrumb + Badges */}
           <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
@@ -2169,7 +2162,11 @@ export default function PropertyDetailPage() {
           </div>
 
           {/* ===== IMAGE GALLERY ===== */}
-          <div className={`transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <div
+            className={`transition-all duration-700 ease-out ${
+              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            }`}
+          >
             {hasSingleImage ? (
               <div className="max-w-4xl mx-auto">
                 <div className="relative group">
@@ -2324,7 +2321,14 @@ export default function PropertyDetailPage() {
           <div className="lg:col-span-2 space-y-6">
             {/* Meta */}
             {property.propertyCode && (
-              <div className={`detail-item transition-all duration-500 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} style={{ transitionDelay: '50ms' }}>
+              <div
+                className={`transition-all duration-500 ease-out ${
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-6"
+                }`}
+                style={{ transitionDelay: "50ms" }}
+              >
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-white/60">
                   <span className="flex items-center gap-1.5 px-3 py-1.5 bg-[#2B7FFF]/15 rounded-full text-[#8DC5FF] font-semibold border border-[#2B7FFF]/25">
                     <Building2 size={12} />
@@ -2350,9 +2354,16 @@ export default function PropertyDetailPage() {
             )}
 
             {/* Quick Stats */}
-            <div className={`grid grid-cols-2 sm:grid-cols-4 gap-3 transition-all duration-500 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} style={{ transitionDelay: '100ms' }}>
+            <div
+              className={`grid grid-cols-2 sm:grid-cols-4 gap-3 transition-all duration-500 ease-out ${
+                isVisible
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-6"
+              }`}
+              style={{ transitionDelay: "100ms" }}
+            >
               {property.bedrooms > 0 && (
-                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-3.5 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group overflow-hidden">
+                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-3.5 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group">
                   <div className="absolute top-0 right-0 w-16 h-16 bg-[rgba(43,127,255,0.1)] rounded-full blur-2xl pointer-events-none" />
                   <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
                     <Bed size={18} className="text-[#2B7FFF]/80" />
@@ -2370,7 +2381,7 @@ export default function PropertyDetailPage() {
                 </div>
               )}
               {property.bathrooms > 0 && (
-                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-3.5 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group overflow-hidden">
+                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-3.5 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group">
                   <div className="absolute top-0 right-0 w-16 h-16 bg-[rgba(43,127,255,0.1)] rounded-full blur-2xl pointer-events-none" />
                   <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
                     <Bath size={18} className="text-[#2B7FFF]/80" />
@@ -2388,7 +2399,7 @@ export default function PropertyDetailPage() {
                 </div>
               )}
               {(property.areaSize || property.area) > 0 && (
-                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-3.5 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group overflow-hidden">
+                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-3.5 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group">
                   <div className="absolute top-0 right-0 w-16 h-16 bg-[rgba(43,127,255,0.1)] rounded-full blur-2xl pointer-events-none" />
                   <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
                     <Ruler size={18} className="text-[#2B7FFF]/80" />
@@ -2409,7 +2420,7 @@ export default function PropertyDetailPage() {
                 </div>
               )}
               {property.propertyType && (
-                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-3.5 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group overflow-hidden">
+                <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-3.5 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group">
                   <div className="absolute top-0 right-0 w-16 h-16 bg-[rgba(43,127,255,0.1)] rounded-full blur-2xl pointer-events-none" />
                   <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
                     <Home size={18} className="text-[#2B7FFF]/80" />
@@ -2428,8 +2439,15 @@ export default function PropertyDetailPage() {
 
             {/* Description */}
             {property.description && (
-              <div className={`detail-item transition-all duration-500 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} style={{ transitionDelay: '150ms' }}>
-                <div className="relative bg-[#1b3454] rounded-2xl p-5 sm:p-6 lg:p-7 border border-white/10 overflow-hidden">
+              <div
+                className={`transition-all duration-500 ease-out ${
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-6"
+                }`}
+                style={{ transitionDelay: "150ms" }}
+              >
+                <div className="relative bg-[#1b3454] rounded-2xl p-5 sm:p-6 lg:p-7 border border-white/10">
                   <div className="absolute top-0 left-0 w-32 h-32 bg-[rgba(43,127,255,0.08)] rounded-full blur-3xl pointer-events-none" />
                   <div className="relative">
                     <h3
@@ -2454,8 +2472,15 @@ export default function PropertyDetailPage() {
 
             {/* Features */}
             {(property.features?.length > 0 || property.amenities?.length > 0) && (
-              <div className={`detail-item hidden md:block transition-all duration-500 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} style={{ transitionDelay: '200ms' }}>
-                <div className="relative bg-[#1b3454] rounded-2xl p-6 sm:p-7 border border-white/10 overflow-hidden">
+              <div
+                className={`hidden md:block transition-all duration-500 ease-out ${
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-6"
+                }`}
+                style={{ transitionDelay: "200ms" }}
+              >
+                <div className="relative bg-[#1b3454] rounded-2xl p-6 sm:p-7 border border-white/10">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-[rgba(43,127,255,0.08)] rounded-full blur-3xl pointer-events-none" />
                   <div className="relative">
                     <h3
@@ -2486,8 +2511,15 @@ export default function PropertyDetailPage() {
 
             {/* Address */}
             {property.address && (
-              <div className={`detail-item transition-all duration-500 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} style={{ transitionDelay: '250ms' }}>
-                <div className="relative bg-[#1b3454] rounded-2xl p-5 sm:p-6 lg:p-7 border border-white/10 overflow-hidden">
+              <div
+                className={`transition-all duration-500 ease-out ${
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-6"
+                }`}
+                style={{ transitionDelay: "250ms" }}
+              >
+                <div className="relative bg-[#1b3454] rounded-2xl p-5 sm:p-6 lg:p-7 border border-white/10">
                   <div className="absolute bottom-0 left-0 w-32 h-32 bg-[rgba(43,127,255,0.08)] rounded-full blur-3xl pointer-events-none" />
                   <div className="relative">
                     <h3
@@ -2500,7 +2532,7 @@ export default function PropertyDetailPage() {
                       <div className="w-8 h-8 rounded-lg bg-[rgba(43,127,255,0.15)] flex items-center justify-center shrink-0 mt-0.5">
                         <MapPin size={14} className="text-[#2B7FFF]/80" />
                       </div>
-                      <p className="text-white/70 text-sm leading-relaxed wrap-break-words">
+                      <p className="text-white/70 text-sm leading-relaxed wrap-break-word">
                         {property.address}
                       </p>
                     </div>
@@ -2514,8 +2546,15 @@ export default function PropertyDetailPage() {
           <div className="lg:col-span-1">
             <div className="lg:sticky lg:top-24 space-y-4">
               {/* Price + CTA */}
-              <div className={`transition-all duration-500 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} style={{ transitionDelay: '300ms' }}>
-                <div className="relative bg-[#1b3454] rounded-2xl border border-white/10 overflow-hidden">
+              <div
+                className={`transition-all duration-500 ease-out ${
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-6"
+                }`}
+                style={{ transitionDelay: "300ms" }}
+              >
+                <div className="relative bg-[#1b3454] rounded-2xl border border-white/10">
                   <div className="absolute inset-0 bg-linear-to-br from-[#2B7FFF]/8 via-transparent to-[#2B7FFF]/5 pointer-events-none" />
                   <div className="relative bg-linear-to-r from-[#2B7FFF]/15 via-[#2B7FFF]/8 to-transparent px-5 sm:px-6 py-5 border-b border-white/10">
                     <p className="text-[10px] text-[#2B7FFF]/70 uppercase tracking-[0.2em] font-bold mb-1">
@@ -2564,7 +2603,14 @@ export default function PropertyDetailPage() {
 
               {/* Agent */}
               {property.addedBy && (
-                <div className={`transition-all duration-500 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} style={{ transitionDelay: '350ms' }}>
+                <div
+                  className={`transition-all duration-500 ease-out ${
+                    isVisible
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-6"
+                  }`}
+                  style={{ transitionDelay: "350ms" }}
+                >
                   <div className="bg-[#1b3454] rounded-2xl p-5 border border-white/10">
                     <h4 className="text-[9px] font-bold text-white/50 uppercase tracking-[0.25em] mb-3">
                       Listed By
@@ -2593,7 +2639,14 @@ export default function PropertyDetailPage() {
               )}
 
               {/* Details */}
-              <div className={`transition-all duration-500 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} style={{ transitionDelay: '400ms' }}>
+              <div
+                className={`transition-all duration-500 ease-out ${
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-6"
+                }`}
+                style={{ transitionDelay: "400ms" }}
+              >
                 <div className="bg-[#1b3454] rounded-2xl p-5 border border-white/10">
                   <h4 className="text-[9px] font-bold text-white/50 uppercase tracking-[0.25em] mb-3">
                     Property Details
@@ -2638,8 +2691,15 @@ export default function PropertyDetailPage() {
               </div>
 
               {/* Verified */}
-              <div className={`transition-all duration-500 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} style={{ transitionDelay: '450ms' }}>
-                <div className="relative bg-[rgba(43,127,255,0.1)] rounded-2xl p-4 border border-[rgba(43,127,255,0.2)] overflow-hidden">
+              <div
+                className={`transition-all duration-500 ease-out ${
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-6"
+                }`}
+                style={{ transitionDelay: "450ms" }}
+              >
+                <div className="relative bg-[rgba(43,127,255,0.1)] rounded-2xl p-4 border border-[rgba(43,127,255,0.2)]">
                   <div className="absolute top-0 right-0 w-20 h-20 bg-[rgba(43,127,255,0.08)] rounded-full blur-2xl pointer-events-none" />
                   <div className="relative flex items-center gap-3">
                     <div className="w-9 h-9 rounded-full bg-[rgba(43,127,255,0.2)] flex items-center justify-center shrink-0 border border-[rgba(43,127,255,0.25)]">
@@ -2661,7 +2721,7 @@ export default function PropertyDetailPage() {
         </div>
       </div>
 
-      {/* ===== LIGHTBOX – fixed mobile padding ===== */}
+      {/* ===== LIGHTBOX ===== */}
       {showLightbox && (
         <div
           className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
