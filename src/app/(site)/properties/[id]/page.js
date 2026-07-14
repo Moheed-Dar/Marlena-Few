@@ -3038,7 +3038,7 @@ export default function PropertyDetailPage() {
   // ============================================
   return (
     <div
-      className={`min-h-screen bg-[#39518A] relative ${inter.variable} font-(family-name:--font-inter)}`}
+      className={`min-h-screen bg-[#39518A] relative ${inter.variable} font-(family-name:--font-inter)`}
     >
       {/* ===== LIGHTER BACKGROUND EFFECTS + WATERMARK ===== */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
@@ -3299,7 +3299,8 @@ export default function PropertyDetailPage() {
       {/* ===== MAIN CONTENT ===== */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-          {/* ===== LEFT ===== */}
+
+          {/* ===== LEFT — no z-index, no stacking context issues ===== */}
           <div className="lg:col-span-2 space-y-6">
             {/* Meta */}
             {property.propertyCode && (
@@ -3346,7 +3347,6 @@ export default function PropertyDetailPage() {
             >
               {property.bedrooms > 0 && (
                 <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-3.5 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group">
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-[rgba(43,127,255,0.1)] rounded-full blur-2xl pointer-events-none" />
                   <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
                     <Bed size={18} className="text-[#2B7FFF]/80" />
                   </div>
@@ -3364,7 +3364,6 @@ export default function PropertyDetailPage() {
               )}
               {property.bathrooms > 0 && (
                 <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-3.5 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group">
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-[rgba(43,127,255,0.1)] rounded-full blur-2xl pointer-events-none" />
                   <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
                     <Bath size={18} className="text-[#2B7FFF]/80" />
                   </div>
@@ -3382,7 +3381,6 @@ export default function PropertyDetailPage() {
               )}
               {(property.areaSize || property.area) > 0 && (
                 <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-3.5 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group">
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-[rgba(43,127,255,0.1)] rounded-full blur-2xl pointer-events-none" />
                   <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
                     <Ruler size={18} className="text-[#2B7FFF]/80" />
                   </div>
@@ -3403,7 +3401,6 @@ export default function PropertyDetailPage() {
               )}
               {property.propertyType && (
                 <div className="relative flex items-center gap-3 bg-[#1b3454] rounded-2xl p-3.5 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group">
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-[rgba(43,127,255,0.1)] rounded-full blur-2xl pointer-events-none" />
                   <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#2B7FFF]/15 group-hover:bg-[#2B7FFF]/25 flex items-center justify-center shrink-0 transition-colors border border-[#2B7FFF]/15">
                     <Home size={18} className="text-[#2B7FFF]/80" />
                   </div>
@@ -3429,24 +3426,21 @@ export default function PropertyDetailPage() {
                 }`}
                 style={{ transitionDelay: "150ms" }}
               >
-                <div className="relative bg-[#1b3454] rounded-2xl p-5 sm:p-6 lg:p-7 border border-white/10">
-                  <div className="absolute top-0 left-0 w-32 h-32 bg-[rgba(43,127,255,0.08)] rounded-full blur-3xl pointer-events-none" />
-                  <div className="relative">
-                    <h3
-                      className={`text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}
-                    >
-                      Description
-                    </h3>
-                    <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-5" />
-                    <div
-                      className="text-white/70 text-sm sm:text-[15px] leading-[1.9] whitespace-pre-line max-h-80 overflow-y-auto pr-2"
-                      style={{
-                        scrollbarWidth: "thin",
-                        scrollbarColor: "rgba(43,127,255,0.3) transparent",
-                      }}
-                    >
-                      {property.description}
-                    </div>
+                <div className="bg-[#1b3454] rounded-2xl p-5 sm:p-6 lg:p-7 border border-white/10">
+                  <h3
+                    className={`text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}
+                  >
+                    Description
+                  </h3>
+                  <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-5" />
+                  <div
+                    className="text-white/70 text-sm sm:text-[15px] leading-[1.9] whitespace-pre-line max-h-80 overflow-y-auto pr-2"
+                    style={{
+                      scrollbarWidth: "thin",
+                      scrollbarColor: "rgba(43,127,255,0.3) transparent",
+                    }}
+                  >
+                    {property.description}
                   </div>
                 </div>
               </div>
@@ -3462,36 +3456,33 @@ export default function PropertyDetailPage() {
                 }`}
                 style={{ transitionDelay: "200ms" }}
               >
-                <div className="relative bg-[#1b3454] rounded-2xl p-6 sm:p-7 border border-white/10">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-[rgba(43,127,255,0.08)] rounded-full blur-3xl pointer-events-none" />
-                  <div className="relative">
-                    <h3
-                      className={`text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}
-                    >
-                      Features & Amenities
-                    </h3>
-                    <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-5" />
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                      {[...(property.features || []), ...(property.amenities || [])].map(
-                        (item, i) => (
-                          <div
-                            key={i}
-                            className="flex items-center gap-2.5 text-sm text-white/70 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10 hover:bg-[#2B7FFF]/10 hover:border-[#2B7FFF]/20 transition-colors group"
-                          >
-                            <div className="w-5 h-5 rounded-full bg-[#2B7FFF]/15 flex items-center justify-center shrink-0 group-hover:bg-[#2B7FFF]/25 transition-colors">
-                              <CheckCircle2 size={12} className="text-[#2B7FFF]/80" />
-                            </div>
-                            <span className="capitalize truncate">{item}</span>
+                <div className="bg-[#1b3454] rounded-2xl p-6 sm:p-7 border border-white/10">
+                  <h3
+                    className={`text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}
+                  >
+                    Features & Amenities
+                  </h3>
+                  <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-5" />
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                    {[...(property.features || []), ...(property.amenities || [])].map(
+                      (item, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center gap-2.5 text-sm text-white/70 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10 hover:bg-[#2B7FFF]/10 hover:border-[#2B7FFF]/20 transition-colors group"
+                        >
+                          <div className="w-5 h-5 rounded-full bg-[#2B7FFF]/15 flex items-center justify-center shrink-0 group-hover:bg-[#2B7FFF]/25 transition-colors">
+                            <CheckCircle2 size={12} className="text-[#2B7FFF]/80" />
                           </div>
-                        )
-                      )}
-                    </div>
+                          <span className="capitalize truncate">{item}</span>
+                        </div>
+                      )
+                    )}
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Address */}
+            {/* Address — removed relative/blur that caused stacking issues */}
             {property.address && (
               <div
                 className={`transition-all duration-500 ease-out ${
@@ -3501,32 +3492,32 @@ export default function PropertyDetailPage() {
                 }`}
                 style={{ transitionDelay: "250ms" }}
               >
-                <div className="relative bg-[#1b3454] rounded-2xl p-5 sm:p-6 lg:p-7 border border-white/10">
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-[rgba(43,127,255,0.08)] rounded-full blur-3xl pointer-events-none" />
-                  <div className="relative">
-                    <h3
-                      className={`text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}
-                    >
-                      Address
-                    </h3>
-                    <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-5" />
-                    <div className="flex items-start gap-3 bg-[rgba(43,127,255,0.1)] rounded-xl p-4 border border-[rgba(43,127,255,0.15)]">
-                      <div className="w-8 h-8 rounded-lg bg-[rgba(43,127,255,0.15)] flex items-center justify-center shrink-0 mt-0.5">
-                        <MapPin size={14} className="text-[#2B7FFF]/80" />
-                      </div>
-                      <p className="text-white/70 text-sm leading-relaxed wrap-break-word">
-                        {property.address}
-                      </p>
+                <div className="bg-[#1b3454] rounded-2xl p-5 sm:p-6 lg:p-7 border border-white/10">
+                  <h3
+                    className={`text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}
+                  >
+                    Address
+                  </h3>
+                  <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-5" />
+                  <div className="flex items-start gap-3 bg-[rgba(43,127,255,0.1)] rounded-xl p-4 border border-[rgba(43,127,255,0.15)]">
+                    <div className="w-8 h-8 rounded-lg bg-[rgba(43,127,255,0.15)] flex items-center justify-center shrink-0 mt-0.5">
+                      <MapPin size={14} className="text-[#2B7FFF]/80" />
                     </div>
+                    <p className="text-white/70 text-sm leading-relaxed wrap-break-word">
+                      {property.address}
+                    </p>
                   </div>
                 </div>
               </div>
             )}
           </div>
 
-          {/* ===== RIGHT SIDEBAR ===== */}
-          <div className="lg:col-span-1">
-            <div className="lg:sticky lg:top-24 space-y-4 z-20 relative"> {/* Added z-20 and relative */}
+          {/* ===== RIGHT SIDEBAR — isolation creates clean stacking context ===== */}
+          <div
+            className="lg:col-span-1"
+            style={{ isolation: "isolate" }}
+          >
+            <div className="lg:sticky lg:top-24 space-y-4 relative z-10">
               {/* Price + CTA */}
               <div
                 className={`transition-all duration-500 ease-out ${
@@ -3536,9 +3527,8 @@ export default function PropertyDetailPage() {
                 }`}
                 style={{ transitionDelay: "300ms" }}
               >
-                <div className="relative bg-[#1b3454] rounded-2xl border border-white/10">
-                  <div className="absolute inset-0 bg-linear-to-br from-[#2B7FFF]/8 via-transparent to-[#2B7FFF]/5 pointer-events-none" />
-                  <div className="relative bg-linear-to-r from-[#2B7FFF]/15 via-[#2B7FFF]/8 to-transparent px-5 sm:px-6 py-5 border-b border-white/10">
+                <div className="bg-[#1b3454] rounded-2xl border border-white/10 overflow-visible">
+                  <div className="bg-linear-to-r from-[#2B7FFF]/15 via-[#2B7FFF]/8 to-transparent px-5 sm:px-6 py-5 border-b border-white/10 rounded-t-2xl">
                     <p className="text-[10px] text-[#2B7FFF]/70 uppercase tracking-[0.2em] font-bold mb-1">
                       Asking Price
                     </p>
@@ -3553,17 +3543,20 @@ export default function PropertyDetailPage() {
                     </p>
                   </div>
 
-                  <div className="relative p-5 space-y-3">
-                    <LeadForm
-                      propertyId={property._id}
-                      propertyTitle={property.title}
-                      propertyCode={property.propertyCode}
-                      propertyPrice={property.price}
-                      propertyCurrency={property.currency}
-                      onSuccess={(data) => {
-                        console.log("Lead created:", data);
-                      }}
-                    />
+                  <div className="p-5 space-y-3">
+                    {/* LeadForm wrapped in high-z wrapper so it always stays on top */}
+                    <div className="relative z-50">
+                      <LeadForm
+                        propertyId={property._id}
+                        propertyTitle={property.title}
+                        propertyCode={property.propertyCode}
+                        propertyPrice={property.price}
+                        propertyCurrency={property.currency}
+                        onSuccess={(data) => {
+                          console.log("Lead created:", data);
+                        }}
+                      />
+                    </div>
 
                     <div className="grid grid-cols-2 gap-2">
                       <a
@@ -3681,9 +3674,8 @@ export default function PropertyDetailPage() {
                 }`}
                 style={{ transitionDelay: "450ms" }}
               >
-                <div className="relative bg-[rgba(43,127,255,0.1)] rounded-2xl p-4 border border-[rgba(43,127,255,0.2)]">
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-[rgba(43,127,255,0.08)] rounded-full blur-2xl pointer-events-none" />
-                  <div className="relative flex items-center gap-3">
+                <div className="bg-[rgba(43,127,255,0.1)] rounded-2xl p-4 border border-[rgba(43,127,255,0.2)]">
+                  <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-full bg-[rgba(43,127,255,0.2)] flex items-center justify-center shrink-0 border border-[rgba(43,127,255,0.25)]">
                       <ShieldCheck size={15} className="text-[#2B7FFF]" />
                     </div>
