@@ -2043,9 +2043,9 @@ export default function LeadsPage() {
             <thead>
               <tr className="border-b border-white/10 bg-white/5">
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider w-12">#</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider min-w-[200px]">Lead Info</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider min-w-[160px]">Property</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider min-w-[120px]">Type</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider min-w-50">Lead Info</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider min-w-40">Property</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider min-w-30">Type</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider">Status</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider">Source</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider">Date</th>
@@ -2112,7 +2112,7 @@ export default function LeadsPage() {
                   return (
                     <tr
                       key={lead._id}
-                      className={`hover:bg-white/5 transition-colors cursor-pointer ${isUnread ? "bg-white/[0.03]" : ""}`}
+                      className={`hover:bg-white/5 transition-colors cursor-pointer ${isUnread ? "bg-white/3" : ""}`}
                       onClick={(e) => handleViewLead(lead, e)}
                     >
                       <td className="px-4 py-3 text-white/40 text-xs">{page * rowsPerPage + idx + 1}</td>
@@ -2120,7 +2120,7 @@ export default function LeadsPage() {
                       {/* Lead Info: Name, Email, Phone (each on new line) */}
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="relative flex-shrink-0">
+                          <div className="relative shrink-0">
                             <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold uppercase ${isUnread ? "bg-[#2B7FFF] text-white" : "bg-white/10 text-white/40"}`}>
                               {lead.name?.charAt(0) || "?"}
                             </div>
@@ -2130,21 +2130,21 @@ export default function LeadsPage() {
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
-                              <p className={`text-sm truncate max-w-[150px] ${isUnread ? "font-semibold text-white" : "text-white/70"}`}>
+                              <p className={`text-sm truncate max-w-37 ${isUnread ? "font-semibold text-white" : "text-white/70"}`}>
                                 {lead.name || "N/A"}
                               </p>
                               {isUnread && (
-                                <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold rounded-md bg-[#2B7FFF] text-white uppercase tracking-wider flex-shrink-0">
+                                <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold rounded-md bg-[#2B7FFF] text-white uppercase tracking-wider shrink-0">
                                   New
                                 </span>
                               )}
                             </div>
-                            <div className="text-[11px] text-white/40 truncate max-w-[160px]">
+                            <div className="text-[11px] text-white/40 truncate max-w-40">
                               <Mail size={10} className="inline mr-1" />
                               {lead.email || "No email"}
                             </div>
                             {lead.phone && (
-                              <div className="text-[11px] text-white/40 truncate max-w-[160px]">
+                              <div className="text-[11px] text-white/40 truncate max-w-40">
                                 <Phone size={10} className="inline mr-1" />
                                 {lead.phone}
                               </div>
@@ -2154,7 +2154,7 @@ export default function LeadsPage() {
                       </td>
 
                       {/* Property */}
-                      <td className="px-4 py-3 text-white/70 text-sm truncate max-w-[160px]">
+                      <td className="px-4 py-3 text-white/70 text-sm truncate max-w-40">
                         {lead.property?.title || "N/A"}
                       </td>
 

@@ -2108,7 +2108,7 @@ export default function PropertyDetailPage() {
         />
         {/* Watermark logo (subtle) */}
         <div className="absolute inset-0 flex items-center justify-center opacity-[0.04]">
-          <div className="relative w-[300px] h-[300px] sm:w-[400px] sm:h-[400px]">
+          <div className="relative w-75 h-75 sm:w-100 sm:h-100">
             <Image
               src="/images/logo1.png"
               alt="Watermark"
@@ -2130,7 +2130,7 @@ export default function PropertyDetailPage() {
             <div className="flex items-center gap-2 text-sm text-white/60">
               <Link
                 href="/properties"
-                className="hover:text-[#2B7FFF] transition-colors text-white/60 hover:text-white"
+                className="hover:text-white transition-colors text-white/60 "
               >
                 Properties
               </Link>

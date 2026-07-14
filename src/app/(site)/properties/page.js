@@ -438,7 +438,7 @@ export default function PropertiesPage() {
           }}
         />
         <div className="absolute inset-0 flex items-center justify-center opacity-[0.06]">
-          <div className="relative w-[300px] h-[300px] sm:w-[400px] sm:h-[400px]">
+          <div className="relative w-75 h-75 sm:w-100 sm:h-100">
             <Image
               src="/images/logo1.png"
               alt="Watermark"
@@ -476,7 +476,7 @@ export default function PropertiesPage() {
             {/* Row 1: Search + Controls */}
             <div className="flex flex-wrap items-center gap-3">
               {/* Search Bar (slightly smaller) */}
-              <div className="relative flex-1 min-w-[180px]">
+              <div className="relative flex-1 min-w-45">
                 <form onSubmit={handleSearch}>
                   <div className="relative flex items-center bg-white/10 border border-white/15 rounded-2xl focus-within:border-[#2B7FFF]/50 focus-within:ring-2 focus-within:ring-[#2B7FFF]/20 transition-all">
                     <Search size={16} className="absolute left-3.5 text-white/40" />

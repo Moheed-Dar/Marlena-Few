@@ -1335,7 +1335,7 @@ export default function ContactPage() {
         />
         {/* Watermark logo */}
         <div className="absolute inset-0 flex items-center justify-center opacity-[0.04]">
-          <div className="relative w-[300px] h-[300px] sm:w-[400px] sm:h-[400px]">
+          <div className="relative w-75 h-75 sm:w-100 sm:h-100">
             <Image
               src="/images/logo1.png"
               alt="Watermark"
