@@ -1,6 +1,9 @@
 import Link from "next/link";
 import LoginForm from "@/app/admin/login/LoginForm";
 
+// ✅ YEH LINE ADD KARO — Vercel ko pre-render karne se rokega
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: "Admin Login",
   description: "Login to admin panel",
