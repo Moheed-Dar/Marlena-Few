@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   Eye,
   EyeOff,
@@ -10,14 +9,14 @@ import {
   ShieldCheck,
   ArrowRight,
   X,
-  Home,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { loginAdmin } from "@/lib/auth/api";
+import { setStoredUser } from "@/lib/auth";
 
 export default function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectPath = searchParams.get("from") || "/admin/dashboard";
+  const redirectPath = searchParams.get("redirect") || "/admin/dashboard";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,22 +36,22 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-        credentials: "include",
-      });
+      const data = await loginAdmin(email, password);
 
-      const data = await res.json();
-
-      if (res.ok) {
-        router.replace(redirectPath);
+      if (data?.user) {
+        setStoredUser(data.user);
       } else {
-        setError(data.error || data.message || "Login failed");
+        setStoredUser({
+          name: data?.name || "Admin",
+          email: data?.email || email,
+          role: data?.role || "admin",
+        });
       }
+
+      document.cookie = "admin_token=authenticated; path=/; max-age=86400; SameSite=Lax";
+      window.location.href = redirectPath;
     } catch (err) {
-      setError("Something went wrong. Please try again.");
+      setError(err.response?.data?.message || err.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -69,25 +68,30 @@ export default function LoginForm() {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="relative w-full max-w-md"
+      className="w-full"
     >
-      <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-60 h-60 bg-[#2B7FFF]/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Background Glow */}
+      <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-48 h-48 bg-[#2B7FFF]/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="relative bg-[#1b3454] backdrop-blur-xl rounded-2xl border border-white/10 p-8 sm:p-10 shadow-2xl shadow-black/40">
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="w-11 h-11 rounded-xl bg-[#2B7FFF]/20 flex items-center justify-center border border-[#2B7FFF]/25">
-            <ShieldCheck size={22} className="text-[#2B7FFF]" />
+      {/* Card */}
+      <div className="relative bg-[#1b3454] backdrop-blur-xl rounded-2xl border border-white/10 px-6 py-8 sm:px-10 sm:py-10 shadow-2xl shadow-black/40">
+
+        {/* Title — Logo hata diya, ab directly title */}
+        <div className="flex items-center justify-center gap-3 mb-7">
+          <div className="w-10 h-10 rounded-xl bg-[#2B7FFF]/20 flex items-center justify-center border border-[#2B7FFF]/25 shrink-0">
+            <ShieldCheck size={20} className="text-[#2B7FFF]" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white">
+            <h1 className="text-lg sm:text-xl font-bold text-white leading-tight">
               Admin Panel
             </h1>
-            <p className="text-[11px] text-white/40 uppercase tracking-[0.2em]">
+            <p className="text-[10px] sm:text-[11px] text-white/40 uppercase tracking-[0.2em]">
               Secure Access
             </p>
           </div>
         </div>
 
+        {/* Error */}
         {error && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -98,7 +102,9 @@ export default function LoginForm() {
           </motion.div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+          {/* Email */}
           <div>
             <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2">
               Email Address
@@ -124,6 +130,7 @@ export default function LoginForm() {
             </div>
           </div>
 
+          {/* Password */}
           <div>
             <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2">
               Password
@@ -160,11 +167,12 @@ export default function LoginForm() {
             </div>
           </div>
 
-          <div className="flex gap-3">
+          {/* Buttons — Fixed alignment */}
+          <div className="flex gap-3 pt-2">
             <button
               type="button"
               onClick={clearFields}
-              className="flex items-center justify-center gap-1.5 px-4 py-3 bg-white/5 border border-white/10 text-white/50 text-sm font-medium rounded-xl hover:bg-white/10 hover:border-white/20 transition-colors flex-1"
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-white/5 border border-white/10 text-white/50 text-sm font-medium rounded-xl hover:bg-white/10 hover:border-white/20 transition-colors flex-1"
             >
               <X size={14} />
               Clear
@@ -190,7 +198,8 @@ export default function LoginForm() {
           </div>
         </form>
 
-        <p className="text-center text-white/20 text-xs mt-8">
+        {/* Footer */}
+        <p className="text-center text-white/20 text-[11px] sm:text-xs mt-7">
           Protected area — Unauthorized access is prohibited.
         </p>
       </div>

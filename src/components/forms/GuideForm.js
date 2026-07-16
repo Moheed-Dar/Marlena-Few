@@ -495,7 +495,7 @@ import {
   Download,
   FileText,
 } from "lucide-react";
-import { downloadGuide } from "@/lib/api";
+import { downloadGuide } from "@/lib/guides/api";
 import { Playfair_Display, Inter } from "next/font/google";
 
 const playfair = Playfair_Display({

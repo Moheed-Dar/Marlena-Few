@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { updateProperty } from "@/lib/api";
+import { updateProperty } from "@/lib/properties/api";
 import {
   X,
   Loader2,

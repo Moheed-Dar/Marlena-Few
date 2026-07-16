@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Playfair_Display, Inter } from "next/font/google";
-import { getAllProperties, deleteProperty } from "@/lib/api";
+import { getAllProperties, deleteProperty } from "@/lib/properties/api";
 import PropertyCreateForm from "@/components/forms/PropertyCreateForm";
 import PropertyUpdateForm from "@/components/forms/PropertyUpdateForm";
 

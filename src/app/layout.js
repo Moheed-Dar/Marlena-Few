@@ -15,9 +15,14 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" data-scroll-behavior="smooth" className={`${poppins.variable} antialiased`}>
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+      className={`${poppins.variable} antialiased`}
+    >
       <body
-        className="min-h-screen font-(family-name:--font-poppins)"
+        className="min-h-screen bg-[#0a1628] text-white font-sans antialiased"
         suppressHydrationWarning
       >
         <SmoothScroll />

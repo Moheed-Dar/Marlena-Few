@@ -17,6 +17,18 @@ const contactSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    
+    // ⚠️ YEH 2 FIELDS MISSING THE JO MAINE ADD KIYE HAIN
+    isRead: {
+      type: Boolean,
+      default: false, // Naya contact aaye toh by default unread hoga
+    },
+    readAt: {
+      type: Date,
+      default: null, // Jab tak read nahi hoga tab tak null rahega
+    },
+    // ==========================================
+
     message: {
       type: String,
       required: [true, 'Message is required'],

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -14,6 +14,7 @@ import {
   Star,
   FileText,
   User,
+  LayoutDashboard,
 } from "lucide-react";
 import Image from "next/image";
 import { gsap } from "gsap";
@@ -34,6 +35,99 @@ const CMS_LINKS = [
 export default function FullscreenMenu({ isOpen, onClose }) {
   const circleRef = useRef(null);
   const menuRef = useRef(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Check if user is logged in
+  useEffect(() => {
+    setMounted(true);
+
+    const checkAuthStatus = () => {
+      try {
+        // Method 1: Check cookies for auth token
+        const cookies = document.cookie.split(";");
+        const authCookieNames = [
+          "token",
+          "auth_token",
+          "session",
+          "auth-session",
+          "next-auth.session-token",
+          "sb-access-token",
+          "supabase-auth-token",
+        ];
+
+        const hasAuthCookie = cookies.some((cookie) => {
+          const trimmedCookie = cookie.trim();
+          return authCookieNames.some((name) =>
+            trimmedCookie.startsWith(`${name}=`)
+          );
+        });
+
+        if (hasAuthCookie) {
+          setIsLoggedIn(true);
+          return;
+        }
+
+        // Method 2: Check localStorage
+        const localStorageKeys = [
+          "token",
+          "auth_token",
+          "access_token",
+          "user",
+          "auth",
+        ];
+
+        const hasLocalToken = localStorageKeys.some((key) => {
+          const value = localStorage.getItem(key);
+          if (!value) return false;
+          try {
+            const parsed = JSON.parse(value);
+            return parsed?.token || parsed?.access_token || parsed?.session;
+          } catch {
+            // If not JSON, check if it's a direct token string
+            return value && value.length > 10;
+          }
+        });
+
+        if (hasLocalToken) {
+          setIsLoggedIn(true);
+          return;
+        }
+
+        // Method 3: Check sessionStorage
+        const sessionKeys = ["token", "auth_token", "access_token"];
+        const hasSessionToken = sessionKeys.some((key) => {
+          const value = sessionStorage.getItem(key);
+          return value && value.length > 10;
+        });
+
+        if (hasSessionToken) {
+          setIsLoggedIn(true);
+          return;
+        }
+
+        // Not logged in
+        setIsLoggedIn(false);
+      } catch (error) {
+        console.error("Auth check error:", error);
+        setIsLoggedIn(false);
+      }
+    };
+
+    checkAuthStatus();
+
+    // Re-check when menu opens
+    if (isOpen) {
+      checkAuthStatus();
+    }
+  }, [isOpen]);
+
+  // Admin link dynamic config
+  const adminLinkConfig = {
+    href: isLoggedIn ? "/admin/dashboard" : "/admin/login",
+    label: isLoggedIn ? "Dashboard" : "Admin",
+    icon: isLoggedIn ? LayoutDashboard : ShieldCheck,
+  };
 
   // Proper close handler: scroll to top + close menu
   const handleClose = () => {
@@ -88,7 +182,7 @@ export default function FullscreenMenu({ isOpen, onClose }) {
       gsap.fromTo(
         menuRef.current,
         { y: -30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" },
+        { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" }
       );
     });
     return () => ctx.revert();
@@ -147,9 +241,6 @@ export default function FullscreenMenu({ isOpen, onClose }) {
             <div className="p-5 lg:p-6 bg-white">
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  {/* <h3 className="text-gray-400 text-xs font-bold tracking-widest uppercase mb-3">
-                    Main Pages
-                  </h3> */}
                   <div className="flex flex-col gap-1.5">
                     {DEFAULT_NAV_LINKS.map((link, index) => (
                       <Link
@@ -168,9 +259,6 @@ export default function FullscreenMenu({ isOpen, onClose }) {
                 </div>
 
                 <div>
-                  {/* <h3 className="text-gray-400 text-xs font-bold tracking-widest uppercase mb-3">
-                    CMS Pages
-                  </h3> */}
                   <div className="flex flex-col gap-1.5">
                     {CMS_LINKS.map((link, index) => (
                       <Link
@@ -204,13 +292,21 @@ export default function FullscreenMenu({ isOpen, onClose }) {
             </a>
 
             <div className="flex items-center gap-2">
+              {/* ✅ FIXED: Dynamic Admin/Dashboard Link */}
               <Link
-                href="/admin/login"
+                href={adminLinkConfig.href}
                 onClick={handleLinkClick}
-                className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 border border-amber-200 text-amber-700 text-sm font-semibold rounded-lg hover:bg-amber-100 hover:border-amber-300 transition-colors"
+                className={`flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-lg transition-colors ${
+                  isLoggedIn
+                    ? "bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-300"
+                    : "bg-amber-50 border border-amber-200 text-amber-700 hover:bg-amber-100 hover:border-amber-300"
+                }`}
               >
-                <ShieldCheck size={16} />
-                <span>Admin</span>
+                {(() => {
+                  const AdminIcon = adminLinkConfig.icon;
+                  return <AdminIcon size={16} />;
+                })()}
+                <span>{adminLinkConfig.label}</span>
               </Link>
               <Link
                 href="/properties"
@@ -381,13 +477,23 @@ export default function FullscreenMenu({ isOpen, onClose }) {
                 </a>
 
                 <div className="flex flex-col items-center gap-2">
+                  {/* ✅ FIXED: Dynamic Admin/Dashboard Link */}
                   <Link
-                    href="/admin/login"
+                    href={adminLinkConfig.href}
                     onClick={handleLinkClick}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-50 border border-amber-200 text-amber-700 text-sm font-semibold rounded-xl hover:bg-amber-100 active:bg-amber-200 transition-all duration-200"
+                    className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 ${
+                      isLoggedIn
+                        ? "bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 active:bg-emerald-200"
+                        : "bg-amber-50 border border-amber-200 text-amber-700 hover:bg-amber-100 active:bg-amber-200"
+                    }`}
                   >
-                    <ShieldCheck size={16} />
-                    <span>Admin Login</span>
+                    {(() => {
+                      const AdminIcon = adminLinkConfig.icon;
+                      return <AdminIcon size={16} />;
+                    })()}
+                    <span>
+                      {isLoggedIn ? "Go to Dashboard" : "Admin Login"}
+                    </span>
                   </Link>
 
                   <Link

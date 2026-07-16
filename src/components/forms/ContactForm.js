@@ -14,7 +14,7 @@ import {
   AlertCircle,
   X,
 } from "lucide-react";
-import { submitContact } from "@/lib/api";
+import { submitContact } from "@/lib/contact/api";
 
 export default function ContactForm() {
   const [form, setForm] = useState({

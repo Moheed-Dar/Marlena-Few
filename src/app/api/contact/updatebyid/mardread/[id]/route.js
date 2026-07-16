@@ -1,8 +1,6 @@
-// backend/app/api/leads/mark-read/[id]/route.js
-
 import { NextResponse } from 'next/server';
-import dbConnect from '@/backend/lib/db';
-import Lead from '@/backend/models/lead';
+import dbConnect from '@/backend/lib/db'; // Agar yeh path alag hai toh theek karo
+import Contact from '@/backend/models/contact';
 import mongoose from 'mongoose';
 
 export async function PATCH(request, { params }) {
@@ -15,13 +13,13 @@ export async function PATCH(request, { params }) {
     // ID Valid Check
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
-        { success: false, message: "Invalid Lead ID" },
+        { success: false, message: "Invalid Contact ID" },
         { status: 400 }
       );
     }
 
-    // Lead Update Karo
-    const lead = await Lead.findByIdAndUpdate(
+    // Contact Update Karo
+    const contact = await Contact.findByIdAndUpdate(
       id,
       {
         isRead: true,
@@ -30,10 +28,10 @@ export async function PATCH(request, { params }) {
       { new : true, runValidators: true }
     ).lean();
 
-    // Lead Exist Check
-    if (!lead) {
+    // Contact Exist Check
+    if (!contact) {
       return NextResponse.json(
-        { success: false, message: "Lead not found" },
+        { success: false, message: "Contact not found" },
         { status: 404 }
       );
     }
@@ -41,8 +39,8 @@ export async function PATCH(request, { params }) {
     return NextResponse.json(
       {
         success: true,
-        message: "Lead marked as read",
-        data: lead,
+        message: "Contact marked as read",
+        data: contact,
       },
       { status: 200 }
     );

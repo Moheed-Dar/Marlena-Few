@@ -1510,8 +1510,6 @@
 
 
 
-
-
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from "react";
@@ -1536,12 +1534,11 @@ import {
   Star,
   Check,
   XCircle,
-  MapPin,
-  DollarSign,
   ChevronLeft,
   ChevronRight,
   BookOpen,
   AlertCircle,
+  MailOpen,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Playfair_Display, Inter } from "next/font/google";
@@ -1550,7 +1547,7 @@ import {
   getLeadById,
   deleteLead,
   markLeadAsRead,
-} from "@/lib/api";
+} from "@/lib/leads/api";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -1574,6 +1571,13 @@ const STATUS_CONFIG = {
     bg: "bg-blue-500/15",
     border: "border-blue-500/25",
     icon: <Sparkles size={12} />,
+  },
+  readed: {
+    label: "Readed",
+    color: "text-gray-400",
+    bg: "bg-gray-500/10",
+    border: "border-gray-500/20",
+    icon: <MailOpen size={12} />,
   },
   contacted: {
     label: "Contacted",
@@ -1631,11 +1635,6 @@ const formatDate = (dateString) => {
   });
 };
 
-const formatPrice = (price, currency = "PKR") => {
-  if (!price) return "N/A";
-  return `${currency} ${Number(price).toLocaleString()}`;
-};
-
 const getLeadTypeDisplay = (lead) => {
   if (lead.leadType === "guide_download") {
     if (lead.guideType === "buyer") {
@@ -1678,7 +1677,6 @@ const getLeadTypeDisplay = (lead) => {
 // MAIN COMPONENT
 // ============================================
 export default function LeadsPage() {
-  // ---- State ----
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
@@ -1690,13 +1688,11 @@ export default function LeadsPage() {
     hasPrevPage: false,
   });
 
-  // Filters
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [readFilter, setReadFilter] = useState("all"); // "all" | "read" | "unread"
-  const [statusFilterNew, setStatusFilterNew] = useState(false); // if true, show only status 'new'
+  const [readFilter, setReadFilter] = useState("all");
+  const [statusFilterNew, setStatusFilterNew] = useState(false);
 
-  // These are kept for API calls but not exposed via UI
   const [statusFilter, setStatusFilter] = useState("all");
   const [sourceFilter, setSourceFilter] = useState("all");
   const [leadTypeFilter, setLeadTypeFilter] = useState("all");
@@ -1704,9 +1700,8 @@ export default function LeadsPage() {
   const [sortOrder, setSortOrder] = useState("desc");
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // UI
   const [selectedLead, setSelectedLead] = useState(null);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -1724,20 +1719,27 @@ export default function LeadsPage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // ---- Fetch ----
+  // ---- Fetch (UPDATED) ----
   const fetchLeads = useCallback(async () => {
     try {
       setLoading(true);
+      
+      // Sirf woh keys add karenge jo actually exist karti hain (undefined nahi bhejenge)
       const params = {
         page: page + 1,
         limit: rowsPerPage,
-        sortBy,
-        sortOrder,
-        status: statusFilter !== "all" ? statusFilter : undefined,
-        source: sourceFilter !== "all" ? sourceFilter : undefined,
-        leadType: leadTypeFilter !== "all" ? leadTypeFilter : undefined,
+        sortBy: sortBy || undefined,
+        sortOrder: sortOrder || undefined,
       };
+
+      // Agar filter "all" nahi hai, tab hi add karo
+      if (statusFilter !== "all") params.status = statusFilter;
+      if (sourceFilter !== "all") params.source = sourceFilter;
+      if (leadTypeFilter !== "all") params.leadType = leadTypeFilter;
+
+      // Ab yeh object safely jayega aur API file usse handle kar legi
       const response = await getAllLeads(params);
+      
       if (response.success) {
         setLeads(response.data);
         setPagination(response.pagination);
@@ -1749,28 +1751,24 @@ export default function LeadsPage() {
       setLoading(false);
     }
   }, [page, rowsPerPage, statusFilter, sourceFilter, leadTypeFilter, sortBy, sortOrder]);
-
   useEffect(() => {
     fetchLeads();
   }, [fetchLeads]);
 
-  // ---- Client-side filtering (search, read, new) ----
+  // ---- Client-side filtering ----
   const filteredLeads = useMemo(() => {
     let result = [...leads];
 
-    // 1. Read filter
     if (readFilter === "read") {
       result = result.filter((l) => l.isRead === true);
     } else if (readFilter === "unread") {
       result = result.filter((l) => l.isRead !== true);
     }
 
-    // 2. New status filter
     if (statusFilterNew) {
       result = result.filter((l) => l.status === "new");
     }
 
-    // 3. Search (client-side partial match)
     if (debouncedSearch.trim() !== "") {
       const query = debouncedSearch.toLowerCase();
       result = result.filter((l) =>
@@ -1784,7 +1782,7 @@ export default function LeadsPage() {
     return result;
   }, [leads, readFilter, statusFilterNew, debouncedSearch]);
 
-  // ---- Counts for cards ----
+  // ---- Counts ----
   const counts = useMemo(() => {
     const total = leads.length;
     const read = leads.filter(l => l.isRead === true).length;
@@ -1793,7 +1791,7 @@ export default function LeadsPage() {
     return { total, read, unread, newLeads };
   }, [leads]);
 
-  // ---- Snackbar (auto-dismiss) ----
+  // ---- Snackbar ----
   const showSnackbar = (message, type = "success") => {
     setSnackbar({ open: true, message, type });
     setTimeout(() => {
@@ -1892,11 +1890,11 @@ export default function LeadsPage() {
 
   // ---- Render ----
   return (
-    <div className={`${inter.variable} font-(family-name:--font-inter)}`}>
-      {/* Header with Refresh Button */}
+    <div className={`${inter.variable} font-(family-name:--font-inter)`}>
+      {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className={`text-2xl font-bold text-white ${playfair.variable} font-(family-name:--font-playfair)}`}>
+          <h1 className={`text-2xl font-bold text-white ${playfair.variable} font-(family-name:--font-playfair)`}>
             Leads Management
           </h1>
           <p className="text-white/40 text-sm">Manage and track all your leads from various sources</p>
@@ -1911,7 +1909,7 @@ export default function LeadsPage() {
         </button>
       </div>
 
-      {/* ===== CARDS: All, Read, Unread, New ===== */}
+      {/* ===== CARDS ===== */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div
           onClick={() => { setReadFilter("all"); setStatusFilterNew(false); setPage(0); }}
@@ -1966,9 +1964,8 @@ export default function LeadsPage() {
         </div>
       </div>
 
-      {/* ===== Search + Filter Buttons (half-half) ===== */}
+      {/* ===== Search + Filter Buttons ===== */}
       <div className="flex flex-col md:flex-row gap-4 mb-6">
-        {/* Search Bar - Half Width */}
         <div className="relative w-full md:w-1/2">
           <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" />
           <input
@@ -1991,7 +1988,6 @@ export default function LeadsPage() {
           )}
         </div>
 
-        {/* Filter Buttons - Half Width */}
         <div className="flex items-center gap-2 w-full md:w-1/2 justify-start md:justify-end">
           <button
             onClick={() => { setReadFilter("all"); setStatusFilterNew(false); setPage(0); }}
@@ -2103,8 +2099,7 @@ export default function LeadsPage() {
               ) : (
                 filteredLeads.map((lead, idx) => {
                   const isUnread = !lead.isRead;
-                  // Determine status display: if unread, show "New" regardless of actual status
-                  const statusKey = isUnread ? "new" : (lead.status || "new");
+                  const statusKey = isUnread ? "new" : "readed";
                   const statusConfig = STATUS_CONFIG[statusKey] || STATUS_CONFIG.new;
                   const sourceConfig = SOURCE_CONFIG[lead.source] || { label: lead.source || "N/A", color: "text-gray-400" };
                   const leadTypeDisplay = getLeadTypeDisplay(lead);
@@ -2117,7 +2112,6 @@ export default function LeadsPage() {
                     >
                       <td className="px-4 py-3 text-white/40 text-xs">{page * rowsPerPage + idx + 1}</td>
 
-                      {/* Lead Info: Name, Email, Phone (each on new line) */}
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <div className="relative shrink-0">
@@ -2129,16 +2123,9 @@ export default function LeadsPage() {
                             )}
                           </div>
                           <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                              <p className={`text-sm truncate max-w-37 ${isUnread ? "font-semibold text-white" : "text-white/70"}`}>
-                                {lead.name || "N/A"}
-                              </p>
-                              {isUnread && (
-                                <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold rounded-md bg-[#2B7FFF] text-white uppercase tracking-wider shrink-0">
-                                  New
-                                </span>
-                              )}
-                            </div>
+                            <p className={`text-sm truncate max-w-40 ${isUnread ? "font-semibold text-white" : "text-white/70"}`}>
+                              {lead.name || "N/A"}
+                            </p>
                             <div className="text-[11px] text-white/40 truncate max-w-40">
                               <Mail size={10} className="inline mr-1" />
                               {lead.email || "No email"}
@@ -2153,12 +2140,10 @@ export default function LeadsPage() {
                         </div>
                       </td>
 
-                      {/* Property */}
                       <td className="px-4 py-3 text-white/70 text-sm truncate max-w-40">
                         {lead.property?.title || "N/A"}
                       </td>
 
-                      {/* Type */}
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider ${leadTypeDisplay.color} ${leadTypeDisplay.bg} border ${leadTypeDisplay.border}`}>
                           {leadTypeDisplay.icon}
@@ -2166,7 +2151,6 @@ export default function LeadsPage() {
                         </span>
                       </td>
 
-                      {/* Status - shows "New" if unread, else actual status */}
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider ${statusConfig.color} ${statusConfig.bg} border ${statusConfig.border}`}>
                           {statusConfig.icon}
@@ -2174,15 +2158,12 @@ export default function LeadsPage() {
                         </span>
                       </td>
 
-                      {/* Source */}
                       <td className="px-4 py-3">
                         <span className={`text-xs ${sourceConfig.color}`}>{sourceConfig.label}</span>
                       </td>
 
-                      {/* Date */}
                       <td className="px-4 py-3 text-white/40 text-xs">{formatDate(lead.createdAt)}</td>
 
-                      {/* Actions */}
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-center gap-2" onClick={(e) => e.stopPropagation()}>
                           <button
@@ -2224,7 +2205,7 @@ export default function LeadsPage() {
           </table>
         </div>
 
-        {/* ===== Pagination (attractive) ===== */}
+        {/* ===== Pagination ===== */}
         {!loading && filteredLeads.length > 0 && (
           <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-t border-white/10">
             <div className="text-sm text-white/40">
@@ -2251,13 +2232,11 @@ export default function LeadsPage() {
                 >
                   <ChevronLeft size={16} />
                 </button>
-                {/* Show page numbers */}
                 {Array.from({ length: Math.min(pagination.totalPages, 5) }, (_, i) => {
                   let pageNum;
                   if (pagination.totalPages <= 5) {
                     pageNum = i + 1;
                   } else {
-                    // Show first, last, and around current
                     if (i === 0) pageNum = 1;
                     else if (i === 4) pageNum = pagination.totalPages;
                     else {
@@ -2292,113 +2271,138 @@ export default function LeadsPage() {
         )}
       </div>
 
-      {/* ===== LEAD DETAIL MODAL (Centered Card) ===== */}
+      {/* ===== LEAD DETAIL MODAL ===== */}
       <AnimatePresence>
         {detailModalOpen && selectedLead && (
-          <>
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
             <div
-              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
               onClick={() => setDetailModalOpen(false)}
+            />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", damping: 28, stiffness: 300 }}
+              className="relative z-10 bg-[#1b3454] rounded-2xl border border-white/10 max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl shadow-black/50"
+              onClick={(e) => e.stopPropagation()}
             >
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="bg-[#1b3454] rounded-2xl border border-white/10 max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6"
-                onClick={(e) => e.stopPropagation()}
-              >
+              <div className="h-1 w-full bg-linear-to-r from-[#2B7FFF] via-[#8b5cf6] to-[#2B7FFF] rounded-t-2xl" />
+
+              <div className="p-6">
                 {/* Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold uppercase ${!selectedLead.isRead ? "bg-[#2B7FFF] text-white" : "bg-white/10 text-white/40"}`}>
+                <div className="flex items-start justify-between mb-6">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold uppercase shrink-0 ${!selectedLead.isRead ? "bg-[#2B7FFF] text-white shadow-lg shadow-[#2B7FFF]/20" : "bg-white/10 text-white/40"}`}>
                       {selectedLead.name?.charAt(0) || "?"}
                     </div>
                     <div>
                       <h2 className="text-xl font-bold text-white">{selectedLead.name || "N/A"}</h2>
-                      <p className="text-sm text-white/40">{selectedLead.email || "No email"}</p>
-                      {selectedLead.phone && <p className="text-sm text-white/40">{selectedLead.phone}</p>}
+                      <p className="text-sm text-white/40 mt-0.5">{selectedLead.email || "No email"}</p>
+                      {selectedLead.phone && (
+                        <p className="text-sm text-white/40">{selectedLead.phone}</p>
+                      )}
                     </div>
                   </div>
                   <button
                     onClick={() => setDetailModalOpen(false)}
-                    className="p-2 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+                    className="p-2 rounded-xl hover:bg-white/10 transition-colors cursor-pointer shrink-0"
                   >
                     <X size={20} className="text-white/50" />
                   </button>
                 </div>
 
-                {/* Lead Details */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                {/* Status badges */}
+                <div className="flex flex-wrap items-center gap-2 mb-6">
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full uppercase tracking-wider ${STATUS_CONFIG[selectedLead.status]?.color || "text-white"} ${STATUS_CONFIG[selectedLead.status]?.bg || "bg-white/10"} border ${STATUS_CONFIG[selectedLead.status]?.border || "border-white/10"}`}>
+                    {STATUS_CONFIG[selectedLead.status]?.icon}
+                    {STATUS_CONFIG[selectedLead.status]?.label || selectedLead.status || "N/A"}
+                  </span>
+                  <span className={`text-xs ${SOURCE_CONFIG[selectedLead.source]?.color || "text-gray-400"}`}>
+                    {SOURCE_CONFIG[selectedLead.source]?.label || selectedLead.source || "N/A"}
+                  </span>
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full uppercase tracking-wider ${selectedLead.isRead ? "text-gray-400 bg-gray-500/10 border border-gray-500/20" : "text-blue-400 bg-blue-500/15 border border-blue-500/25"}`}>
+                    <MailCheck size={12} />
+                    {selectedLead.isRead ? "Readed" : "New"}
+                  </span>
+                </div>
+
+                {/* Details Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-sm">
-                      <User size={16} className="text-white/30" />
-                      <span className="text-white/60">Name:</span>
-                      <span className="text-white">{selectedLead.name || "N/A"}</span>
+                    <div className="flex items-center gap-3 text-sm p-3 rounded-xl bg-white/3 border border-white/5">
+                      <User size={16} className="text-[#2B7FFF]/60 shrink-0" />
+                      <div>
+                        <p className="text-white/40 text-xs">Name</p>
+                        <p className="text-white font-medium">{selectedLead.name || "N/A"}</p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Mail size={16} className="text-white/30" />
-                      <span className="text-white/60">Email:</span>
-                      <span className="text-white break-all">{selectedLead.email || "N/A"}</span>
+                    <div className="flex items-center gap-3 text-sm p-3 rounded-xl bg-white/3 border border-white/5">
+                      <Mail size={16} className="text-[#2B7FFF]/60 shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-white/40 text-xs">Email</p>
+                        <p className="text-white font-medium break-all">{selectedLead.email || "N/A"}</p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Phone size={16} className="text-white/30" />
-                      <span className="text-white/60">Phone:</span>
-                      <span className="text-white">{selectedLead.phone || "N/A"}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Home size={16} className="text-white/30" />
-                      <span className="text-white/60">Property:</span>
-                      <span className="text-white">{selectedLead.property?.title || "N/A"}</span>
+                    <div className="flex items-center gap-3 text-sm p-3 rounded-xl bg-white/3 border border-white/5">
+                      <Phone size={16} className="text-[#2B7FFF]/60 shrink-0" />
+                      <div>
+                        <p className="text-white/40 text-xs">Phone</p>
+                        <p className="text-white font-medium">{selectedLead.phone || "N/A"}</p>
+                      </div>
                     </div>
                   </div>
                   <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Info size={16} className="text-white/30" />
-                      <span className="text-white/60">Status:</span>
-                      <span className={`${STATUS_CONFIG[selectedLead.status]?.color || "text-white"}`}>
-                        {STATUS_CONFIG[selectedLead.status]?.label || selectedLead.status || "N/A"}
-                      </span>
+                    <div className="flex items-center gap-3 text-sm p-3 rounded-xl bg-white/3 border border-white/5">
+                      <Home size={16} className="text-[#2B7FFF]/60 shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-white/40 text-xs">Property</p>
+                        <p className="text-white font-medium truncate">{selectedLead.property?.title || "N/A"}</p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <TrendingUp size={16} className="text-white/30" />
-                      <span className="text-white/60">Source:</span>
-                      <span className={SOURCE_CONFIG[selectedLead.source]?.color || "text-white"}>
-                        {SOURCE_CONFIG[selectedLead.source]?.label || selectedLead.source || "N/A"}
-                      </span>
+                    <div className="flex items-center gap-3 text-sm p-3 rounded-xl bg-white/3 border border-white/5">
+                      <Calendar size={16} className="text-[#2B7FFF]/60 shrink-0" />
+                      <div>
+                        <p className="text-white/40 text-xs">Created</p>
+                        <p className="text-white font-medium">{formatDate(selectedLead.createdAt)}</p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Calendar size={16} className="text-white/30" />
-                      <span className="text-white/60">Created:</span>
-                      <span className="text-white">{formatDate(selectedLead.createdAt)}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <MailCheck size={16} className="text-white/30" />
-                      <span className="text-white/60">Read:</span>
-                      <span className="text-white">{selectedLead.isRead ? "Yes" : "No"}</span>
-                    </div>
+                    {selectedLead.readAt && (
+                      <div className="flex items-center gap-3 text-sm p-3 rounded-xl bg-white/3 border border-white/5">
+                        <MailCheck size={16} className="text-[#2B7FFF]/60 shrink-0" />
+                        <div>
+                          <p className="text-white/40 text-xs">Read At</p>
+                          <p className="text-white font-medium">{formatDate(selectedLead.readAt)}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {/* Message */}
                 {selectedLead.message && (
-                  <div className="mt-4 p-3 bg-white/5 rounded-lg border border-white/10">
-                    <p className="text-sm text-white/60">Message:</p>
-                    <p className="text-white text-sm mt-1">{selectedLead.message}</p>
+                  <div className="mt-5 p-4 bg-white/3 rounded-xl border border-white/5">
+                    <p className="text-xs text-white/40 uppercase tracking-wider font-semibold mb-2">Message</p>
+                    <p className="text-white/80 text-sm leading-relaxed">{selectedLead.message}</p>
                   </div>
                 )}
 
                 {/* Actions */}
-                <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/10">
+                <div className="flex flex-wrap justify-end gap-3 mt-6 pt-5 border-t border-white/10">
                   {!selectedLead.isRead && (
                     <button
-                      onClick={() => {
-                        handleMarkAsRead(selectedLead._id);
-                      }}
+                      onClick={() => handleMarkAsRead(selectedLead._id)}
                       disabled={markingReadIds.has(selectedLead._id)}
-                      className="px-4 py-2 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition-colors text-sm font-semibold flex items-center gap-2 cursor-pointer"
+                      className="px-5 py-2.5 rounded-xl bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 transition-colors text-sm font-semibold flex items-center gap-2 cursor-pointer border border-emerald-500/20"
                     >
-                      <MailCheck size={16} />
+                      <MailCheck size={16} className={markingReadIds.has(selectedLead._id) ? "animate-pulse" : ""} />
                       Mark as Read
                     </button>
                   )}
@@ -2408,61 +2412,70 @@ export default function LeadsPage() {
                       setLeadToDelete(selectedLead);
                       setDeleteDialogOpen(true);
                     }}
-                    className="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors text-sm font-semibold flex items-center gap-2 cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl bg-red-500/15 text-red-400 hover:bg-red-500/25 transition-colors text-sm font-semibold flex items-center gap-2 cursor-pointer border border-red-500/20"
                   >
                     <Trash2 size={16} />
                     Delete
                   </button>
                   <button
                     onClick={() => setDetailModalOpen(false)}
-                    className="px-4 py-2 rounded-lg bg-white/5 text-white/60 hover:bg-white/10 transition-colors text-sm font-semibold cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl bg-white/5 text-white/60 hover:bg-white/10 transition-colors text-sm font-semibold cursor-pointer border border-white/10"
                   >
                     Close
                   </button>
                 </div>
-              </motion.div>
-            </div>
-          </>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ===== DELETE CONFIRMATION DIALOG ===== */}
+      {/* ===== DELETE DIALOG ===== */}
       <AnimatePresence>
         {deleteDialogOpen && leadToDelete && (
-          <>
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
             <div
-              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
               onClick={() => setDeleteDialogOpen(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", damping: 28, stiffness: 300 }}
+              className="relative z-10 bg-[#1b3454] rounded-2xl border border-white/10 max-w-md w-full p-6 shadow-2xl shadow-black/50"
+              onClick={(e) => e.stopPropagation()}
             >
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-[#1b3454] rounded-2xl border border-white/10 max-w-md w-full p-6"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <h3 className="text-xl font-bold text-white mb-2">Delete Lead</h3>
-                <p className="text-white/60 text-sm mb-6">
-                  Are you sure you want to delete the lead <span className="text-white font-semibold">{leadToDelete.name}</span>? This action cannot be undone.
-                </p>
-                <div className="flex justify-end gap-3">
-                  <button
-                    onClick={() => setDeleteDialogOpen(false)}
-                    className="px-4 py-2 rounded-lg bg-white/5 text-white/60 hover:bg-white/10 transition-colors text-sm font-semibold cursor-pointer"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleConfirmDelete}
-                    className="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors text-sm font-semibold flex items-center gap-2 cursor-pointer"
-                  >
-                    <Trash2 size={16} />
-                    Delete
-                  </button>
-                </div>
-              </motion.div>
-            </div>
-          </>
+              <div className="w-14 h-14 rounded-2xl bg-red-500/15 border border-red-500/20 flex items-center justify-center mx-auto mb-4">
+                <Trash2 size={24} className="text-red-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white text-center mb-2">Delete Lead</h3>
+              <p className="text-white/60 text-sm text-center mb-6">
+                Are you sure you want to delete <span className="text-white font-semibold">{leadToDelete.name}</span>? This action cannot be undone.
+              </p>
+              <div className="flex justify-center gap-3">
+                <button
+                  onClick={() => setDeleteDialogOpen(false)}
+                  className="px-5 py-2.5 rounded-xl bg-white/5 text-white/60 hover:bg-white/10 transition-colors text-sm font-semibold cursor-pointer border border-white/10"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmDelete}
+                  className="px-5 py-2.5 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors text-sm font-semibold flex items-center gap-2 cursor-pointer border border-red-500/25"
+                >
+                  <Trash2 size={16} />
+                  Delete
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 

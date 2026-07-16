@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createProperty } from "@/lib/api";
+import { createProperty } from "@/lib/properties/api";
 import {
   X,
   Loader2,

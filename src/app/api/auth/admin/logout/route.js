@@ -57,7 +57,7 @@ const logoutUser = async (request) => {
           { $inc: { tokenVersion: 1 } },  // ✅ Atomic increment
           { 
             runValidators: false,
-            new: true 
+            returnDocument: 'after'  // ✅ Fixed: new: true replaced
           }
         );
       } catch (dbError) {

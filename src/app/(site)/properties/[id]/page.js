@@ -926,11 +926,6 @@
 //   );
 // }
 
-
-
-
-
-
 // "use client";
 
 // import { useState, useEffect, useRef } from "react";
@@ -1839,10 +1834,6 @@
 //     </div>
 //   );
 // }
-
-
-
-
 
 // "use client";
 
@@ -2818,19 +2809,6 @@
 //   );
 // }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 // "use client";
 
 // import { useState, useEffect, useRef } from "react";
@@ -3714,12 +3692,6 @@
 //   );
 // }
 
-
-
-
-
-
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -3947,7 +3919,7 @@ export default function PropertyDetailPage() {
           }}
         />
         <div className="absolute inset-0 flex items-center justify-center opacity-[0.04]">
-          <div className="relative w-75 h-75 sm:w-100 sm:h-100">
+          {/* <div className="relative w-75 h-75 sm:w-100 sm:h-100">
             <Image
               src="/images/logo1.png"
               alt="Watermark"
@@ -3955,7 +3927,7 @@ export default function PropertyDetailPage() {
               className="object-contain"
               unoptimized
             />
-          </div>
+          </div> */}
         </div>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(43,127,255,0.12)_0%,transparent_40%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(43,127,255,0.08)_0%,transparent_50%)]" />
@@ -4042,7 +4014,9 @@ export default function PropertyDetailPage() {
           {/* ===== IMAGE GALLERY ===== */}
           <div
             className={`transition-all duration-700 ease-out ${
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
             }`}
           >
             {hasSingleImage ? (
@@ -4057,6 +4031,7 @@ export default function PropertyDetailPage() {
                       src={currentDisplayImage}
                       alt={property.title || "Property"}
                       fill
+                      loading="eager"
                       unoptimized
                       className="object-cover"
                       sizes="(max-width: 1024px) 100vw, 66vw"
@@ -4109,13 +4084,19 @@ export default function PropertyDetailPage() {
                       </span>
                     </div>
                     <button
-                      onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        prevImage();
+                      }}
                       className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 sm:left-3 sm:w-11 sm:h-11 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md text-white hover:bg-black/60 hover:scale-105 transition-all shadow-lg ring-1 ring-white/20"
                     >
                       <ChevronLeft size={18} />
                     </button>
                     <button
-                      onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        nextImage();
+                      }}
                       className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 sm:right-3 sm:w-11 sm:h-11 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md text-white hover:bg-black/60 hover:scale-105 transition-all shadow-lg ring-1 ring-white/20"
                     >
                       <ChevronRight size={18} />
@@ -4134,8 +4115,12 @@ export default function PropertyDetailPage() {
                       <button
                         key={index}
                         onClick={() => {
-                          if (isSeeMore) { setActiveImage(3); setShowLightbox(true); }
-                          else { setActiveImage(index); }
+                          if (isSeeMore) {
+                            setActiveImage(3);
+                            setShowLightbox(true);
+                          } else {
+                            setActiveImage(index);
+                          }
                         }}
                         className={`relative rounded-lg sm:rounded-xl overflow-hidden transition-all duration-300 ring-1 ring-white/15 hover:ring-white/30 aspect-square md:aspect-auto ${
                           isActive && !isSeeMore
@@ -4153,7 +4138,11 @@ export default function PropertyDetailPage() {
                         />
                         {isActive && !isSeeMore && (
                           <div className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#2B7FFF] flex items-center justify-center shadow-lg shadow-[#2B7FFF]/50 z-10 border border-white">
-                            <Check size={10} strokeWidth={3} className="text-white" />
+                            <Check
+                              size={10}
+                              strokeWidth={3}
+                              className="text-white"
+                            />
                           </div>
                         )}
                         {isSeeMore && (
@@ -4177,15 +4166,15 @@ export default function PropertyDetailPage() {
       {/* ===== MAIN CONTENT ===== */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
-
           {/* ===== LEFT COLUMN ===== */}
           <div className="lg:col-span-2 space-y-5 sm:space-y-6">
-
             {/* Meta */}
             {property.propertyCode && (
               <div
                 className={`transition-all duration-500 ease-out ${
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-6"
                 }`}
                 style={{ transitionDelay: "50ms" }}
               >
@@ -4202,9 +4191,14 @@ export default function PropertyDetailPage() {
                   {property.createdAt && (
                     <span className="flex items-center gap-1 text-white/60">
                       <CalendarDays size={11} />
-                      {new Date(property.createdAt).toLocaleDateString("en-US", {
-                        month: "short", day: "numeric", year: "numeric",
-                      })}
+                      {new Date(property.createdAt).toLocaleDateString(
+                        "en-US",
+                        {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        },
+                      )}
                     </span>
                   )}
                 </div>
@@ -4214,7 +4208,9 @@ export default function PropertyDetailPage() {
             {/* Quick Stats */}
             <div
               className={`grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 transition-all duration-500 ease-out ${
-                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+                isVisible
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-6"
               }`}
               style={{ transitionDelay: "100ms" }}
             >
@@ -4224,8 +4220,12 @@ export default function PropertyDetailPage() {
                     <Bed size={16} className="text-[#2B7FFF]/80" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[8px] sm:text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">Beds</p>
-                    <p className={`text-lg sm:text-xl font-bold text-white leading-tight ${playfair.variable} font-(family-name:--font-playfair)`}>
+                    <p className="text-[8px] sm:text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">
+                      Beds
+                    </p>
+                    <p
+                      className={`text-lg sm:text-xl font-bold text-white leading-tight ${playfair.variable} font-(family-name:--font-playfair)`}
+                    >
                       {property.bedrooms}
                     </p>
                   </div>
@@ -4237,8 +4237,12 @@ export default function PropertyDetailPage() {
                     <Bath size={16} className="text-[#2B7FFF]/80" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[8px] sm:text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">Baths</p>
-                    <p className={`text-lg sm:text-xl font-bold text-white leading-tight ${playfair.variable} font-(family-name:--font-playfair)`}>
+                    <p className="text-[8px] sm:text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">
+                      Baths
+                    </p>
+                    <p
+                      className={`text-lg sm:text-xl font-bold text-white leading-tight ${playfair.variable} font-(family-name:--font-playfair)`}
+                    >
                       {property.bathrooms}
                     </p>
                   </div>
@@ -4250,8 +4254,12 @@ export default function PropertyDetailPage() {
                     <Ruler size={16} className="text-[#2B7FFF]/80" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[8px] sm:text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">Area</p>
-                    <p className={`text-base sm:text-lg font-bold text-white leading-tight ${playfair.variable} font-(family-name:--font-playfair)`}>
+                    <p className="text-[8px] sm:text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">
+                      Area
+                    </p>
+                    <p
+                      className={`text-base sm:text-lg font-bold text-white leading-tight ${playfair.variable} font-(family-name:--font-playfair)`}
+                    >
                       {property.areaSize || property.area}
                       <span className="text-[9px] sm:text-[10px] font-normal text-white/40 ml-0.5">
                         {property.areaUnit || "sqft"}
@@ -4266,7 +4274,9 @@ export default function PropertyDetailPage() {
                     <Home size={16} className="text-[#2B7FFF]/80" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[8px] sm:text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">Type</p>
+                    <p className="text-[8px] sm:text-[9px] text-white/50 uppercase tracking-[0.2em] font-bold">
+                      Type
+                    </p>
                     <p className="text-xs sm:text-sm font-bold text-white leading-tight capitalize truncate">
                       {property.propertyType}
                     </p>
@@ -4279,12 +4289,16 @@ export default function PropertyDetailPage() {
             {property.description && (
               <div
                 className={`transition-all duration-500 ease-out ${
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-6"
                 }`}
                 style={{ transitionDelay: "150ms" }}
               >
                 <div className="bg-[#1b3454] rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-7 border border-white/10">
-                  <h3 className={`text-lg sm:text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}>
+                  <h3
+                    className={`text-lg sm:text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}
+                  >
                     Description
                   </h3>
                   <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-4 sm:mb-5" />
@@ -4302,32 +4316,41 @@ export default function PropertyDetailPage() {
             )}
 
             {/* Features */}
-            {(property.features?.length > 0 || property.amenities?.length > 0) && (
+            {(property.features?.length > 0 ||
+              property.amenities?.length > 0) && (
               <div
                 className={`hidden md:block transition-all duration-500 ease-out ${
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-6"
                 }`}
                 style={{ transitionDelay: "200ms" }}
               >
                 <div className="bg-[#1b3454] rounded-2xl p-5 sm:p-7 border border-white/10">
-                  <h3 className={`text-lg sm:text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}>
+                  <h3
+                    className={`text-lg sm:text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}
+                  >
                     Features & Amenities
                   </h3>
                   <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-4 sm:mb-5" />
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-2.5">
-                    {[...(property.features || []), ...(property.amenities || [])].map(
-                      (item, i) => (
-                        <div
-                          key={i}
-                          className="flex items-center gap-2 sm:gap-2.5 text-xs sm:text-sm text-white/70 bg-white/5 rounded-lg sm:rounded-xl px-2.5 sm:px-3 py-2 sm:py-2.5 border border-white/10 hover:bg-[#2B7FFF]/10 hover:border-[#2B7FFF]/20 transition-colors group"
-                        >
-                          <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#2B7FFF]/15 flex items-center justify-center shrink-0 group-hover:bg-[#2B7FFF]/25 transition-colors">
-                            <CheckCircle2 size={10} className="text-[#2B7FFF]/80" />
-                          </div>
-                          <span className="capitalize truncate">{item}</span>
+                    {[
+                      ...(property.features || []),
+                      ...(property.amenities || []),
+                    ].map((item, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-2 sm:gap-2.5 text-xs sm:text-sm text-white/70 bg-white/5 rounded-lg sm:rounded-xl px-2.5 sm:px-3 py-2 sm:py-2.5 border border-white/10 hover:bg-[#2B7FFF]/10 hover:border-[#2B7FFF]/20 transition-colors group"
+                      >
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#2B7FFF]/15 flex items-center justify-center shrink-0 group-hover:bg-[#2B7FFF]/25 transition-colors">
+                          <CheckCircle2
+                            size={10}
+                            className="text-[#2B7FFF]/80"
+                          />
                         </div>
-                      )
-                    )}
+                        <span className="capitalize truncate">{item}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -4337,12 +4360,16 @@ export default function PropertyDetailPage() {
             {property.address && (
               <div
                 className={`transition-all duration-500 ease-out ${
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-6"
                 }`}
                 style={{ transitionDelay: "250ms" }}
               >
                 <div className="bg-[#1b3454] rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-7 border border-white/10">
-                  <h3 className={`text-lg sm:text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}>
+                  <h3
+                    className={`text-lg sm:text-xl text-white mb-1 ${playfair.variable} font-(family-name:--font-playfair)`}
+                  >
                     Address
                   </h3>
                   <div className="w-12 h-0.5 bg-linear-to-r from-[#2B7FFF] to-transparent rounded-full mb-4 sm:mb-5" />
@@ -4362,11 +4389,12 @@ export default function PropertyDetailPage() {
           {/* ===== RIGHT SIDEBAR ===== */}
           <div className="lg:col-span-1">
             <div className="lg:sticky lg:top-24 space-y-3 sm:space-y-4">
-
               {/* Price + CTA Card */}
               <div
                 className={`transition-all duration-500 ease-out ${
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-6"
                 }`}
                 style={{ transitionDelay: "300ms" }}
               >
@@ -4419,7 +4447,9 @@ export default function PropertyDetailPage() {
               {property.addedBy && (
                 <div
                   className={`transition-all duration-500 ease-out ${
-                    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+                    isVisible
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-6"
                   }`}
                   style={{ transitionDelay: "350ms" }}
                 >
@@ -4443,7 +4473,9 @@ export default function PropertyDetailPage() {
                         <p className="text-xs sm:text-sm font-bold text-white truncate">
                           {property.addedBy?.name || "Agent"}
                         </p>
-                        <p className="text-[11px] sm:text-xs text-white/50">Property Agent</p>
+                        <p className="text-[11px] sm:text-xs text-white/50">
+                          Property Agent
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -4453,7 +4485,9 @@ export default function PropertyDetailPage() {
               {/* Details */}
               <div
                 className={`transition-all duration-500 ease-out ${
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-6"
                 }`}
                 style={{ transitionDelay: "400ms" }}
               >
@@ -4467,25 +4501,33 @@ export default function PropertyDetailPage() {
                         <span className="text-white/60 flex items-center gap-1.5 sm:gap-2">
                           <Layers size={11} /> Floors
                         </span>
-                        <span className="font-semibold text-white">{property.floors}</span>
+                        <span className="font-semibold text-white">
+                          {property.floors}
+                        </span>
                       </div>
                     )}
                     {property.kitchens && (
                       <div className="flex items-center justify-between text-xs sm:text-sm py-2 sm:py-2.5 border-b border-white/10">
                         <span className="text-white/60">Kitchens</span>
-                        <span className="font-semibold text-white">{property.kitchens}</span>
+                        <span className="font-semibold text-white">
+                          {property.kitchens}
+                        </span>
                       </div>
                     )}
                     {property.yearBuilt && (
                       <div className="flex items-center justify-between text-xs sm:text-sm py-2 sm:py-2.5 border-b border-white/10">
                         <span className="text-white/60">Year Built</span>
-                        <span className="font-semibold text-white">{property.yearBuilt}</span>
+                        <span className="font-semibold text-white">
+                          {property.yearBuilt}
+                        </span>
                       </div>
                     )}
                     {property.leadsCount > 0 && (
                       <div className="flex items-center justify-between text-xs sm:text-sm py-2 sm:py-2.5">
                         <span className="text-white/60">Interested Buyers</span>
-                        <span className="font-semibold text-[#2B7FFF]">{property.leadsCount}</span>
+                        <span className="font-semibold text-[#2B7FFF]">
+                          {property.leadsCount}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -4495,7 +4537,9 @@ export default function PropertyDetailPage() {
               {/* Verified */}
               <div
                 className={`transition-all duration-500 ease-out ${
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-6"
                 }`}
                 style={{ transitionDelay: "450ms" }}
               >
@@ -4505,8 +4549,12 @@ export default function PropertyDetailPage() {
                       <ShieldCheck size={13} className="text-[#2B7FFF]" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[11px] sm:text-xs font-bold text-[#2B7FFF]">Verified Listing</p>
-                      <p className="text-[10px] sm:text-[11px] text-white/50">Verified by our team</p>
+                      <p className="text-[11px] sm:text-xs font-bold text-[#2B7FFF]">
+                        Verified Listing
+                      </p>
+                      <p className="text-[10px] sm:text-[11px] text-white/50">
+                        Verified by our team
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -4563,13 +4611,19 @@ export default function PropertyDetailPage() {
             {!hasSingleImage && (
               <>
                 <button
-                  onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    prevImage();
+                  }}
                   className="absolute left-2 sm:left-5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors ring-1 ring-white/20"
                 >
                   <ChevronLeft size={18} />
                 </button>
                 <button
-                  onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    nextImage();
+                  }}
                   className="absolute right-2 sm:right-5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors ring-1 ring-white/20"
                 >
                   <ChevronRight size={18} />
@@ -4588,14 +4642,24 @@ export default function PropertyDetailPage() {
                 return (
                   <button
                     key={index}
-                    onClick={(e) => { e.stopPropagation(); setActiveImage(index); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveImage(index);
+                    }}
                     className={`relative w-12 h-9 sm:w-16 sm:h-12 rounded-md sm:rounded-lg overflow-hidden shrink-0 transition-all duration-300 ring-1 ring-white/20 ${
                       activeImage === index
                         ? "ring-2 ring-[#2B7FFF] scale-105"
                         : "opacity-50 hover:opacity-80"
                     }`}
                   >
-                    <Image src={safeImg} alt="" fill unoptimized className="object-cover" sizes="64px" />
+                    <Image
+                      src={safeImg}
+                      alt=""
+                      fill
+                      unoptimized
+                      className="object-cover"
+                      sizes="64px"
+                    />
                   </button>
                 );
               })}

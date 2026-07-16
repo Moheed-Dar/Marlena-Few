@@ -114,6 +114,7 @@ export async function GET(request) {
       {
         success: true,
         message: "Contacts fetched successfully",
+        total: totalContacts,
         data: contacts,
         pagination,
         stats,

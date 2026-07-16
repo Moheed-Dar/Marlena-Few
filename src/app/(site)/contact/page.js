@@ -417,16 +417,6 @@
 //   );
 // }
 
-
-
-
-
-
-
-
-
-
-
 // "use client";
 
 // import Link from "next/link";
@@ -822,22 +812,6 @@
 //     </div>
 //   );
 // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // "use client";
 
@@ -1242,13 +1216,6 @@
 //   );
 // }
 
-
-
-
-
-
-
-
 "use client";
 
 import Link from "next/link";
@@ -1320,9 +1287,7 @@ const QUICK_LINKS = [
 // ============================================
 export default function ContactPage() {
   return (
-    <div
-      className="min-h-screen bg-[#39518A] relative overflow-x-hidden"
-    >
+    <div className="min-h-screen bg-[#39518A] relative overflow-x-hidden">
       {/* ===== BACKGROUND TEXTURE + WATERMARK ===== */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div
@@ -1426,7 +1391,10 @@ export default function ContactPage() {
                     ].map((item, i) => (
                       <div key={i} className="flex items-start gap-2.5">
                         <div className="w-5 h-5 rounded-full bg-[#2B7FFF]/15 flex items-center justify-center shrink-0 mt-0.5 border border-[#2B7FFF]/20">
-                          <CheckCircle2 size={11} className="text-[#2B7FFF]/80" />
+                          <CheckCircle2
+                            size={11}
+                            className="text-[#2B7FFF]/80"
+                          />
                         </div>
                         <div>
                           <p className="text-[13px] font-semibold text-white/80">
@@ -1506,12 +1474,16 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <p className="text-sm font-bold text-red-300">Call Now</p>
-                  <p className="text-[11px] text-white/50 mt-0.5">Urgent inquiries</p>
+                  <p className="text-[11px] text-white/50 mt-0.5">
+                    Urgent inquiries
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-2 px-3 py-2 bg-red-500/15 rounded-lg border border-red-500/20">
                 <Phone size={12} className="text-red-400/80" />
-                <span className="text-xs font-semibold text-red-300">+1 226 932 5002</span>
+                <span className="text-xs font-semibold text-red-300">
+                  +1 226 932 5002
+                </span>
               </div>
             </div>
           </div>
@@ -1532,8 +1504,13 @@ export default function ContactPage() {
                   { day: "Saturday", time: "10 AM - 5 PM", active: true },
                   { day: "Sunday", time: "Closed", active: false },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between py-1.5">
-                    <span className={`text-xs ${item.active ? "text-white/70" : "text-white/30"}`}>
+                  <div
+                    key={i}
+                    className="flex items-center justify-between py-1.5"
+                  >
+                    <span
+                      className={`text-xs ${item.active ? "text-white/70" : "text-white/30"}`}
+                    >
                       {item.day}
                     </span>
                     <span
@@ -1587,19 +1564,23 @@ export default function ContactPage() {
                   <ShieldCheck size={16} className="text-[#2B7FFF]" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-[#2B7FFF]">Trusted Agency</p>
+                  <p className="text-sm font-bold text-[#2B7FFF]">
+                    Trusted Agency
+                  </p>
                   <p className="text-[11px] text-white/50">Since 2020</p>
                 </div>
               </div>
               <div className="space-y-2">
-                {["Verified Listings", "Secure Deals", "Happy Clients"].map((tag, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-full bg-[#2B7FFF]/15 flex items-center justify-center shrink-0">
-                      <CheckCircle2 size={9} className="text-[#2B7FFF]/80" />
+                {["Verified Listings", "Secure Deals", "Happy Clients"].map(
+                  (tag, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <div className="w-4 h-4 rounded-full bg-[#2B7FFF]/15 flex items-center justify-center shrink-0">
+                        <CheckCircle2 size={9} className="text-[#2B7FFF]/80" />
+                      </div>
+                      <span className="text-[11px] text-white/50">{tag}</span>
                     </div>
-                    <span className="text-[11px] text-white/50">{tag}</span>
-                  </div>
-                ))}
+                  ),
+                )}
               </div>
             </div>
           </div>
@@ -1630,7 +1611,9 @@ export default function ContactPage() {
               <div className="hidden md:block absolute top-0 right-0 w-20 h-20 bg-[#2B7FFF]/8 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
               <div className="relative z-10">
                 <div className="w-8 h-8 rounded-lg bg-[#2B7FFF]/15 flex items-center justify-center mb-3 border border-[#2B7FFF]/20">
-                  <span className="text-[#2B7FFF] font-bold text-sm">{index + 1}</span>
+                  <span className="text-[#2B7FFF] font-bold text-sm">
+                    {index + 1}
+                  </span>
                 </div>
                 <h3 className="text-base text-white mb-2 leading-snug font-bold">
                   {faq.q}

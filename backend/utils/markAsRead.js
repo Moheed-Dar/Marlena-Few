@@ -16,7 +16,7 @@ export const markAsRead = async (Model, id) => {
   const updatedDoc = await Model.findByIdAndUpdate(
     id,
     { isRead: true },
-    { new: true, runValidators: true } // new: true se updated doc return hoga
+    { new : true, runValidators: true } // new : true se updated doc return hoga
   );
 
   // 3. Agar document nahi mili

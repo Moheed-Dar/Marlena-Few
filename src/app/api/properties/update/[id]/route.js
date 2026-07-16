@@ -190,7 +190,7 @@
 //     updateData.updatedBy = user._id;
 
 //     const updatedProperty = await Property.findByIdAndUpdate(id, updateData, {
-//       new: true,
+//       new : true,
 //       runValidators: true,
 //     });
 
@@ -504,7 +504,7 @@ const patchProperty = async (request, context, user) => {
 
     // Note: Cannot use .lean() here because runValidators and .populate() require Mongoose Document
     const updatedProperty = await Property.findByIdAndUpdate(id, updateData, {
-      new: true,
+      new : true,
       runValidators: true,
     });
 

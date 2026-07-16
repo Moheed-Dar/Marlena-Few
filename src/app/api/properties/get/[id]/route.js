@@ -41,7 +41,7 @@ const getPropertyById = async (request, context) => {
     // 2. DATABASE FETCH + ATOMIC VIEW INCREMENT
     // ==========================================
     // ✅ $inc is atomic: Race condition nahi hogi
-    // ✅ new: true: Updated document (viewsCount + 1) return hoga
+    // ✅ new : true: Updated document (viewsCount + 1) return hoga
     // ✅ lean(): Fast plain JS object return karega
     const property = await Property.findOneAndUpdate(
       { 
@@ -50,7 +50,7 @@ const getPropertyById = async (request, context) => {
       },
       { $inc: { viewsCount: 1 } }, // ✅ Safe View Counting
       { 
-        returnDocument: 'after', // Return updated document
+        returnDocument: 'after',
         runValidators: false 
       }
     )

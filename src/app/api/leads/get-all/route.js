@@ -263,6 +263,7 @@ export async function GET(request) {
       {
         success: true,
         message: "Leads fetched successfully",
+        total: totalLeads,
         data: leads,
         pagination,
         stats,

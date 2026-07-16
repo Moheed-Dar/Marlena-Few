@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
@@ -35,8 +35,15 @@ const inter = Inter({
 });
 
 const PROPERTY_TYPES = [
-  "all", "house", "apartment", "villa", "penthouse",
-  "plot", "commercial", "flat", "studio",
+  "all",
+  "house",
+  "apartment",
+  "villa",
+  "penthouse",
+  "plot",
+  "commercial",
+  "flat",
+  "studio",
 ];
 
 const PRICE_TYPES = [
@@ -62,7 +69,8 @@ const getSafeImg = (img) => {
   return null;
 };
 
-const PLACEHOLDER = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80";
+const PLACEHOLDER =
+  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80";
 
 // ============================================
 // HIGHLIGHT MATCHED TEXT
@@ -71,16 +79,21 @@ const HighlightText = ({ text, query }) => {
   if (!query || !query.trim()) return <>{text}</>;
   const words = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
   if (words.length === 0) return <>{text}</>;
-  const regex = new RegExp(`(${words.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, "gi");
+  const regex = new RegExp(
+    `(${words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`,
+    "gi",
+  );
   const parts = text.split(regex);
   return (
     <>
       {parts.map((part, i) =>
         regex.test(part) ? (
-          <span key={i} className="text-[#2B7FFF] font-semibold">{part}</span>
+          <span key={i} className="text-[#2B7FFF] font-semibold">
+            {part}
+          </span>
         ) : (
           <span key={i}>{part}</span>
-        )
+        ),
       )}
     </>
   );
@@ -99,7 +112,11 @@ const DarkSelect = ({ value, onChange, options, className = "" }) => (
     >
       {options}
     </select>
-    <ChevronDown size={14} strokeWidth={2.5} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none transition-transform duration-200" />
+    <ChevronDown
+      size={14}
+      strokeWidth={2.5}
+      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none transition-transform duration-200"
+    />
   </div>
 );
 
@@ -137,7 +154,8 @@ export default function PropertiesPage() {
       setLoading(true);
       let url = `/api/properties/get-all?page=${pageNum}&limit=${limit}&sortBy=${sortBy}&sortOrder=${sortOrder}`;
       if (priceType) url += `&priceType=${priceType}`;
-      if (propertyType && propertyType !== "all") url += `&propertyType=${propertyType}`;
+      if (propertyType && propertyType !== "all")
+        url += `&propertyType=${propertyType}`;
       const res = await axios.get(url);
       setProperties(res.data?.data || []);
       setPagination(res.data?.pagination || null);
@@ -159,12 +177,18 @@ export default function PropertiesPage() {
   const matchProperty = useCallback((p, words) => {
     const title = (p.title || "").toLowerCase();
     const location = (p.location || p.city || "").toLowerCase();
-    return words.every((word) => title.includes(word) || location.includes(word));
+    return words.every(
+      (word) => title.includes(word) || location.includes(word),
+    );
   }, []);
 
   const filteredProperties = useMemo(() => {
     if (!search.trim()) return properties;
-    const searchWords = search.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    const searchWords = search
+      .toLowerCase()
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
     if (searchWords.length === 0) return properties;
     return properties.filter((p) => matchProperty(p, searchWords));
   }, [properties, search, matchProperty]);
@@ -184,8 +208,12 @@ export default function PropertiesPage() {
   // ============================================
   useEffect(() => {
     if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-    debounceTimerRef.current = setTimeout(() => { setSearch(searchInput); }, 300);
-    return () => { if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current); };
+    debounceTimerRef.current = setTimeout(() => {
+      setSearch(searchInput);
+    }, 300);
+    return () => {
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    };
   }, [searchInput]);
 
   // ============================================
@@ -193,7 +221,12 @@ export default function PropertiesPage() {
   // ============================================
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target) && searchInputRef.current && !searchInputRef.current.contains(e.target)) {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(e.target) &&
+        searchInputRef.current &&
+        !searchInputRef.current.contains(e.target)
+      ) {
         setShowSuggestions(false);
       }
     };
@@ -201,20 +234,40 @@ export default function PropertiesPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSearch = (e) => { e.preventDefault(); setSearch(searchInput); setShowSuggestions(false); };
-  const handleClearSearch = () => { setSearchInput(""); setSearch(""); setShowSuggestions(false); searchInputRef.current?.focus(); };
-  const handleSuggestionClick = () => { setShowSuggestions(false); };
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setSearch(searchInput);
+    setShowSuggestions(false);
+  };
+  const handleClearSearch = () => {
+    setSearchInput("");
+    setSearch("");
+    setShowSuggestions(false);
+    searchInputRef.current?.focus();
+  };
+  const handleSuggestionClick = () => {
+    setShowSuggestions(false);
+  };
 
   const toggleLike = (id, e) => {
     e.preventDefault();
     e.stopPropagation();
-    setLikedIds((prev) => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next; });
+    setLikedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   };
 
   const hasActiveFilters = propertyType !== "all" || priceType || search;
   const clearAllFilters = () => {
-    setPropertyType("all"); setPriceType(""); setSearch(""); setSearchInput("");
-    setSortBy("createdAt"); setSortOrder("desc");
+    setPropertyType("all");
+    setPriceType("");
+    setSearch("");
+    setSearchInput("");
+    setSortBy("createdAt");
+    setSortOrder("desc");
   };
 
   // ============================================
@@ -251,7 +304,10 @@ export default function PropertiesPage() {
   // PROPERTY CARD (GRID)
   // ============================================
   const PropertyCard = ({ property }) => {
-    const img = getSafeImg(property.thumbnail) || getSafeImg(property.images?.[0]) || PLACEHOLDER;
+    const img =
+      getSafeImg(property.thumbnail) ||
+      getSafeImg(property.images?.[0]) ||
+      PLACEHOLDER;
     const isLiked = likedIds.has(property._id);
 
     return (
@@ -286,8 +342,16 @@ export default function PropertiesPage() {
                 {property.priceType}
               </span>
             </div>
-            <button onClick={(e) => toggleLike(property._id, e)} className="w-9 h-9 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-md border border-white/10 hover:bg-black/50 transition-all">
-              <Heart size={15} className={isLiked ? "fill-red-400 text-red-400" : "text-white/70"} />
+            <button
+              onClick={(e) => toggleLike(property._id, e)}
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-md border border-white/10 hover:bg-black/50 transition-all"
+            >
+              <Heart
+                size={15}
+                className={
+                  isLiked ? "fill-red-400 text-red-400" : "text-white/70"
+                }
+              />
             </button>
           </div>
 
@@ -296,19 +360,26 @@ export default function PropertiesPage() {
               {property.bedrooms > 0 && (
                 <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-black/40 backdrop-blur-md rounded-lg border border-white/10">
                   <Bed size={12} className="text-[#2B7FFF]/80" />
-                  <span className="text-white text-xs font-semibold">{property.bedrooms}</span>
+                  <span className="text-white text-xs font-semibold">
+                    {property.bedrooms}
+                  </span>
                 </div>
               )}
               {property.bathrooms > 0 && (
                 <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-black/40 backdrop-blur-md rounded-lg border border-white/10">
                   <Bath size={12} className="text-[#2B7FFF]/80" />
-                  <span className="text-white text-xs font-semibold">{property.bathrooms}</span>
+                  <span className="text-white text-xs font-semibold">
+                    {property.bathrooms}
+                  </span>
                 </div>
               )}
               {(property.areaSize || property.area) > 0 && (
                 <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-black/40 backdrop-blur-md rounded-lg border border-white/10">
                   <Maximize size={12} className="text-[#2B7FFF]/80" />
-                  <span className="text-white text-xs font-semibold">{property.areaSize || property.area} {property.areaUnit || "sqft"}</span>
+                  <span className="text-white text-xs font-semibold">
+                    {property.areaSize || property.area}{" "}
+                    {property.areaUnit || "sqft"}
+                  </span>
                 </div>
               )}
             </div>
@@ -319,18 +390,29 @@ export default function PropertiesPage() {
 
             <div className="flex items-center gap-1.5 text-white/70 text-sm mb-4">
               <MapPin size={13} className="text-[#2B7FFF]/70 shrink-0" />
-              <span className="truncate">{property.location || property.city}</span>
+              <span className="truncate">
+                {property.location || property.city}
+              </span>
             </div>
 
             <div className="flex items-end justify-between">
               <div>
                 <p className="text-2xl text-transparent bg-clip-text bg-linear-to-r from-[#8DC5FF] via-[#5AA8FF] to-[#2B7FFF] leading-none font-inter">
-                  {property.currency === "PKR" ? "Rs" : "$"} {Number(property.price)?.toLocaleString()}
+                  {property.currency === "PKR" ? "Rs" : "$"}{" "}
+                  {Number(property.price)?.toLocaleString()}
                 </p>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className={`inline-block w-2 h-2 rounded-full ${property.status === "available" ? "bg-emerald-400" : property.status === "sold" ? "bg-red-400" : "bg-[#2B7FFF]"}`} />
-                  <span className="text-white/60 text-xs capitalize">{property.status}</span>
-                  {property.viewsCount > 0 && <span className="text-white/40 text-xs">· {property.viewsCount} views</span>}
+                  <span
+                    className={`inline-block w-2 h-2 rounded-full ${property.status === "available" ? "bg-emerald-400" : property.status === "sold" ? "bg-red-400" : "bg-[#2B7FFF]"}`}
+                  />
+                  <span className="text-white/60 text-xs capitalize">
+                    {property.status}
+                  </span>
+                  {property.viewsCount > 0 && (
+                    <span className="text-white/40 text-xs">
+                      · {property.viewsCount} views
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="w-9 h-9 flex items-center justify-center rounded-xl bg-[#2B7FFF] text-white opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 shadow-lg shadow-[#2B7FFF]/30">
@@ -347,7 +429,10 @@ export default function PropertiesPage() {
   // PROPERTY CARD (LIST)
   // ============================================
   const PropertyListItem = ({ property }) => {
-    const img = getSafeImg(property.thumbnail) || getSafeImg(property.images?.[0]) || PLACEHOLDER;
+    const img =
+      getSafeImg(property.thumbnail) ||
+      getSafeImg(property.images?.[0]) ||
+      PLACEHOLDER;
     const isLiked = likedIds.has(property._id);
 
     return (
@@ -372,18 +457,29 @@ export default function PropertiesPage() {
             <div className="flex gap-1.5">
               {property.isFeatured && (
                 <span className="px-2 py-0.5 bg-[#2B7FFF]/90 text-white text-[9px] font-bold rounded-full uppercase tracking-wider">
-                  <Crown size={8} className="fill-white inline mr-0.5" />Featured
+                  <Crown size={8} className="fill-white inline mr-0.5" />
+                  Featured
                 </span>
               )}
               <span className="px-2 py-0.5 bg-white/15 backdrop-blur-md text-white/90 text-[9px] font-bold rounded-full uppercase tracking-wider border border-white/10">
                 {property.priceType}
               </span>
-              <span className={`px-2 py-0.5 text-[9px] font-bold rounded-full uppercase tracking-wider ${property.status === "available" ? "bg-emerald-500/90 text-white" : "bg-red-500/90 text-white"}`}>
+              <span
+                className={`px-2 py-0.5 text-[9px] font-bold rounded-full uppercase tracking-wider ${property.status === "available" ? "bg-emerald-500/90 text-white" : "bg-red-500/90 text-white"}`}
+              >
                 {property.status}
               </span>
             </div>
-            <button onClick={(e) => toggleLike(property._id, e)} className="w-8 h-8 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-md border border-white/10 hover:bg-black/50 transition-all">
-              <Heart size={14} className={isLiked ? "fill-red-400 text-red-400" : "text-white/70"} />
+            <button
+              onClick={(e) => toggleLike(property._id, e)}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-md border border-white/10 hover:bg-black/50 transition-all"
+            >
+              <Heart
+                size={14}
+                className={
+                  isLiked ? "fill-red-400 text-red-400" : "text-white/70"
+                }
+              />
             </button>
           </div>
 
@@ -395,17 +491,29 @@ export default function PropertiesPage() {
                 </h3>
                 <div className="flex items-center gap-1.5 text-white/60 text-xs">
                   <MapPin size={11} className="text-[#2B7FFF]/70" />
-                  <span className="truncate">{property.location || property.city}</span>
+                  <span className="truncate">
+                    {property.location || property.city}
+                  </span>
                   <span className="text-white/20 mx-1">·</span>
                   <div className="flex items-center gap-2">
-                    {property.bedrooms > 0 && <span>{property.bedrooms} Bed</span>}
-                    {property.bathrooms > 0 && <span>{property.bathrooms} Bath</span>}
-                    {(property.areaSize || property.area) > 0 && <span>{property.areaSize || property.area} {property.areaUnit || "sqft"}</span>}
+                    {property.bedrooms > 0 && (
+                      <span>{property.bedrooms} Bed</span>
+                    )}
+                    {property.bathrooms > 0 && (
+                      <span>{property.bathrooms} Bath</span>
+                    )}
+                    {(property.areaSize || property.area) > 0 && (
+                      <span>
+                        {property.areaSize || property.area}{" "}
+                        {property.areaUnit || "sqft"}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
               <p className="text-xl text-transparent bg-clip-text bg-linear-to-r from-[#8DC5FF] to-[#2B7FFF] leading-none font-inter">
-                {property.currency === "PKR" ? "Rs" : "$"} {Number(property.price)?.toLocaleString()}
+                {property.currency === "PKR" ? "Rs" : "$"}{" "}
+                {Number(property.price)?.toLocaleString()}
               </p>
             </div>
           </div>
@@ -434,7 +542,7 @@ export default function PropertiesPage() {
           className="absolute inset-0 opacity-[0.04]"
           style={{
             backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
-            backgroundSize: '40px 40px',
+            backgroundSize: "40px 40px",
           }}
         />
         <div className="absolute inset-0 flex items-center justify-center opacity-[0.06]">
@@ -467,7 +575,8 @@ export default function PropertiesPage() {
               Our Properties
             </h1>
             <p className="text-white/70 text-sm sm:text-base leading-relaxed mb-8">
-              Discover your perfect property from our curated collection of premium real estate listings.
+              Discover your perfect property from our curated collection of
+              premium real estate listings.
             </p>
           </div>
 
@@ -479,13 +588,21 @@ export default function PropertiesPage() {
               <div className="relative flex-1 min-w-45">
                 <form onSubmit={handleSearch}>
                   <div className="relative flex items-center bg-white/10 border border-white/15 rounded-2xl focus-within:border-[#2B7FFF]/50 focus-within:ring-2 focus-within:ring-[#2B7FFF]/20 transition-all">
-                    <Search size={16} className="absolute left-3.5 text-white/40" />
+                    <Search
+                      size={16}
+                      className="absolute left-3.5 text-white/40"
+                    />
                     <input
                       ref={searchInputRef}
                       type="text"
                       value={searchInput}
-                      onChange={(e) => { setSearchInput(e.target.value); setShowSuggestions(true); }}
-                      onFocus={() => { if (searchInput.trim()) setShowSuggestions(true); }}
+                      onChange={(e) => {
+                        setSearchInput(e.target.value);
+                        setShowSuggestions(true);
+                      }}
+                      onFocus={() => {
+                        if (searchInput.trim()) setShowSuggestions(true);
+                      }}
                       placeholder="Search by title or location..."
                       className="w-full pl-9 pr-20 py-3 text-sm bg-transparent text-white placeholder-white/30 focus:outline-none"
                       autoComplete="off"
@@ -498,7 +615,10 @@ export default function PropertiesPage() {
                         className="absolute right-12 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/15 transition-colors group"
                         title="Clear search"
                       >
-                        <X size={14} className="text-white/50 group-hover:text-white/80 transition-colors" />
+                        <X
+                          size={14}
+                          className="text-white/50 group-hover:text-white/80 transition-colors"
+                        />
                       </button>
                     )}
                     {/* Submit button with Search icon */}
@@ -525,35 +645,79 @@ export default function PropertiesPage() {
                     >
                       <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/5">
                         <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.15em]">
-                          {suggestions.length} suggestion{suggestions.length !== 1 ? "s" : ""} found
+                          {suggestions.length} suggestion
+                          {suggestions.length !== 1 ? "s" : ""} found
                         </span>
-                        <button onClick={() => setShowSuggestions(false)} className="w-5 h-5 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors">
+                        <button
+                          onClick={() => setShowSuggestions(false)}
+                          className="w-5 h-5 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors"
+                        >
                           <X size={11} className="text-white/30" />
                         </button>
                       </div>
-                      <div className="max-h-80 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(43,127,255,0.3) transparent" }}>
+                      <div
+                        className="max-h-80 overflow-y-auto"
+                        style={{
+                          scrollbarWidth: "thin",
+                          scrollbarColor: "rgba(43,127,255,0.3) transparent",
+                        }}
+                      >
                         {suggestions.map((property) => {
-                          const img = getSafeImg(property.thumbnail) || getSafeImg(property.images?.[0]) || PLACEHOLDER;
+                          const img =
+                            getSafeImg(property.thumbnail) ||
+                            getSafeImg(property.images?.[0]) ||
+                            PLACEHOLDER;
                           return (
-                            <Link key={property._id} href={`/properties/${property._id}`} onClick={handleSuggestionClick} className="flex items-center gap-3.5 px-4 py-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-b-0">
+                            <Link
+                              key={property._id}
+                              href={`/properties/${property._id}`}
+                              onClick={handleSuggestionClick}
+                              className="flex items-center gap-3.5 px-4 py-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-b-0"
+                            >
                               <div className="relative w-16 h-12 rounded-lg overflow-hidden shrink-0 bg-white/5 shadow-lg shadow-black/30 ring-1 ring-white/10">
-                                <Image src={img} alt="" fill className="object-cover" sizes="64px" unoptimized />
+                                <Image
+                                  src={img}
+                                  alt=""
+                                  fill
+                                  className="object-cover"
+                                  sizes="64px"
+                                  unoptimized
+                                />
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-semibold text-white leading-tight line-clam-1 font-inter">
-                                  <HighlightText text={property.title} query={searchInput} />
+                                  <HighlightText
+                                    text={property.title}
+                                    query={searchInput}
+                                  />
                                 </p>
                                 <div className="flex items-center gap-1.5 mt-1">
-                                  <MapPin size={10} className="text-[#2B7FFF]/70 shrink-0" />
+                                  <MapPin
+                                    size={10}
+                                    className="text-[#2B7FFF]/70 shrink-0"
+                                  />
                                   <span className="text-[11px] text-white/50 truncate">
-                                    <HighlightText text={property.location || property.city || "N/A"} query={searchInput} />
+                                    <HighlightText
+                                      text={
+                                        property.location ||
+                                        property.city ||
+                                        "N/A"
+                                      }
+                                      query={searchInput}
+                                    />
                                   </span>
                                 </div>
                               </div>
                               <div className="flex items-center gap-2.5 shrink-0">
-                                <span className="text-xs font-bold text-white/70">{property.currency === "PKR" ? "Rs" : "$"} {Number(property.price)?.toLocaleString()}</span>
+                                <span className="text-xs font-bold text-white/70">
+                                  {property.currency === "PKR" ? "Rs" : "$"}{" "}
+                                  {Number(property.price)?.toLocaleString()}
+                                </span>
                                 <div className="w-6 h-6 rounded-md bg-[#2B7FFF]/10 flex items-center justify-center">
-                                  <ArrowUpRight size={11} className="text-[#2B7FFF]/60" />
+                                  <ArrowUpRight
+                                    size={11}
+                                    className="text-[#2B7FFF]/60"
+                                  />
                                 </div>
                               </div>
                             </Link>
@@ -562,11 +726,15 @@ export default function PropertiesPage() {
                       </div>
                       <div className="border-t border-white/5">
                         <button
-                          onClick={() => { setSearch(searchInput); setShowSuggestions(false); }}
+                          onClick={() => {
+                            setSearch(searchInput);
+                            setShowSuggestions(false);
+                          }}
                           className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold text-[#2B7FFF] hover:bg-[#2B7FFF]/10 transition-colors"
                         >
                           <Search size={12} />
-                          View all results for &quot;{searchInput.slice(0, 30)}{searchInput.length > 30 ? "..." : ""}&quot;
+                          View all results for &quot;{searchInput.slice(0, 30)}
+                          {searchInput.length > 30 ? "..." : ""}&quot;
                         </button>
                       </div>
                     </motion.div>
@@ -574,30 +742,38 @@ export default function PropertiesPage() {
                 </AnimatePresence>
 
                 <AnimatePresence>
-                  {showSuggestions && searchInput.trim().length > 0 && suggestions.length === 0 && !loading && (
-                    <motion.div
-                      ref={suggestionsRef}
-                      initial={{ opacity: 0, y: -8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute top-full left-0 right-0 mt-2 bg-[#1b3454]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden z-50"
-                    >
-                      <div className="flex flex-col items-center justify-center py-8 px-4">
-                        <div className="w-10 h-10 rounded-full bg-[#2B7FFF]/5 flex items-center justify-center mb-3 border border-[#2B7FFF]/10">
-                          <Search size={16} className="text-[#2B7FFF]/40" />
+                  {showSuggestions &&
+                    searchInput.trim().length > 0 &&
+                    suggestions.length === 0 &&
+                    !loading && (
+                      <motion.div
+                        ref={suggestionsRef}
+                        initial={{ opacity: 0, y: -8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -8 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute top-full left-0 right-0 mt-2 bg-[#1b3454]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden z-50"
+                      >
+                        <div className="flex flex-col items-center justify-center py-8 px-4">
+                          <div className="w-10 h-10 rounded-full bg-[#2B7FFF]/5 flex items-center justify-center mb-3 border border-[#2B7FFF]/10">
+                            <Search size={16} className="text-[#2B7FFF]/40" />
+                          </div>
+                          <p className="text-sm text-white/50 font-medium">
+                            No matches found
+                          </p>
+                          <p className="text-[11px] text-white/30 mt-1">
+                            Try different keywords
+                          </p>
                         </div>
-                        <p className="text-sm text-white/50 font-medium">No matches found</p>
-                        <p className="text-[11px] text-white/30 mt-1">Try different keywords</p>
-                      </div>
-                    </motion.div>
-                  )}
+                      </motion.div>
+                    )}
                 </AnimatePresence>
               </div>
 
               {/* Total Count Badge */}
               <div className="shrink-0 px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full border border-white/10 text-white/80 text-xs font-medium whitespace-nowrap">
-                {filteredProperties.length} {filteredProperties.length === 1 ? 'property' : 'properties'}
+                {filteredProperties.length}{" "}
+                {filteredProperties.length === 1 ? "property" : "properties"}
               </div>
 
               {/* Refresh */}
@@ -607,7 +783,10 @@ export default function PropertiesPage() {
                 className="p-2.5 rounded-xl bg-white/10 border border-white/15 text-white/60 hover:text-white hover:bg-white/20 transition-all disabled:opacity-40 shrink-0"
                 title="Refresh listings"
               >
-                <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
+                <RefreshCw
+                  size={18}
+                  className={loading ? "animate-spin" : ""}
+                />
               </button>
 
               {/* Filters Toggle */}
@@ -622,16 +801,24 @@ export default function PropertiesPage() {
                 <SlidersHorizontal size={15} />
                 <span>Filters</span>
                 {hasActiveFilters && (
-                  <span className="w-4 h-4 flex items-center justify-center bg-white text-[#2B7FFF] text-[10px] font-black rounded-full">!</span>
+                  <span className="w-4 h-4 flex items-center justify-center bg-white text-[#2B7FFF] text-[10px] font-black rounded-full">
+                    !
+                  </span>
                 )}
               </button>
 
               {/* Grid/List Toggle */}
               <div className="flex items-center bg-white/10 rounded-xl p-1 border border-white/10 shrink-0">
-                <button onClick={() => setViewMode("grid")} className={`p-1.5 rounded-lg transition-colors ${viewMode === "grid" ? "bg-[#2B7FFF] text-white shadow-lg shadow-[#2B7FFF]/25" : "text-white/40 hover:text-white/70"}`}>
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`p-1.5 rounded-lg transition-colors ${viewMode === "grid" ? "bg-[#2B7FFF] text-white shadow-lg shadow-[#2B7FFF]/25" : "text-white/40 hover:text-white/70"}`}
+                >
                   <Grid3X3 size={15} />
                 </button>
-                <button onClick={() => setViewMode("list")} className={`p-1.5 rounded-lg transition-colors ${viewMode === "list" ? "bg-[#2B7FFF] text-white shadow-lg shadow-[#2B7FFF]/25" : "text-white/40 hover:text-white/70"}`}>
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`p-1.5 rounded-lg transition-colors ${viewMode === "list" ? "bg-[#2B7FFF] text-white shadow-lg shadow-[#2B7FFF]/25" : "text-white/40 hover:text-white/70"}`}
+                >
                   <List size={15} />
                 </button>
               </div>
@@ -640,9 +827,19 @@ export default function PropertiesPage() {
               <DarkSelect
                 className="w-36 shrink-0"
                 value={`${sortBy}-${sortOrder}`}
-                onChange={(e) => { const [f, o] = e.target.value.split("-"); setSortBy(f); setSortOrder(o); }}
+                onChange={(e) => {
+                  const [f, o] = e.target.value.split("-");
+                  setSortBy(f);
+                  setSortOrder(o);
+                }}
                 options={SORT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={`${opt.value}-${opt.value === "price" ? "asc" : "desc"}`} style={darkOptionStyle}>{opt.label}</option>
+                  <option
+                    key={opt.value}
+                    value={`${opt.value}-${opt.value === "price" ? "asc" : "desc"}`}
+                    style={darkOptionStyle}
+                  >
+                    {opt.label}
+                  </option>
                 ))}
               />
             </div>
@@ -653,22 +850,33 @@ export default function PropertiesPage() {
                 {propertyType !== "all" && (
                   <span className="flex items-center gap-1 px-2.5 py-1 bg-[#2B7FFF]/20 text-[#6BABFF] text-[11px] font-semibold rounded-full capitalize border border-[#2B7FFF]/25">
                     {propertyType}
-                    <button onClick={() => setPropertyType("all")}><X size={9} /></button>
+                    <button onClick={() => setPropertyType("all")}>
+                      <X size={9} />
+                    </button>
                   </span>
                 )}
                 {priceType && (
                   <span className="flex items-center gap-1 px-2.5 py-1 bg-[#2B7FFF]/20 text-[#6BABFF] text-[11px] font-semibold rounded-full capitalize border border-[#2B7FFF]/25">
                     {priceType}
-                    <button onClick={() => setPriceType("")}><X size={9} /></button>
+                    <button onClick={() => setPriceType("")}>
+                      <X size={9} />
+                    </button>
                   </span>
                 )}
                 {search && (
                   <span className="flex items-center gap-1 px-2.5 py-1 bg-[#2B7FFF]/20 text-[#6BABFF] text-[11px] font-semibold rounded-full border border-[#2B7FFF]/25">
                     &quot;{search.slice(0, 15)}&quot;
-                    <button onClick={handleClearSearch}><X size={9} /></button>
+                    <button onClick={handleClearSearch}>
+                      <X size={9} />
+                    </button>
                   </span>
                 )}
-                <button onClick={clearAllFilters} className="text-[11px] text-red-400 font-semibold hover:underline">Clear all</button>
+                <button
+                  onClick={clearAllFilters}
+                  className="text-[11px] text-red-400 font-semibold hover:underline"
+                >
+                  Clear all
+                </button>
               </div>
             )}
           </div>
@@ -688,42 +896,72 @@ export default function PropertiesPage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-[11px] font-bold text-white/60 uppercase tracking-wider mb-1.5">Property Type</label>
+                  <label className="block text-[11px] font-bold text-white/60 uppercase tracking-wider mb-1.5">
+                    Property Type
+                  </label>
                   <DarkSelect
                     className="w-full [&>select]:py-2.5 [&>select]:rounded-xl [&>select]:text-sm [&>select]:text-white/80"
                     value={propertyType}
                     onChange={(e) => setPropertyType(e.target.value)}
                     options={PROPERTY_TYPES.map((t) => (
-                      <option key={t} value={t} style={darkOptionStyle} className="capitalize">
+                      <option
+                        key={t}
+                        value={t}
+                        style={darkOptionStyle}
+                        className="capitalize"
+                      >
                         {t === "all" ? "All Types" : t}
                       </option>
                     ))}
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold text-white/60 uppercase tracking-wider mb-1.5">Listing Type</label>
+                  <label className="block text-[11px] font-bold text-white/60 uppercase tracking-wider mb-1.5">
+                    Listing Type
+                  </label>
                   <DarkSelect
                     className="w-full [&>select]:py-2.5 [&>select]:rounded-xl [&>select]:text-sm [&>select]:text-white/80"
                     value={priceType}
                     onChange={(e) => setPriceType(e.target.value)}
                     options={PRICE_TYPES.map((t) => (
-                      <option key={t.value} value={t.value} style={darkOptionStyle}>{t.label}</option>
+                      <option
+                        key={t.value}
+                        value={t.value}
+                        style={darkOptionStyle}
+                      >
+                        {t.label}
+                      </option>
                     ))}
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold text-white/60 uppercase tracking-wider mb-1.5">Sort By</label>
+                  <label className="block text-[11px] font-bold text-white/60 uppercase tracking-wider mb-1.5">
+                    Sort By
+                  </label>
                   <DarkSelect
                     className="w-full [&>select]:py-2.5 [&>select]:rounded-xl [&>select]:text-sm [&>select]:text-white/80"
                     value={`${sortBy}-${sortOrder}`}
-                    onChange={(e) => { const [f, o] = e.target.value.split("-"); setSortBy(f); setSortOrder(o); }}
+                    onChange={(e) => {
+                      const [f, o] = e.target.value.split("-");
+                      setSortBy(f);
+                      setSortOrder(o);
+                    }}
                     options={SORT_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={`${opt.value}-${opt.value === "price" ? "asc" : "desc"}`} style={darkOptionStyle}>{opt.label}</option>
+                      <option
+                        key={opt.value}
+                        value={`${opt.value}-${opt.value === "price" ? "asc" : "desc"}`}
+                        style={darkOptionStyle}
+                      >
+                        {opt.label}
+                      </option>
                     ))}
                   />
                 </div>
                 <div className="flex items-end">
-                  <button onClick={clearAllFilters} className="w-full px-4 py-2.5 border border-white/15 text-white/60 text-sm font-semibold rounded-xl hover:bg-white/10 transition-colors">
+                  <button
+                    onClick={clearAllFilters}
+                    className="w-full px-4 py-2.5 border border-white/15 text-white/60 text-sm font-semibold rounded-xl hover:bg-white/10 transition-colors"
+                  >
                     Reset
                   </button>
                 </div>
@@ -738,11 +976,15 @@ export default function PropertiesPage() {
         {loading ? (
           viewMode === "grid" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+              {Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
             </div>
           ) : (
             <div className="flex flex-col gap-4">
-              {Array.from({ length: 4 }).map((_, i) => <SkeletonList key={i} />)}
+              {Array.from({ length: 4 }).map((_, i) => (
+                <SkeletonList key={i} />
+              ))}
             </div>
           )
         ) : filteredProperties.length === 0 ? (
@@ -750,12 +992,19 @@ export default function PropertiesPage() {
             <div className="w-20 h-20 rounded-full bg-[#2B7FFF]/10 flex items-center justify-center mb-4 border border-[#2B7FFF]/15">
               <Search size={28} className="text-[#2B7FFF]/40" />
             </div>
-            <h3 className="text-lg text-white mb-1 font-inter">No Properties Found</h3>
+            <h3 className="text-lg text-white mb-1 font-inter">
+              No Properties Found
+            </h3>
             <p className="text-white/60 text-sm max-w-sm mb-4">
-              {hasActiveFilters ? `No match found for "${search}". Try different keywords or clear filters.` : "No properties listed yet."}
+              {hasActiveFilters
+                ? `No match found for "${search}". Try different keywords or clear filters.`
+                : "No properties listed yet."}
             </p>
             {hasActiveFilters && (
-              <button onClick={clearAllFilters} className="px-5 py-2.5 bg-[#2B7FFF] text-white text-sm font-semibold rounded-xl hover:bg-[#4D94FF] transition-colors shadow-lg shadow-[#2B7FFF]/25">
+              <button
+                onClick={clearAllFilters}
+                className="px-5 py-2.5 bg-[#2B7FFF] text-white text-sm font-semibold rounded-xl hover:bg-[#4D94FF] transition-colors shadow-lg shadow-[#2B7FFF]/25"
+              >
                 Clear All Filters
               </button>
             )}
@@ -777,22 +1026,48 @@ export default function PropertiesPage() {
         {/* ===== PAGINATION ===== */}
         {pagination && pagination.totalPages > 1 && (
           <div className="flex items-center justify-center gap-2 mt-12">
-            <button onClick={() => fetchProperties(page - 1)} disabled={!pagination.hasPrevPage} className="w-10 h-10 flex items-center justify-center rounded-xl border border-white/15 text-white/40 hover:border-[#2B7FFF]/50 hover:text-[#2B7FFF] disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+            <button
+              onClick={() => fetchProperties(page - 1)}
+              disabled={!pagination.hasPrevPage}
+              className="w-10 h-10 flex items-center justify-center rounded-xl border border-white/15 text-white/40 hover:border-[#2B7FFF]/50 hover:text-[#2B7FFF] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
               <ChevronLeft size={18} />
             </button>
             {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
-              .filter((p) => p === 1 || p === pagination.totalPages || Math.abs(p - page) <= 1)
-              .reduce((acc, p, i, arr) => { if (i > 0 && p - arr[i - 1] > 1) acc.push("..."); acc.push(p); return acc; }, [])
+              .filter(
+                (p) =>
+                  p === 1 ||
+                  p === pagination.totalPages ||
+                  Math.abs(p - page) <= 1,
+              )
+              .reduce((acc, p, i, arr) => {
+                if (i > 0 && p - arr[i - 1] > 1) acc.push("...");
+                acc.push(p);
+                return acc;
+              }, [])
               .map((item, i) =>
                 item === "..." ? (
-                  <span key={`d${i}`} className="w-10 h-10 flex items-center justify-center text-white/20 text-sm">...</span>
+                  <span
+                    key={`d${i}`}
+                    className="w-10 h-10 flex items-center justify-center text-white/20 text-sm"
+                  >
+                    ...
+                  </span>
                 ) : (
-                  <button key={item} onClick={() => fetchProperties(item)} className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-semibold transition-colors ${page === item ? "bg-[#2B7FFF] text-white shadow-lg shadow-[#2B7FFF]/25" : "border border-white/15 text-white/50 hover:border-[#2B7FFF]/50 hover:text-[#2B7FFF]"}`}>
+                  <button
+                    key={item}
+                    onClick={() => fetchProperties(item)}
+                    className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-semibold transition-colors ${page === item ? "bg-[#2B7FFF] text-white shadow-lg shadow-[#2B7FFF]/25" : "border border-white/15 text-white/50 hover:border-[#2B7FFF]/50 hover:text-[#2B7FFF]"}`}
+                  >
                     {item}
                   </button>
-                )
+                ),
               )}
-            <button onClick={() => fetchProperties(page + 1)} disabled={!pagination.hasNextPage} className="w-10 h-10 flex items-center justify-center rounded-xl border border-white/15 text-white/40 hover:border-[#2B7FFF]/50 hover:text-[#2B7FFF] disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+            <button
+              onClick={() => fetchProperties(page + 1)}
+              disabled={!pagination.hasNextPage}
+              className="w-10 h-10 flex items-center justify-center rounded-xl border border-white/15 text-white/40 hover:border-[#2B7FFF]/50 hover:text-[#2B7FFF] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
               <ChevronRight size={18} />
             </button>
           </div>
