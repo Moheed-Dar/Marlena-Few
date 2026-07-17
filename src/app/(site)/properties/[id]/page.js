@@ -2555,7 +2555,7 @@ export default function PropertyDetailPage() {
                 }`}
                 style={{ transitionDelay: "200ms", transitionProperty: "opacity, transform" }}
               >
-                <div className="bg-[#1b3454] rounded-2xl p-5 sm:p-7 border border-white/10">
+                <div className="bg-[#1b3454] md:block hidden rounded-2xl p-5 sm:p-7 border border-white/10">
                   <h3 className="text-lg sm:text-xl text-white mb-1">
                     Features & Amenities
                   </h3>
