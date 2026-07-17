@@ -7,18 +7,17 @@ export async function GET(request) {
     await dbConnect();
 
     const { searchParams } = new URL(request.url);
-    
+
     // Pagination
     const page = parseInt(searchParams.get('page')) || 1;
     const limit = parseInt(searchParams.get('limit')) || 10;
-    
+
     // Search & Filters
     const search = searchParams.get('search') || '';
     const dateFrom = searchParams.get('dateFrom') || '';
     const dateTo = searchParams.get('dateTo') || '';
-    const isRead = searchParams.get('isRead'); // 'true', 'false', ya empty
-    const isReplied = searchParams.get('isReplied'); // 'true', 'false', ya empty
-    
+    const isRead = searchParams.get('isRead');
+
     // Sorting
     const sortBy = searchParams.get('sortBy') || 'createdAt';
     const sortOrder = searchParams.get('sortOrder') || 'desc';
@@ -28,7 +27,6 @@ export async function GET(request) {
     // ============================================
     const filter = {};
 
-    // Search Filter (Name, Email, Phone, Message)
     if (search) {
       filter.$or = [
         { name: { $regex: search, $options: 'i' } },
@@ -38,21 +36,12 @@ export async function GET(request) {
       ];
     }
 
-    // Read/Unread Filter
     if (isRead === 'true') {
       filter.isRead = true;
     } else if (isRead === 'false') {
       filter.isRead = false;
     }
 
-    // Replied/Not Replied Filter
-    if (isReplied === 'true') {
-      filter.isReplied = true;
-    } else if (isReplied === 'false') {
-      filter.isReplied = false;
-    }
-
-    // Date Range Filter
     if (dateFrom || dateTo) {
       filter.createdAt = {};
       if (dateFrom) filter.createdAt.$gte = new Date(dateFrom);
@@ -75,23 +64,42 @@ export async function GET(request) {
     // PAGINATION
     // ============================================
     const skip = (page - 1) * limit;
-    const totalContacts = await Contact.countDocuments(filter);
-
-    const contacts = await Contact.find(filter)
-      .sort(sort)
-      .skip(skip)
-      .limit(limit)
-      .lean();
 
     // ============================================
-    // STATS
+    // 🚀 PARALLEL QUERIES + .select() OPTIMIZATION
     // ============================================
+    const [totalContacts, contacts, statsResult] = await Promise.all([
+      Contact.countDocuments(filter),
+
+      // ✅ .select() => Sirf zaroori fields lega (Extra data transfer nahi hoga)
+      Contact.find(filter)
+        .select('name email phone isRead readAt message createdAt')
+        .sort(sort)
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+
+      Contact.aggregate([
+        {
+          $group: {
+            _id: null,
+            total: { $sum: 1 },
+            read: {
+              $sum: { $cond: [{ $eq: ['$isRead', true] }, 1, 0] },
+            },
+            unread: {
+              $sum: { $cond: [{ $eq: ['$isRead', false] }, 1, 0] },
+            },
+          },
+        },
+      ]),
+    ]);
+
+    const statsData = statsResult[0] || { total: 0, read: 0, unread: 0 };
     const stats = {
-      total: totalContacts,
-      unread: await Contact.countDocuments({ isRead: false }),
-      read: await Contact.countDocuments({ isRead: true }),
-      replied: await Contact.countDocuments({ isReplied: true }),
-      pending: await Contact.countDocuments({ isReplied: false }),
+      total: statsData.total,
+      read: statsData.read,
+      unread: statsData.unread,
     };
 
     // ============================================
@@ -113,7 +121,7 @@ export async function GET(request) {
     return NextResponse.json(
       {
         success: true,
-        message: "Contacts fetched successfully",
+        message: 'Contacts fetched successfully',
         total: totalContacts,
         data: contacts,
         pagination,
@@ -121,14 +129,13 @@ export async function GET(request) {
       },
       { status: 200 }
     );
-
   } catch (error) {
-    console.error("GET Contacts Error:", error);
+    console.error('GET Contacts Error:', error);
 
     return NextResponse.json(
       {
         success: false,
-        message: "Internal Server Error while fetching contacts",
+        message: 'Internal Server Error while fetching contacts',
         error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       },
       { status: 500 }

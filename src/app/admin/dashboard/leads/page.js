@@ -1,1515 +1,3 @@
-// 'use client';
-
-// import { useState, useEffect, useCallback } from "react";
-// import {
-//   Search,
-//   Delete,
-//   Eye,
-//   MailCheck,
-//   Filter,
-//   RefreshCw,
-//   X,
-//   Phone,
-//   Mail,
-//   User,
-//   Home,
-//   Calendar,
-//   TrendingUp,
-//   Users,
-//   FileDown,
-//   Info,
-//   CheckCircle,
-//   AlertCircle,
-//   AlertTriangle,
-//   Sparkles,
-//   MessageSquare,
-//   Star,
-//   Check,
-//   XCircle,
-//   FileText,
-//   MapPin,
-//   DollarSign,
-//   Grid3X3,
-//   Building2,
-//   ChevronLeft,
-//   ChevronRight,
-//   BookOpen,
-// } from "lucide-react";
-// import { motion, AnimatePresence } from "framer-motion";
-// import { Playfair_Display, Inter } from "next/font/google";
-// import {
-//   getAllLeads,
-//   getLeadById,
-//   deleteLead,
-//   markLeadAsRead,
-// } from "@/lib/api";
-
-// const playfair = Playfair_Display({
-//   subsets: ["latin"],
-//   variable: "--font-playfair",
-//   display: "swap",
-// });
-
-// const inter = Inter({
-//   subsets: ["latin"],
-//   variable: "--font-inter",
-//   display: "swap",
-// });
-
-// // ============================================
-// // CONSTANTS
-// // ============================================
-// const STATUS_CONFIG = {
-//   new: {
-//     label: "New",
-//     color: "text-blue-400",
-//     bg: "bg-blue-500/15",
-//     border: "border-blue-500/25",
-//     icon: <Sparkles size={12} />,
-//   },
-//   contacted: {
-//     label: "Contacted",
-//     color: "text-orange-400",
-//     bg: "bg-orange-500/15",
-//     border: "border-orange-500/25",
-//     icon: <MessageSquare size={12} />,
-//   },
-//   qualified: {
-//     label: "Qualified",
-//     color: "text-emerald-400",
-//     bg: "bg-emerald-500/15",
-//     border: "border-emerald-500/25",
-//     icon: <Check size={12} />,
-//   },
-//   converted: {
-//     label: "Converted",
-//     color: "text-indigo-400",
-//     bg: "bg-indigo-500/15",
-//     border: "border-indigo-500/25",
-//     icon: <Star size={12} />,
-//   },
-//   lost: {
-//     label: "Lost",
-//     color: "text-red-400",
-//     bg: "bg-red-500/15",
-//     border: "border-red-500/25",
-//     icon: <XCircle size={12} />,
-//   },
-// };
-
-// const SOURCE_CONFIG = {
-//   website: { label: "Website", color: "text-blue-400" },
-//   facebook: { label: "Facebook", color: "text-indigo-400" },
-//   instagram: { label: "Instagram", color: "text-pink-400" },
-//   google: { label: "Google", color: "text-emerald-400" },
-//   referral: { label: "Referral", color: "text-amber-400" },
-//   direct: { label: "Direct", color: "text-gray-400" },
-//   whatsapp: { label: "WhatsApp", color: "text-emerald-400" },
-//   call: { label: "Call", color: "text-orange-400" },
-//   email: { label: "Email", color: "text-blue-400" },
-// };
-
-// // ============================================
-// // HELPERS
-// // ============================================
-// const formatDate = (dateString) => {
-//   if (!dateString) return "N/A";
-//   return new Date(dateString).toLocaleDateString("en-PK", {
-//     year: "numeric",
-//     month: "short",
-//     day: "numeric",
-//     hour: "2-digit",
-//     minute: "2-digit",
-//   });
-// };
-
-// const formatPrice = (price, currency = "PKR") => {
-//   if (!price) return "N/A";
-//   return `${currency} ${Number(price).toLocaleString()}`;
-// };
-
-// // ✅ Helper: Type column mein kya dikhana hai
-// const getLeadTypeDisplay = (lead) => {
-//   if (lead.leadType === "guide_download") {
-//     if (lead.guideType === "buyer") {
-//       return {
-//         label: "Buyer Guide",
-//         icon: <BookOpen size={12} />,
-//         color: "text-cyan-400",
-//         bg: "bg-cyan-500/15",
-//         border: "border-cyan-500/25",
-//       };
-//     }
-//     if (lead.guideType === "seller") {
-//       return {
-//         label: "Seller Guide",
-//         icon: <BookOpen size={12} />,
-//         color: "text-amber-400",
-//         bg: "bg-amber-500/15",
-//         border: "border-amber-500/25",
-//       };
-//     }
-//     return {
-//       label: "Guide Download",
-//       icon: <FileDown size={12} />,
-//       color: "text-emerald-400",
-//       bg: "bg-emerald-500/15",
-//       border: "border-emerald-500/25",
-//     };
-//   }
-
-//   return {
-//     label: "Property Inquiry",
-//     icon: <Home size={12} />,
-//     color: "text-blue-400",
-//     bg: "bg-blue-500/15",
-//     border: "border-blue-500/25",
-//   };
-// };
-
-// // ============================================
-// // MAIN COMPONENT
-// // ============================================
-// export default function LeadsPage() {
-//   // ---- State ----
-//   const [leads, setLeads] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [pagination, setPagination] = useState({
-//     currentPage: 1,
-//     totalPages: 1,
-//     totalRecords: 0,
-//     limit: 10,
-//     hasNextPage: false,
-//     hasPrevPage: false,
-//   });
-//   const [stats, setStats] = useState(null);
-
-//   // Filters
-//   const [searchQuery, setSearchQuery] = useState("");
-//   const [debouncedSearch, setDebouncedSearch] = useState("");
-//   const [statusFilter, setStatusFilter] = useState("all");
-//   const [sourceFilter, setSourceFilter] = useState("all");
-//   const [leadTypeFilter, setLeadTypeFilter] = useState("all");
-//   const [sortBy, setSortBy] = useState("createdAt");
-//   const [sortOrder, setSortOrder] = useState("desc");
-//   const [page, setPage] = useState(0);
-//   const [rowsPerPage, setRowsPerPage] = useState(10);
-
-//   // UI
-//   const [selectedLead, setSelectedLead] = useState(null);
-//   const [detailDrawerOpen, setDetailDrawerOpen] = useState(false);
-//   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-//   const [leadToDelete, setLeadToDelete] = useState(null);
-//   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
-//   const [snackbar, setSnackbar] = useState({
-//     open: false,
-//     message: "",
-//     type: "success",
-//   });
-
-//   // Mark read loading per lead
-//   const [markingReadIds, setMarkingReadIds] = useState(new Set());
-
-//   // ---- Debounce ----
-//   useEffect(() => {
-//     const timer = setTimeout(() => setDebouncedSearch(searchQuery), 500);
-//     return () => clearTimeout(timer);
-//   }, [searchQuery]);
-
-//   // ---- Fetch ----
-//   const fetchLeads = useCallback(async () => {
-//     try {
-//       setLoading(true);
-//       const params = {
-//         page: page + 1,
-//         limit: rowsPerPage,
-//         search: debouncedSearch,
-//         sortBy,
-//         sortOrder,
-//         status: statusFilter !== "all" ? statusFilter : undefined,
-//         source: sourceFilter !== "all" ? sourceFilter : undefined,
-//         leadType: leadTypeFilter !== "all" ? leadTypeFilter : undefined,
-//       };
-//       const response = await getAllLeads(params);
-//       if (response.success) {
-//         setLeads(response.data);
-//         setPagination(response.pagination);
-//         setStats(response.stats);
-//       }
-//     } catch (error) {
-//       console.error("Fetch Leads Error:", error);
-//       showSnackbar("Failed to fetch leads", "error");
-//     } finally {
-//       setLoading(false);
-//     }
-//   }, [
-//     page,
-//     rowsPerPage,
-//     debouncedSearch,
-//     statusFilter,
-//     sourceFilter,
-//     leadTypeFilter,
-//     sortBy,
-//     sortOrder,
-//   ]);
-
-//   useEffect(() => {
-//     fetchLeads();
-//   }, [fetchLeads]);
-
-//   // ---- Snackbar ----
-//   const showSnackbar = (message, type = "success") => {
-//     setSnackbar({ open: true, message, type });
-//   };
-
-//   // ---- Handlers ----
-//   const handleSort = (field) => {
-//     const isAsc = sortBy === field && sortOrder === "asc";
-//     setSortOrder(isAsc ? "desc" : "asc");
-//     setSortBy(field);
-//   };
-
-//   // ✅ View Lead + Auto Mark as Read
-//   const handleViewLead = async (lead, e) => {
-//     if (e) e.stopPropagation();
-//     try {
-//       let leadData = lead;
-
-//       // Agar property ya assignedTo nahi hai toh fresh data lo
-//       if (!lead.property && !lead.assignedTo) {
-//         const response = await getLeadById(lead._id);
-//         if (response.success) {
-//           leadData = response.data;
-//         }
-//       }
-
-//       setSelectedLead(leadData);
-//       setDetailDrawerOpen(true);
-
-//       // ✅ Auto Mark as Read jab user view kare
-//       if (!leadData.isRead) {
-//         handleMarkAsRead(leadData._id);
-//       }
-//     } catch (error) {
-//       console.error("View Lead Error:", error);
-//       showSnackbar("Failed to load lead details", "error");
-//     }
-//   };
-
-//   // ✅ Mark as Read - Properly working
-//   const handleMarkAsRead = async (leadId) => {
-//     // Agar already marking read hai toh dubara na karo
-//     if (markingReadIds.has(leadId)) return;
-
-//     try {
-//       setMarkingReadIds((prev) => new Set(prev).add(leadId));
-
-//       const response = await markLeadAsRead(leadId);
-
-//       if (response.success) {
-//         // Table mein update karo
-//         setLeads((prev) =>
-//           prev.map((l) =>
-//             l._id === leadId
-//               ? { ...l, isRead: true, readAt: new Date().toISOString() }
-//               : l
-//           )
-//         );
-
-//         // Drawer mein agar same lead hai toh bhi update karo
-//         setSelectedLead((prev) => {
-//           if (prev && prev._id === leadId) {
-//             return { ...prev, isRead: true, readAt: new Date().toISOString() };
-//           }
-//           return prev;
-//         });
-
-//         showSnackbar("Marked as read", "success");
-//       }
-//     } catch (error) {
-//       console.error("Mark Read Error:", error);
-//       showSnackbar("Failed to mark as read", "error");
-//     } finally {
-//       setMarkingReadIds((prev) => {
-//         const next = new Set(prev);
-//         next.delete(leadId);
-//         return next;
-//       });
-//     }
-//   };
-
-//   const handleDeleteClick = (lead, e) => {
-//     if (e) e.stopPropagation();
-//     setLeadToDelete(lead);
-//     setDeleteDialogOpen(true);
-//   };
-
-//   const handleConfirmDelete = async () => {
-//     if (!leadToDelete?._id) return;
-//     try {
-//       const response = await deleteLead(leadToDelete._id);
-//       if (response.success) {
-//         setLeads((prev) => prev.filter((l) => l._id !== leadToDelete._id));
-//         setPagination((prev) => ({
-//           ...prev,
-//           totalRecords: prev.totalRecords - 1,
-//         }));
-//         if (stats) {
-//           setStats((prev) => ({
-//             ...prev,
-//             total: prev.total - 1,
-//             [leadToDelete.status]: Math.max(
-//               0,
-//               (prev[leadToDelete.status] || 0) - 1
-//             ),
-//           }));
-//         }
-//         showSnackbar("Lead deleted successfully", "success");
-//         if (selectedLead?._id === leadToDelete._id) {
-//           setDetailDrawerOpen(false);
-//           setSelectedLead(null);
-//         }
-//       }
-//     } catch (error) {
-//       console.error("Delete Error:", error);
-//       showSnackbar(error.message || "Failed to delete lead", "error");
-//     } finally {
-//       setDeleteDialogOpen(false);
-//       setLeadToDelete(null);
-//     }
-//   };
-
-//   const handleResetFilters = () => {
-//     setSearchQuery("");
-//     setStatusFilter("all");
-//     setSourceFilter("all");
-//     setLeadTypeFilter("all");
-//     setSortBy("createdAt");
-//     setSortOrder("desc");
-//     setPage(0);
-//   };
-
-//   const activeFiltersCount = [
-//     statusFilter !== "all",
-//     sourceFilter !== "all",
-//     leadTypeFilter !== "all",
-//     debouncedSearch !== "",
-//   ].filter(Boolean).length;
-
-//   // ---- Render ----
-//   return (
-//     <div className={`${inter.variable} font-(family-name:--font-inter)`}>
-//       {/* Header */}
-//       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-//         <div>
-//           <h1
-//             className={`text-2xl font-bold text-white ${playfair.variable} font-(family-name:--font-playfair)`}
-//           >
-//             Leads Management
-//           </h1>
-//           <p className="text-white/40 text-sm">
-//             Manage and track all your leads from various sources
-//           </p>
-//         </div>
-//         <div className="flex items-center gap-2">
-//           <button
-//             onClick={fetchLeads}
-//             disabled={loading}
-//             className="p-2 rounded-lg hover:bg-white/10 text-white/50 hover:text-white/80 transition-colors disabled:opacity-50"
-//             title="Refresh"
-//           >
-//             <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
-//           </button>
-//           <button
-//             onClick={() => setFilterDrawerOpen(true)}
-//             className={`p-2 rounded-lg hover:bg-white/10 transition-colors relative ${
-//               activeFiltersCount > 0 ? "text-[#2B7FFF]" : "text-white/50"
-//             }`}
-//             title="Filters"
-//           >
-//             <Filter size={18} />
-//             {activeFiltersCount > 0 && (
-//               <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-//                 {activeFiltersCount}
-//               </span>
-//             )}
-//           </button>
-//         </div>
-//       </div>
-
-//       {/* Stats Cards */}
-//       {stats && (
-//         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-6">
-//           <div
-//             className={`bg-[#1b3454] rounded-2xl p-4 border-2 transition-all cursor-pointer ${
-//               statusFilter === "all"
-//                 ? "border-[#2B7FFF]"
-//                 : "border-white/10 hover:border-white/20"
-//             }`}
-//             onClick={() => {
-//               setStatusFilter("all");
-//               setPage(0);
-//             }}
-//           >
-//             <div className="flex items-center justify-between">
-//               <div>
-//                 <p className="text-[10px] font-bold text-white/40 uppercase tracking-wider">
-//                   Total
-//                 </p>
-//                 <p className="text-2xl font-bold text-white">{stats.total}</p>
-//               </div>
-//               <div className="w-9 h-9 rounded-xl bg-[#2B7FFF]/15 flex items-center justify-center border border-[#2B7FFF]/20">
-//                 <Users size={16} className="text-[#2B7FFF]" />
-//               </div>
-//             </div>
-//           </div>
-
-//           {Object.entries(STATUS_CONFIG).map(([key, config]) => (
-//             <div
-//               key={key}
-//               className={`bg-[#1b3454] rounded-2xl p-4 border-2 transition-all cursor-pointer ${
-//                 statusFilter === key
-//                   ? "border-[#2B7FFF]"
-//                   : "border-white/10 hover:border-white/20"
-//               }`}
-//               onClick={() => {
-//                 setStatusFilter(statusFilter === key ? "all" : key);
-//                 setPage(0);
-//               }}
-//             >
-//               <div className="flex items-center justify-between">
-//                 <div>
-//                   <p
-//                     className={`text-[10px] font-bold uppercase tracking-wider ${config.color}`}
-//                   >
-//                     {config.label}
-//                   </p>
-//                   <p className="text-2xl font-bold text-white">
-//                     {stats[key] || 0}
-//                   </p>
-//                 </div>
-//                 <div
-//                   className={`w-9 h-9 rounded-xl flex items-center justify-center ${config.bg} border ${config.border}`}
-//                 >
-//                   {config.icon}
-//                 </div>
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-//       )}
-
-//       {/* Search Bar */}
-//       <div className="relative mb-6">
-//         <Search
-//           size={16}
-//           className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30"
-//         />
-//         <input
-//           type="text"
-//           placeholder="Search leads by name, email, phone, or title..."
-//           value={searchQuery}
-//           onChange={(e) => {
-//             setSearchQuery(e.target.value);
-//             setPage(0);
-//           }}
-//           className="w-full bg-[#1b3454] border border-white/10 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#2B7FFF]/40 focus:ring-2 focus:ring-[#2B7FFF]/10 transition-all"
-//         />
-//         {searchQuery && (
-//           <button
-//             onClick={() => setSearchQuery("")}
-//             className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-white/10 transition-colors"
-//           >
-//             <X size={14} className="text-white/30" />
-//           </button>
-//         )}
-//       </div>
-
-//       {/* Table */}
-//       <div className="bg-[#1b3454] rounded-2xl border border-white/10 overflow-hidden">
-//         <div className="overflow-x-auto">
-//           <table className="w-full text-sm">
-//             <thead>
-//               <tr className="border-b border-white/10 bg-white/5">
-//                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider w-12">
-//                   #
-//                 </th>
-//                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider min-w-[220px]">
-//                   <button
-//                     onClick={() => handleSort("name")}
-//                     className="flex items-center gap-1 hover:text-white/60 transition-colors"
-//                   >
-//                     Lead Info
-//                     <span className="text-[10px] opacity-50">
-//                       {sortBy === "name"
-//                         ? sortOrder === "asc"
-//                           ? "↑"
-//                           : "↓"
-//                         : "⇅"}
-//                     </span>
-//                   </button>
-//                 </th>
-//                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider min-w-[140px]">
-//                   <button
-//                     onClick={() => handleSort("leadType")}
-//                     className="flex items-center gap-1 hover:text-white/60 transition-colors"
-//                   >
-//                     Type
-//                     <span className="text-[10px] opacity-50">
-//                       {sortBy === "leadType"
-//                         ? sortOrder === "asc"
-//                           ? "↑"
-//                           : "↓"
-//                         : "⇅"}
-//                     </span>
-//                   </button>
-//                 </th>
-//                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider">
-//                   Property
-//                 </th>
-//                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider">
-//                   <button
-//                     onClick={() => handleSort("status")}
-//                     className="flex items-center gap-1 hover:text-white/60 transition-colors"
-//                   >
-//                     Status
-//                     <span className="text-[10px] opacity-50">
-//                       {sortBy === "status"
-//                         ? sortOrder === "asc"
-//                           ? "↑"
-//                           : "↓"
-//                         : "⇅"}
-//                     </span>
-//                   </button>
-//                 </th>
-//                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider">
-//                   Source
-//                 </th>
-//                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider">
-//                   <button
-//                     onClick={() => handleSort("createdAt")}
-//                     className="flex items-center gap-1 hover:text-white/60 transition-colors"
-//                   >
-//                     Date
-//                     <span className="text-[10px] opacity-50">
-//                       {sortBy === "createdAt"
-//                         ? sortOrder === "asc"
-//                           ? "↑"
-//                           : "↓"
-//                         : "⇅"}
-//                     </span>
-//                   </button>
-//                 </th>
-//                 <th className="px-4 py-3 text-center text-xs font-semibold text-white/40 uppercase tracking-wider">
-//                   Actions
-//                 </th>
-//               </tr>
-//             </thead>
-//             <tbody className="divide-y divide-white/10">
-//               {loading ? (
-//                 Array.from({ length: rowsPerPage }).map((_, i) => (
-//                   <tr key={i} className="animate-pulse">
-//                     <td className="px-4 py-3">
-//                       <div className="w-6 h-4 bg-white/5 rounded" />
-//                     </td>
-//                     <td className="px-4 py-3">
-//                       <div className="flex items-center gap-3">
-//                         <div className="w-9 h-9 rounded-full bg-white/5" />
-//                         <div>
-//                           <div className="w-32 h-4 bg-white/5 rounded" />
-//                           <div className="w-24 h-3 bg-white/5 rounded mt-1" />
-//                         </div>
-//                       </div>
-//                     </td>
-//                     <td>
-//                       <div className="w-20 h-5 bg-white/5 rounded" />
-//                     </td>
-//                     <td>
-//                       <div className="w-20 h-4 bg-white/5 rounded" />
-//                     </td>
-//                     <td>
-//                       <div className="w-14 h-6 bg-white/5 rounded-full" />
-//                     </td>
-//                     <td>
-//                       <div className="w-16 h-5 bg-white/5 rounded" />
-//                     </td>
-//                     <td>
-//                       <div className="w-24 h-4 bg-white/5 rounded" />
-//                     </td>
-//                     <td>
-//                       <div className="flex justify-center gap-1">
-//                         <div className="w-7 h-7 bg-white/5 rounded-lg" />
-//                         <div className="w-7 h-7 bg-white/5 rounded-lg" />
-//                         <div className="w-7 h-7 bg-white/5 rounded-lg" />
-//                       </div>
-//                     </td>
-//                   </tr>
-//                 ))
-//               ) : leads.length === 0 ? (
-//                 <tr>
-//                   <td colSpan={8} className="text-center py-16">
-//                     <div className="w-16 h-16 rounded-full bg-[#2B7FFF]/10 flex items-center justify-center mx-auto mb-4 border border-[#2B7FFF]/15">
-//                       <Users size={28} className="text-[#2B7FFF]/40" />
-//                     </div>
-//                     <p className="text-white/40 text-sm">No leads found</p>
-//                     {(debouncedSearch || activeFiltersCount > 0) && (
-//                       <button
-//                         onClick={handleResetFilters}
-//                         className="text-[#2B7FFF] text-sm font-semibold mt-2 hover:underline"
-//                       >
-//                         Clear filters
-//                       </button>
-//                     )}
-//                   </td>
-//                 </tr>
-//               ) : (
-//                 leads.map((lead, idx) => {
-//                   const statusConfig =
-//                     STATUS_CONFIG[lead.status] || STATUS_CONFIG.new;
-//                   const sourceConfig = SOURCE_CONFIG[lead.source] || {
-//                     label: lead.source || "N/A",
-//                     color: "text-gray-400",
-//                   };
-//                   const leadTypeDisplay = getLeadTypeDisplay(lead);
-
-//                   return (
-//                     <tr
-//                       key={lead._id}
-//                       className={`hover:bg-white/5 transition-colors ${
-//                         !lead.isRead ? "bg-white/[0.03]" : ""
-//                       }`}
-//                     >
-//                       <td className="px-4 py-3 text-white/40 text-xs">
-//                         {page * rowsPerPage + idx + 1}
-//                       </td>
-
-//                       {/* ✅ Lead Info + NEW Badge */}
-//                       <td className="px-4 py-3">
-//                         <div className="flex items-center gap-3">
-//                           <div className="relative flex-shrink-0">
-//                             <div
-//                               className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold uppercase ${
-//                                 !lead.isRead
-//                                   ? "bg-[#2B7FFF] text-white"
-//                                   : "bg-white/10 text-white/40"
-//                               }`}
-//                             >
-//                               {lead.name?.charAt(0) || "?"}
-//                             </div>
-//                             {!lead.isRead && (
-//                               <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-[#2B7FFF] rounded-full border-2 border-[#1b3454]" />
-//                             )}
-//                           </div>
-//                           <div className="min-w-0">
-//                             <div className="flex items-center gap-2">
-//                               <p
-//                                 className={`text-sm truncate max-w-[150px] ${
-//                                   !lead.isRead
-//                                     ? "font-semibold text-white"
-//                                     : "text-white/70"
-//                                 }`}
-//                               >
-//                                 {lead.name || "N/A"}
-//                               </p>
-//                               {/* ✅ NEW Label - sirf unread leads par */}
-//                               {!lead.isRead && (
-//                                 <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold rounded-md bg-[#2B7FFF] text-white uppercase tracking-wider flex-shrink-0">
-//                                   New
-//                                 </span>
-//                               )}
-//                             </div>
-//                             <div className="flex items-center gap-1.5 mt-0.5 text-[11px] text-white/40">
-//                               <Mail size={10} />
-//                               <span className="truncate max-w-[120px]">
-//                                 {lead.email || "No email"}
-//                               </span>
-//                               {lead.phone && (
-//                                 <>
-//                                   <span className="text-white/20">•</span>
-//                                   <Phone size={10} />
-//                                   <span className="truncate max-w-[80px]">
-//                                     {lead.phone}
-//                                   </span>
-//                                 </>
-//                               )}
-//                             </div>
-//                           </div>
-//                         </div>
-//                       </td>
-
-//                       {/* ✅ Type - Buyer Guide / Seller Guide dikhao */}
-//                       <td className="px-4 py-3">
-//                         <span
-//                           className={`inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider ${leadTypeDisplay.color} ${leadTypeDisplay.bg} border ${leadTypeDisplay.border}`}
-//                         >
-//                           {leadTypeDisplay.icon}
-//                           {leadTypeDisplay.label}
-//                         </span>
-//                       </td>
-
-//                       {/* Property */}
-//                       <td className="px-4 py-3">
-//                         {lead.property ? (
-//                           <div>
-//                             <p className="text-white/70 text-sm truncate max-w-[140px]">
-//                               {lead.property.title || "N/A"}
-//                             </p>
-//                             {lead.property.city && (
-//                               <p className="text-white/30 text-[11px]">
-//                                 {lead.property.city}
-//                               </p>
-//                             )}
-//                           </div>
-//                         ) : (
-//                           <span className="text-white/30 text-sm">—</span>
-//                         )}
-//                       </td>
-
-//                       {/* Status */}
-//                       <td className="px-4 py-3">
-//                         <span
-//                           className={`inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider ${statusConfig.color} ${statusConfig.bg} border ${statusConfig.border}`}
-//                         >
-//                           {statusConfig.icon}
-//                           {statusConfig.label}
-//                         </span>
-//                       </td>
-
-//                       {/* Source */}
-//                       <td className="px-4 py-3">
-//                         <span className={`text-xs ${sourceConfig.color}`}>
-//                           {sourceConfig.label}
-//                         </span>
-//                       </td>
-
-//                       {/* Date */}
-//                       <td className="px-4 py-3 text-white/40 text-xs">
-//                         {formatDate(lead.createdAt)}
-//                       </td>
-
-//                       {/* ✅ Actions: Eye + Read + Delete */}
-//                       <td className="px-4 py-3">
-//                         <div className="flex items-center justify-center gap-1">
-//                           {/* Eye - View */}
-//                           <button
-//                             onClick={(e) => handleViewLead(lead, e)}
-//                             className="p-1.5 rounded-lg hover:bg-[#2B7FFF]/15 text-white/40 hover:text-[#2B7FFF] transition-colors"
-//                             title="View Details"
-//                           >
-//                             <Eye size={15} />
-//                           </button>
-
-//                           {/* ✅ Read - sirf unread par dikhao */}
-//                           {!lead.isRead && (
-//                             <button
-//                               onClick={(e) => {
-//                                 e.stopPropagation();
-//                                 handleMarkAsRead(lead._id);
-//                               }}
-//                               disabled={markingReadIds.has(lead._id)}
-//                               className="p-1.5 rounded-lg hover:bg-emerald-500/15 text-white/40 hover:text-emerald-400 transition-colors disabled:opacity-40"
-//                               title="Mark as Read"
-//                             >
-//                               <MailCheck
-//                                 size={15}
-//                                 className={
-//                                   markingReadIds.has(lead._id)
-//                                     ? "animate-pulse"
-//                                     : ""
-//                                 }
-//                               />
-//                             </button>
-//                           )}
-
-//                           {/* Delete */}
-//                           <button
-//                             onClick={(e) => handleDeleteClick(lead, e)}
-//                             className="p-1.5 rounded-lg hover:bg-red-500/15 text-white/40 hover:text-red-400 transition-colors"
-//                             title="Delete Lead"
-//                           >
-//                             <Delete size={15} />
-//                           </button>
-//                         </div>
-//                       </td>
-//                     </tr>
-//                   );
-//                 })
-//               )}
-//             </tbody>
-//           </table>
-//         </div>
-
-//         {/* Pagination */}
-//         {!loading && leads.length > 0 && (
-//           <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-t border-white/10">
-//             <div className="text-sm text-white/40">
-//               Showing {page * rowsPerPage + 1}–
-//               {Math.min((page + 1) * rowsPerPage, pagination.totalRecords)} of{" "}
-//               {pagination.totalRecords}
-//             </div>
-//             <div className="flex items-center gap-2">
-//               <select
-//                 value={rowsPerPage}
-//                 onChange={(e) => {
-//                   setRowsPerPage(Number(e.target.value));
-//                   setPage(0);
-//                 }}
-//                 className="bg-[#1b3454] border border-white/10 rounded-lg px-2 py-1 text-sm text-white/60 focus:outline-none focus:border-[#2B7FFF]/40"
-//               >
-//                 {[5, 10, 25, 50].map((val) => (
-//                   <option key={val} value={val}>
-//                     {val}
-//                   </option>
-//                 ))}
-//               </select>
-//               <div className="flex items-center gap-1">
-//                 <button
-//                   onClick={() => setPage((p) => Math.max(0, p - 1))}
-//                   disabled={page === 0}
-//                   className="w-8 h-8 rounded-lg border border-white/10 text-white/40 hover:border-[#2B7FFF]/50 hover:text-[#2B7FFF] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-//                 >
-//                   <ChevronLeft size={14} />
-//                 </button>
-//                 <span className="text-sm text-white/40 px-2">
-//                   {page + 1} / {pagination.totalPages}
-//                 </span>
-//                 <button
-//                   onClick={() =>
-//                     setPage((p) => Math.min(pagination.totalPages - 1, p + 1))
-//                   }
-//                   disabled={page >= pagination.totalPages - 1}
-//                   className="w-8 h-8 rounded-lg border border-white/10 text-white/40 hover:border-[#2B7FFF]/50 hover:text-[#2B7FFF] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-//                 >
-//                   <ChevronRight size={14} />
-//                 </button>
-//               </div>
-//             </div>
-//           </div>
-//         )}
-//       </div>
-
-//       {/* Filter Drawer */}
-//       <AnimatePresence>
-//         {filterDrawerOpen && (
-//           <>
-//             <div
-//               className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
-//               onClick={() => setFilterDrawerOpen(false)}
-//             />
-//             <motion.div
-//               initial={{ x: "100%" }}
-//               animate={{ x: 0 }}
-//               exit={{ x: "100%" }}
-//               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-//               className="fixed right-0 top-0 bottom-0 w-full max-w-sm bg-[#13273f] border-l border-white/10 z-50 overflow-y-auto"
-//             >
-//               <div className="p-5">
-//                 <div className="flex items-center justify-between mb-6">
-//                   <h3 className="text-lg font-bold text-white">Filters</h3>
-//                   <button
-//                     onClick={() => setFilterDrawerOpen(false)}
-//                     className="p-2 rounded-lg hover:bg-white/10 transition-colors"
-//                   >
-//                     <X size={18} className="text-white/50" />
-//                   </button>
-//                 </div>
-
-//                 <div className="space-y-4">
-//                   {/* Status */}
-//                   <div>
-//                     <label className="block text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">
-//                       Status
-//                     </label>
-//                     <div className="grid grid-cols-2 gap-2">
-//                       <button
-//                         onClick={() => {
-//                           setStatusFilter("all");
-//                           setPage(0);
-//                         }}
-//                         className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
-//                           statusFilter === "all"
-//                             ? "bg-[#2B7FFF] text-white"
-//                             : "bg-white/5 text-white/50 hover:bg-white/10"
-//                         }`}
-//                       >
-//                         All
-//                       </button>
-//                       {Object.entries(STATUS_CONFIG).map(([key, config]) => (
-//                         <button
-//                           key={key}
-//                           onClick={() => {
-//                             setStatusFilter(statusFilter === key ? "all" : key);
-//                             setPage(0);
-//                           }}
-//                           className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
-//                             statusFilter === key
-//                               ? `${config.bg} ${config.color} border ${config.border}`
-//                               : "bg-white/5 text-white/50 hover:bg-white/10"
-//                           }`}
-//                         >
-//                           {config.label}
-//                         </button>
-//                       ))}
-//                     </div>
-//                   </div>
-
-//                   {/* Source */}
-//                   <div>
-//                     <label className="block text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">
-//                       Source
-//                     </label>
-//                     <div className="grid grid-cols-2 gap-2">
-//                       <button
-//                         onClick={() => {
-//                           setSourceFilter("all");
-//                           setPage(0);
-//                         }}
-//                         className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
-//                           sourceFilter === "all"
-//                             ? "bg-[#2B7FFF] text-white"
-//                             : "bg-white/5 text-white/50 hover:bg-white/10"
-//                         }`}
-//                       >
-//                         All
-//                       </button>
-//                       {Object.entries(SOURCE_CONFIG).map(([key, config]) => (
-//                         <button
-//                           key={key}
-//                           onClick={() => {
-//                             setSourceFilter(sourceFilter === key ? "all" : key);
-//                             setPage(0);
-//                           }}
-//                           className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
-//                             sourceFilter === key
-//                               ? `bg-white/10 text-white`
-//                               : "bg-white/5 text-white/50 hover:bg-white/10"
-//                           }`}
-//                         >
-//                           {config.label}
-//                         </button>
-//                       ))}
-//                     </div>
-//                   </div>
-
-//                   {/* Lead Type */}
-//                   <div>
-//                     <label className="block text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">
-//                       Lead Type
-//                     </label>
-//                     <div className="grid grid-cols-2 gap-2">
-//                       <button
-//                         onClick={() => {
-//                           setLeadTypeFilter("all");
-//                           setPage(0);
-//                         }}
-//                         className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
-//                           leadTypeFilter === "all"
-//                             ? "bg-[#2B7FFF] text-white"
-//                             : "bg-white/5 text-white/50 hover:bg-white/10"
-//                         }`}
-//                       >
-//                         All
-//                       </button>
-//                       <button
-//                         onClick={() => {
-//                           setLeadTypeFilter(
-//                             leadTypeFilter === "property_inquiry"
-//                               ? "all"
-//                               : "property_inquiry"
-//                           );
-//                           setPage(0);
-//                         }}
-//                         className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
-//                           leadTypeFilter === "property_inquiry"
-//                             ? "bg-blue-500/15 text-blue-400 border border-blue-500/25"
-//                             : "bg-white/5 text-white/50 hover:bg-white/10"
-//                         }`}
-//                       >
-//                         Property Inquiry
-//                       </button>
-//                       <button
-//                         onClick={() => {
-//                           setLeadTypeFilter(
-//                             leadTypeFilter === "guide_download"
-//                               ? "all"
-//                               : "guide_download"
-//                           );
-//                           setPage(0);
-//                         }}
-//                         className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
-//                           leadTypeFilter === "guide_download"
-//                             ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25"
-//                             : "bg-white/5 text-white/50 hover:bg-white/10"
-//                         }`}
-//                       >
-//                         Guide Download
-//                       </button>
-//                     </div>
-//                   </div>
-
-//                   <div className="pt-4 border-t border-white/10">
-//                     <button
-//                       onClick={handleResetFilters}
-//                       className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-white/50 hover:text-white hover:bg-white/5 transition-all"
-//                     >
-//                       Reset All Filters
-//                     </button>
-//                   </div>
-//                 </div>
-//               </div>
-//             </motion.div>
-//           </>
-//         )}
-//       </AnimatePresence>
-
-//       {/* Lead Detail Drawer */}
-//       <AnimatePresence>
-//         {detailDrawerOpen && selectedLead && (
-//           <>
-//             <div
-//               className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
-//               onClick={() => {
-//                 setDetailDrawerOpen(false);
-//                 setSelectedLead(null);
-//               }}
-//             />
-//             <motion.div
-//               initial={{ x: "100%" }}
-//               animate={{ x: 0 }}
-//               exit={{ x: "100%" }}
-//               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-//               className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-[#13273f] border-l border-white/10 z-50 overflow-y-auto"
-//             >
-//               {/* Header */}
-//               <div
-//                 className={`p-5 border-b border-white/10 ${
-//                   selectedLead.isRead ? "bg-[#1b3454]" : "bg-[#2B7FFF]/20"
-//                 }`}
-//               >
-//                 <div className="flex items-start justify-between">
-//                   <div>
-//                     <h3
-//                       className={`text-xl font-bold text-white ${playfair.variable} font-(family-name:--font-playfair)`}
-//                     >
-//                       {selectedLead.name || "N/A"}
-//                     </h3>
-//                     <p className="text-white/40 text-xs mt-0.5">
-//                       {selectedLead.isRead ? "Read" : "Unread"} • #
-//                       {selectedLead._id?.slice(-6)}
-//                     </p>
-//                   </div>
-//                   <button
-//                     onClick={() => {
-//                       setDetailDrawerOpen(false);
-//                       setSelectedLead(null);
-//                     }}
-//                     className="p-2 rounded-lg hover:bg-white/10 transition-colors"
-//                   >
-//                     <X size={18} className="text-white/50" />
-//                   </button>
-//                 </div>
-//                 <div className="flex flex-wrap gap-2 mt-3">
-//                   <span
-//                     className={`inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider ${STATUS_CONFIG[selectedLead.status]?.color} ${STATUS_CONFIG[selectedLead.status]?.bg} border ${STATUS_CONFIG[selectedLead.status]?.border}`}
-//                   >
-//                     {STATUS_CONFIG[selectedLead.status]?.icon}
-//                     {STATUS_CONFIG[selectedLead.status]?.label}
-//                   </span>
-//                   <span
-//                     className={`inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider ${getLeadTypeDisplay(selectedLead).color} ${getLeadTypeDisplay(selectedLead).bg} border ${getLeadTypeDisplay(selectedLead).border}`}
-//                   >
-//                     {getLeadTypeDisplay(selectedLead).icon}
-//                     {getLeadTypeDisplay(selectedLead).label}
-//                   </span>
-//                   <span
-//                     className={`inline-flex px-2.5 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider ${SOURCE_CONFIG[selectedLead.source]?.color || "text-gray-400"} bg-white/5 border border-white/10`}
-//                   >
-//                     {SOURCE_CONFIG[selectedLead.source]?.label ||
-//                       selectedLead.source ||
-//                       "N/A"}
-//                   </span>
-//                 </div>
-//               </div>
-
-//               {/* Body */}
-//               <div className="p-5 space-y-5">
-//                 {/* Contact */}
-//                 <div>
-//                   <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-2">
-//                     Contact Information
-//                   </h4>
-//                   <div className="bg-[#1b3454] rounded-xl border border-white/10 p-3 space-y-2">
-//                     {selectedLead.email && (
-//                       <div className="flex items-center gap-2.5 text-sm">
-//                         <Mail size={14} className="text-white/30 flex-shrink-0" />
-//                         <span className="text-white/70 break-all">
-//                           {selectedLead.email}
-//                         </span>
-//                       </div>
-//                     )}
-//                     {selectedLead.phone && (
-//                       <div className="flex items-center gap-2.5 text-sm">
-//                         <Phone size={14} className="text-white/30 flex-shrink-0" />
-//                         <span className="text-white/70">
-//                           {selectedLead.phone}
-//                         </span>
-//                       </div>
-//                     )}
-//                     {selectedLead.title && (
-//                       <div className="flex items-center gap-2.5 text-sm">
-//                         <FileText size={14} className="text-white/30 flex-shrink-0" />
-//                         <span className="text-white/70">
-//                           {selectedLead.title}
-//                         </span>
-//                       </div>
-//                     )}
-//                   </div>
-//                 </div>
-
-//                 {/* Message */}
-//                 {selectedLead.message && (
-//                   <div>
-//                     <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-2">
-//                       Message
-//                     </h4>
-//                     <div className="bg-[#1b3454] rounded-xl border border-white/10 p-3 text-white/60 text-sm whitespace-pre-wrap leading-relaxed">
-//                       {selectedLead.message}
-//                     </div>
-//                   </div>
-//                 )}
-
-//                 {/* Property Details */}
-//                 {selectedLead.property && (
-//                   <div>
-//                     <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-2">
-//                       Property Details
-//                     </h4>
-//                     <div className="bg-[#1b3454] rounded-xl border border-white/10 p-3 space-y-3">
-//                       <div className="flex gap-3">
-//                         {selectedLead.property.thumbnail && (
-//                           <img
-//                             src={selectedLead.property.thumbnail}
-//                             alt={selectedLead.property.title}
-//                             className="w-20 h-16 rounded-lg object-cover border border-white/10 flex-shrink-0"
-//                           />
-//                         )}
-//                         <div className="min-w-0">
-//                           <p className="text-white font-semibold text-sm truncate">
-//                             {selectedLead.property.title || "N/A"}
-//                           </p>
-//                           {selectedLead.property.propertyCode && (
-//                             <p className="text-white/30 text-xs">
-//                               Code: {selectedLead.property.propertyCode}
-//                             </p>
-//                           )}
-//                         </div>
-//                       </div>
-//                       <div className="grid grid-cols-2 gap-2 text-sm">
-//                         {selectedLead.property.propertyType && (
-//                           <div>
-//                             <p className="text-white/30 text-[11px]">Type</p>
-//                             <p className="text-white/70 capitalize">
-//                               {selectedLead.property.propertyType}
-//                             </p>
-//                           </div>
-//                         )}
-//                         {selectedLead.property.city && (
-//                           <div>
-//                             <p className="text-white/30 text-[11px]">City</p>
-//                             <p className="text-white/70">
-//                               {selectedLead.property.city}
-//                             </p>
-//                           </div>
-//                         )}
-//                         {selectedLead.property.price && (
-//                           <div>
-//                             <p className="text-white/30 text-[11px]">Price</p>
-//                             <p className="text-white/70">
-//                               {formatPrice(
-//                                 selectedLead.property.price,
-//                                 selectedLead.property.currency
-//                               )}
-//                               {selectedLead.property.priceType &&
-//                                 ` ${selectedLead.property.priceType}`}
-//                             </p>
-//                           </div>
-//                         )}
-//                         {selectedLead.property.areaSize && (
-//                           <div>
-//                             <p className="text-white/30 text-[11px]">Area</p>
-//                             <p className="text-white/70">
-//                               {selectedLead.property.areaSize}{" "}
-//                               {selectedLead.property.areaUnit}
-//                             </p>
-//                           </div>
-//                         )}
-//                       </div>
-//                     </div>
-//                   </div>
-//                 )}
-
-//                 {/* ✅ Guide Download Info - Buyer/Seller clearly */}
-//                 {selectedLead.leadType === "guide_download" && (
-//                   <div>
-//                     <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-2">
-//                       Guide Information
-//                     </h4>
-//                     <div
-//                       className={`rounded-xl border p-3 flex items-center gap-3 ${
-//                         selectedLead.guideType === "buyer"
-//                           ? "bg-cyan-500/10 border-cyan-500/20"
-//                           : selectedLead.guideType === "seller"
-//                           ? "bg-amber-500/10 border-amber-500/20"
-//                           : "bg-emerald-500/10 border-emerald-500/20"
-//                       }`}
-//                     >
-//                       <BookOpen
-//                         size={18}
-//                         className={
-//                           selectedLead.guideType === "buyer"
-//                             ? "text-cyan-400"
-//                             : selectedLead.guideType === "seller"
-//                             ? "text-amber-400"
-//                             : "text-emerald-400"
-//                         }
-//                       />
-//                       <div>
-//                         <p className="text-white font-semibold text-sm">
-//                           {selectedLead.guideType === "buyer"
-//                             ? "Buyer Guide"
-//                             : selectedLead.guideType === "seller"
-//                             ? "Seller Guide"
-//                             : "Guide"}
-//                         </p>
-//                         <p className="text-white/40 text-xs">
-//                           Downloaded on{" "}
-//                           {formatDate(selectedLead.createdAt)}
-//                         </p>
-//                       </div>
-//                     </div>
-//                   </div>
-//                 )}
-
-//                 {/* Additional */}
-//                 <div>
-//                   <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-2">
-//                     Additional Info
-//                   </h4>
-//                   <div className="bg-[#1b3454] rounded-xl border border-white/10 p-3 space-y-2 text-sm">
-//                     <div className="flex items-center gap-2.5">
-//                       <span className="text-white/30">Source:</span>
-//                       <span
-//                         className={`${
-//                           SOURCE_CONFIG[selectedLead.source]?.color ||
-//                           "text-white/70"
-//                         }`}
-//                       >
-//                         {SOURCE_CONFIG[selectedLead.source]?.label ||
-//                           selectedLead.source ||
-//                           "N/A"}
-//                       </span>
-//                     </div>
-//                     <div className="flex items-center gap-2.5">
-//                       <span className="text-white/30">Created:</span>
-//                       <span className="text-white/70">
-//                         {formatDate(selectedLead.createdAt)}
-//                       </span>
-//                     </div>
-//                     {selectedLead.readAt && (
-//                       <div className="flex items-center gap-2.5">
-//                         <span className="text-white/30">Read at:</span>
-//                         <span className="text-white/70">
-//                           {formatDate(selectedLead.readAt)}
-//                         </span>
-//                       </div>
-//                     )}
-//                     {selectedLead.assignedTo && (
-//                       <div className="flex items-center gap-2.5">
-//                         <span className="text-white/30">Assigned to:</span>
-//                         <span className="text-white/70">
-//                           {selectedLead.assignedTo.name || "N/A"}
-//                         </span>
-//                       </div>
-//                     )}
-//                   </div>
-//                 </div>
-
-//                 {/* Property Images */}
-//                 {selectedLead.property?.images?.length > 0 && (
-//                   <div>
-//                     <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-2">
-//                       Property Images
-//                     </h4>
-//                     <div className="grid grid-cols-3 gap-1.5">
-//                       {selectedLead.property.images
-//                         .slice(0, 6)
-//                         .map((img, i) => (
-//                           <img
-//                             key={i}
-//                             src={img}
-//                             alt={`Property ${i + 1}`}
-//                             className="w-full h-20 rounded-lg object-cover border border-white/10 hover:scale-105 transition-transform cursor-pointer"
-//                           />
-//                         ))}
-//                     </div>
-//                   </div>
-//                 )}
-//               </div>
-
-//               {/* Footer */}
-//               <div className="p-4 border-t border-white/10 bg-[#1b3454] sticky bottom-0">
-//                 <div className="flex gap-2">
-//                   {!selectedLead.isRead && (
-//                     <button
-//                       onClick={() => handleMarkAsRead(selectedLead._id)}
-//                       disabled={markingReadIds.has(selectedLead._id)}
-//                       className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2B7FFF] hover:bg-[#4D94FF] text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-[#2B7FFF]/25 disabled:opacity-50"
-//                     >
-//                       <MailCheck
-//                         size={16}
-//                         className={
-//                           markingReadIds.has(selectedLead._id)
-//                             ? "animate-pulse"
-//                             : ""
-//                         }
-//                       />
-//                       {markingReadIds.has(selectedLead._id)
-//                         ? "Marking..."
-//                         : "Mark as Read"}
-//                     </button>
-//                   )}
-//                   {selectedLead.isRead && (
-//                     <div className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500/15 text-emerald-400 text-sm font-semibold rounded-xl border border-emerald-500/25">
-//                       <CheckCircle size={16} />
-//                       Already Read
-//                     </div>
-//                   )}
-//                   <button
-//                     onClick={() => {
-//                       setDetailDrawerOpen(false);
-//                       handleDeleteClick(selectedLead);
-//                     }}
-//                     className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-red-500/30 text-red-400 hover:bg-red-500/10 text-sm font-semibold rounded-xl transition-all"
-//                   >
-//                     <Delete size={16} /> Delete
-//                   </button>
-//                 </div>
-//               </div>
-//             </motion.div>
-//           </>
-//         )}
-//       </AnimatePresence>
-
-//       {/* Delete Confirmation Dialog */}
-//       <AnimatePresence>
-//         {deleteDialogOpen && leadToDelete && (
-//           <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-//             <div
-//               className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-//               onClick={() => {
-//                 setDeleteDialogOpen(false);
-//                 setLeadToDelete(null);
-//               }}
-//             />
-//             <motion.div
-//               initial={{ opacity: 0, scale: 0.95, y: 10 }}
-//               animate={{ opacity: 1, scale: 1, y: 0 }}
-//               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-//               className="relative bg-[#1b3454] rounded-2xl border border-white/10 p-6 w-full max-w-sm shadow-2xl"
-//             >
-//               <div className="flex flex-col items-center text-center">
-//                 <div className="w-14 h-14 rounded-full bg-red-500/15 border border-red-500/25 flex items-center justify-center mb-4">
-//                   <AlertTriangle size={24} className="text-red-400" />
-//                 </div>
-//                 <h3 className="text-lg font-bold text-white mb-2">
-//                   Delete Lead
-//                 </h3>
-//                 <p className="text-white/50 text-sm mb-4">
-//                   Are you sure you want to delete this lead? This action cannot
-//                   be undone.
-//                 </p>
-
-//                 {leadToDelete && (
-//                   <div className="w-full bg-red-500/10 border border-red-500/20 rounded-xl p-3 mb-5">
-//                     <p className="text-white font-semibold text-sm">
-//                       {leadToDelete.name || "N/A"}
-//                     </p>
-//                     <p className="text-white/40 text-xs mt-0.5">
-//                       {leadToDelete.email || "No email"}
-//                     </p>
-//                     {leadToDelete.phone && (
-//                       <p className="text-white/40 text-xs">
-//                         {leadToDelete.phone}
-//                       </p>
-//                     )}
-//                   </div>
-//                 )}
-
-//                 <div className="flex gap-3 w-full">
-//                   <button
-//                     onClick={() => {
-//                       setDeleteDialogOpen(false);
-//                       setLeadToDelete(null);
-//                     }}
-//                     className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white/50 hover:text-white hover:bg-white/5 border border-white/10 transition-all"
-//                   >
-//                     Cancel
-//                   </button>
-//                   <button
-//                     onClick={handleConfirmDelete}
-//                     className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-red-500 hover:bg-red-600 transition-all shadow-lg shadow-red-500/25"
-//                   >
-//                     Delete
-//                   </button>
-//                 </div>
-//               </div>
-//             </motion.div>
-//           </div>
-//         )}
-//       </AnimatePresence>
-
-//       {/* Snackbar */}
-//       <AnimatePresence>
-//         {snackbar.open && (
-//           <motion.div
-//             initial={{ opacity: 0, y: 50, x: "-50%" }}
-//             animate={{ opacity: 1, y: 0, x: "-50%" }}
-//             exit={{ opacity: 0, y: 50, x: "-50%" }}
-//             className="fixed bottom-6 left-1/2 z-[99999]"
-//           >
-//             <div
-//               className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold shadow-2xl border ${
-//                 snackbar.type === "success"
-//                   ? "bg-emerald-500/90 text-white border-emerald-400/30"
-//                   : snackbar.type === "error"
-//                   ? "bg-red-500/90 text-white border-red-400/30"
-//                   : "bg-[#2B7FFF]/90 text-white border-[#2B7FFF]/30"
-//               }`}
-//             >
-//               {snackbar.type === "success" ? (
-//                 <CheckCircle size={16} />
-//               ) : snackbar.type === "error" ? (
-//                 <AlertCircle size={16} />
-//               ) : (
-//                 <Info size={16} />
-//               )}
-//               {snackbar.message}
-//             </div>
-//           </motion.div>
-//         )}
-//       </AnimatePresence>
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
-
-
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from "react";
@@ -1525,10 +13,8 @@ import {
   User,
   Home,
   Calendar,
-  TrendingUp,
   Users,
   FileDown,
-  Info,
   Sparkles,
   MessageSquare,
   Star,
@@ -1539,6 +25,7 @@ import {
   BookOpen,
   AlertCircle,
   MailOpen,
+  Hash,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Playfair_Display, Inter } from "next/font/google";
@@ -1691,11 +178,11 @@ export default function LeadsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [readFilter, setReadFilter] = useState("all");
-  const [statusFilterNew, setStatusFilterNew] = useState(false);
 
   const [statusFilter, setStatusFilter] = useState("all");
   const [sourceFilter, setSourceFilter] = useState("all");
   const [leadTypeFilter, setLeadTypeFilter] = useState("all");
+  const [guideTypeFilter, setGuideTypeFilter] = useState("all");
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState("desc");
 
@@ -1712,6 +199,23 @@ export default function LeadsPage() {
     type: "success",
   });
   const [markingReadIds, setMarkingReadIds] = useState(new Set());
+  const [modalLoading, setModalLoading] = useState(false);
+
+  // ✅ NEW: Global Stats State (Database se aayega)
+  const [globalStats, setGlobalStats] = useState({
+    allLeads: 0,
+    propertyInquiries: 0,
+    buyerGuides: 0,
+    sellerGuides: 0,
+  });
+
+  // Derive single value for Type Dropdown
+  const currentTypeFilterValue = useMemo(() => {
+    if (leadTypeFilter === "guide_download" && guideTypeFilter === "buyer") return "buyer_guide";
+    if (leadTypeFilter === "guide_download" && guideTypeFilter === "seller") return "seller_guide";
+    if (leadTypeFilter === "property_inquiry") return "property_inquiry";
+    return "all";
+  }, [leadTypeFilter, guideTypeFilter]);
 
   // ---- Debounce Search ----
   useEffect(() => {
@@ -1719,12 +223,10 @@ export default function LeadsPage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // ---- Fetch (UPDATED) ----
+  // ---- Fetch ----
   const fetchLeads = useCallback(async () => {
     try {
       setLoading(true);
-      
-      // Sirf woh keys add karenge jo actually exist karti hain (undefined nahi bhejenge)
       const params = {
         page: page + 1,
         limit: rowsPerPage,
@@ -1732,17 +234,21 @@ export default function LeadsPage() {
         sortOrder: sortOrder || undefined,
       };
 
-      // Agar filter "all" nahi hai, tab hi add karo
       if (statusFilter !== "all") params.status = statusFilter;
       if (sourceFilter !== "all") params.source = sourceFilter;
       if (leadTypeFilter !== "all") params.leadType = leadTypeFilter;
+      if (guideTypeFilter !== "all") params.guideType = guideTypeFilter;
 
-      // Ab yeh object safely jayega aur API file usse handle kar legi
       const response = await getAllLeads(params);
-      
+
       if (response.success) {
         setLeads(response.data);
         setPagination(response.pagination);
+        
+        // ✅ NEW: Set Global Stats from Backend
+        if (response.stats) {
+          setGlobalStats(response.stats);
+        }
       }
     } catch (error) {
       console.error("Fetch Leads Error:", error);
@@ -1750,10 +256,30 @@ export default function LeadsPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, rowsPerPage, statusFilter, sourceFilter, leadTypeFilter, sortBy, sortOrder]);
+  }, [page, rowsPerPage, statusFilter, sourceFilter, leadTypeFilter, guideTypeFilter, sortBy, sortOrder]);
+  
   useEffect(() => {
     fetchLeads();
   }, [fetchLeads]);
+
+  // Handler for Type Filter Dropdown & Cards
+  const handleTypeFilterChange = (val) => {
+    const value = val?.target ? val.target.value : val;
+    if (value === "all") {
+      setLeadTypeFilter("all");
+      setGuideTypeFilter("all");
+    } else if (value === "property_inquiry") {
+      setLeadTypeFilter("property_inquiry");
+      setGuideTypeFilter("all");
+    } else if (value === "buyer_guide") {
+      setLeadTypeFilter("guide_download");
+      setGuideTypeFilter("buyer");
+    } else if (value === "seller_guide") {
+      setLeadTypeFilter("guide_download");
+      setGuideTypeFilter("seller");
+    }
+    setPage(0);
+  };
 
   // ---- Client-side filtering ----
   const filteredLeads = useMemo(() => {
@@ -1765,30 +291,25 @@ export default function LeadsPage() {
       result = result.filter((l) => l.isRead !== true);
     }
 
-    if (statusFilterNew) {
-      result = result.filter((l) => l.status === "new");
-    }
-
     if (debouncedSearch.trim() !== "") {
       const query = debouncedSearch.toLowerCase();
       result = result.filter((l) =>
         (l.name && l.name.toLowerCase().includes(query)) ||
         (l.email && l.email.toLowerCase().includes(query)) ||
         (l.phone && l.phone.toLowerCase().includes(query)) ||
-        (l.property?.title && l.property.title.toLowerCase().includes(query))
+        (l.property?.title && l.property.title.toLowerCase().includes(query)) ||
+        (l.property?.propertyCode && l.property.propertyCode.toLowerCase().includes(query))
       );
     }
 
     return result;
-  }, [leads, readFilter, statusFilterNew, debouncedSearch]);
+  }, [leads, readFilter, debouncedSearch]);
 
-  // ---- Counts ----
+  // ✅ UPDATED: Counts (Sirf Client-side Read/Unread ke liye)
   const counts = useMemo(() => {
-    const total = leads.length;
     const read = leads.filter(l => l.isRead === true).length;
     const unread = leads.filter(l => l.isRead !== true).length;
-    const newLeads = leads.filter(l => l.status === "new").length;
-    return { total, read, unread, newLeads };
+    return { read, unread };
   }, [leads]);
 
   // ---- Snackbar ----
@@ -1803,11 +324,9 @@ export default function LeadsPage() {
   const handleViewLead = async (lead, e) => {
     if (e) e.stopPropagation();
     try {
-      let leadData = lead;
-      if (!lead.property && !lead.assignedTo) {
-        const response = await getLeadById(lead._id);
-        if (response.success) leadData = response.data;
-      }
+      setModalLoading(true);
+      const response = await getLeadById(lead._id);
+      const leadData = response.success ? response.data : lead;
       setSelectedLead(leadData);
       setDetailModalOpen(true);
       if (!leadData.isRead) {
@@ -1815,7 +334,11 @@ export default function LeadsPage() {
       }
     } catch (error) {
       console.error("View Lead Error:", error);
-      showSnackbar("Failed to load lead details", "error");
+      setSelectedLead(lead);
+      setDetailModalOpen(true);
+      showSnackbar("Showing cached data", "error");
+    } finally {
+      setModalLoading(false);
     }
   };
 
@@ -1872,6 +395,7 @@ export default function LeadsPage() {
           setDetailModalOpen(false);
           setSelectedLead(null);
         }
+        fetchLeads(); // Stats refresh ke liye
       }
     } catch (error) {
       showSnackbar(error.message || "Failed to delete lead", "error");
@@ -1884,7 +408,7 @@ export default function LeadsPage() {
   const handleResetFilters = () => {
     setSearchQuery("");
     setReadFilter("all");
-    setStatusFilterNew(false);
+    handleTypeFilterChange("all");
     setPage(0);
   };
 
@@ -1909,58 +433,91 @@ export default function LeadsPage() {
         </button>
       </div>
 
-      {/* ===== CARDS ===== */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      {/* ===== 6 CARDS ===== */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+        
+        {/* All Leads (Global Total) */}
         <div
-          onClick={() => { setReadFilter("all"); setStatusFilterNew(false); setPage(0); }}
+          onClick={() => { setReadFilter("all"); handleTypeFilterChange("all"); setPage(0); }}
           className={`cursor-pointer bg-[#1b3454] border rounded-xl p-4 transition-all hover:border-[#2B7FFF]/40 ${
-            readFilter === "all" && !statusFilterNew ? "border-[#2B7FFF] bg-[#2B7FFF]/10" : "border-white/10"
+            readFilter === "all" && currentTypeFilterValue === "all" ? "border-[#2B7FFF] bg-[#2B7FFF]/10" : "border-white/10"
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-white/60 text-sm">All Leads</span>
-            <Users size={18} className="text-white/30" />
+            <span className="text-white/60 text-xs truncate">All Leads</span>
+            <Users size={16} className="text-white/30" />
           </div>
-          <p className="text-2xl font-bold text-white mt-1">{counts.total}</p>
+          <p className="text-2xl font-bold text-white mt-1">{globalStats.allLeads}</p>
         </div>
 
+        {/* Unread (Client-side) */}
         <div
-          onClick={() => { setReadFilter("unread"); setStatusFilterNew(false); setPage(0); }}
+          onClick={() => { setReadFilter("unread"); setPage(0); }}
           className={`cursor-pointer bg-[#1b3454] border rounded-xl p-4 transition-all hover:border-[#2B7FFF]/40 ${
-            readFilter === "unread" && !statusFilterNew ? "border-[#2B7FFF] bg-[#2B7FFF]/10" : "border-white/10"
+            readFilter === "unread" ? "border-[#2B7FFF] bg-[#2B7FFF]/10" : "border-white/10"
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-white/60 text-sm">Unread</span>
-            <Mail size={18} className="text-white/30" />
+            <span className="text-white/60 text-xs truncate">Unread</span>
+            <Mail size={16} className="text-white/30" />
           </div>
           <p className="text-2xl font-bold text-white mt-1">{counts.unread}</p>
         </div>
 
+        {/* Read (Client-side) */}
         <div
-          onClick={() => { setReadFilter("read"); setStatusFilterNew(false); setPage(0); }}
+          onClick={() => { setReadFilter("read"); setPage(0); }}
           className={`cursor-pointer bg-[#1b3454] border rounded-xl p-4 transition-all hover:border-[#2B7FFF]/40 ${
-            readFilter === "read" && !statusFilterNew ? "border-[#2B7FFF] bg-[#2B7FFF]/10" : "border-white/10"
+            readFilter === "read" ? "border-[#2B7FFF] bg-[#2B7FFF]/10" : "border-white/10"
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-white/60 text-sm">Read</span>
-            <MailCheck size={18} className="text-white/30" />
+            <span className="text-white/60 text-xs truncate">Read</span>
+            <MailCheck size={16} className="text-white/30" />
           </div>
           <p className="text-2xl font-bold text-white mt-1">{counts.read}</p>
         </div>
 
+        {/* Property Inquiry (Global Total) */}
         <div
-          onClick={() => { setReadFilter("all"); setStatusFilterNew(true); setPage(0); }}
-          className={`cursor-pointer bg-[#1b3454] border rounded-xl p-4 transition-all hover:border-[#2B7FFF]/40 ${
-            statusFilterNew && readFilter === "all" ? "border-[#2B7FFF] bg-[#2B7FFF]/10" : "border-white/10"
+          onClick={() => handleTypeFilterChange("property_inquiry")}
+          className={`cursor-pointer bg-[#1b3454] border rounded-xl p-4 transition-all hover:border-blue-500/40 ${
+            currentTypeFilterValue === "property_inquiry" ? "border-blue-500 bg-blue-500/10" : "border-white/10"
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-white/60 text-sm">New</span>
-            <Sparkles size={18} className="text-white/30" />
+            <span className="text-white/60 text-xs truncate">Property</span>
+            <Home size={16} className="text-blue-400/60" />
           </div>
-          <p className="text-2xl font-bold text-white mt-1">{counts.newLeads}</p>
+          <p className="text-2xl font-bold text-white mt-1">{globalStats.propertyInquiries}</p>
+        </div>
+
+        {/* Buyer Guide (Global Total) */}
+        <div
+          onClick={() => handleTypeFilterChange("buyer_guide")}
+          className={`cursor-pointer bg-[#1b3454] border rounded-xl p-4 transition-all hover:border-cyan-500/40 ${
+            currentTypeFilterValue === "buyer_guide" ? "border-cyan-500 bg-cyan-500/10" : "border-white/10"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-white/60 text-xs truncate">Buyer Guide</span>
+            <BookOpen size={16} className="text-cyan-400/60" />
+          </div>
+          <p className="text-2xl font-bold text-white mt-1">{globalStats.buyerGuides}</p>
+        </div>
+
+        {/* Seller Guide (Global Total) */}
+        <div
+          onClick={() => handleTypeFilterChange("seller_guide")}
+          className={`cursor-pointer bg-[#1b3454] border rounded-xl p-4 transition-all hover:border-amber-500/40 ${
+            currentTypeFilterValue === "seller_guide" ? "border-amber-500 bg-amber-500/10" : "border-white/10"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-white/60 text-xs truncate">Seller Guide</span>
+            <BookOpen size={16} className="text-amber-400/60" />
+          </div>
+          <p className="text-2xl font-bold text-white mt-1">{globalStats.sellerGuides}</p>
         </div>
       </div>
 
@@ -1970,7 +527,7 @@ export default function LeadsPage() {
           <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" />
           <input
             type="text"
-            placeholder="Search by name, email, phone, or property title..."
+            placeholder="Search by name, email, phone, or property code..."
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
@@ -1988,11 +545,11 @@ export default function LeadsPage() {
           )}
         </div>
 
-        <div className="flex items-center gap-2 w-full md:w-1/2 justify-start md:justify-end">
+        <div className="flex items-center gap-2 w-full md:w-1/2 justify-start md:justify-end flex-wrap">
           <button
-            onClick={() => { setReadFilter("all"); setStatusFilterNew(false); setPage(0); }}
+            onClick={() => { setReadFilter("all"); setPage(0); }}
             className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
-              readFilter === "all" && !statusFilterNew
+              readFilter === "all"
                 ? "bg-[#2B7FFF] text-white shadow-lg shadow-[#2B7FFF]/20"
                 : "bg-[#1b3454] text-white/60 border border-white/10 hover:border-white/20 hover:text-white"
             }`}
@@ -2000,9 +557,9 @@ export default function LeadsPage() {
             All
           </button>
           <button
-            onClick={() => { setReadFilter("unread"); setStatusFilterNew(false); setPage(0); }}
+            onClick={() => { setReadFilter("unread"); setPage(0); }}
             className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
-              readFilter === "unread" && !statusFilterNew
+              readFilter === "unread"
                 ? "bg-[#2B7FFF] text-white shadow-lg shadow-[#2B7FFF]/20"
                 : "bg-[#1b3454] text-white/60 border border-white/10 hover:border-white/20 hover:text-white"
             }`}
@@ -2010,25 +567,27 @@ export default function LeadsPage() {
             Unread
           </button>
           <button
-            onClick={() => { setReadFilter("read"); setStatusFilterNew(false); setPage(0); }}
+            onClick={() => { setReadFilter("read"); setPage(0); }}
             className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
-              readFilter === "read" && !statusFilterNew
+              readFilter === "read"
                 ? "bg-[#2B7FFF] text-white shadow-lg shadow-[#2B7FFF]/20"
                 : "bg-[#1b3454] text-white/60 border border-white/10 hover:border-white/20 hover:text-white"
             }`}
           >
             Read
           </button>
-          <button
-            onClick={() => { setReadFilter("all"); setStatusFilterNew(true); setPage(0); }}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
-              statusFilterNew && readFilter === "all"
-                ? "bg-[#2B7FFF] text-white shadow-lg shadow-[#2B7FFF]/20"
-                : "bg-[#1b3454] text-white/60 border border-white/10 hover:border-white/20 hover:text-white"
-            }`}
+
+          {/* Type Filter Dropdown */}
+          <select
+            value={currentTypeFilterValue}
+            onChange={(e) => handleTypeFilterChange(e)}
+            className="bg-[#1b3454] border border-white/10 rounded-xl px-4 py-2 text-sm font-semibold text-white/60 focus:outline-none focus:border-[#2B7FFF]/40 cursor-pointer hover:border-white/20 hover:text-white transition-all"
           >
-            New
-          </button>
+            <option value="all">All Types</option>
+            <option value="property_inquiry">Property Inquiry</option>
+            <option value="buyer_guide">Buyer Guide</option>
+            <option value="seller_guide">Seller Guide</option>
+          </select>
         </div>
       </div>
 
@@ -2041,6 +600,7 @@ export default function LeadsPage() {
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider w-12">#</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider min-w-50">Lead Info</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider min-w-40">Property</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider min-w-35">Property Code</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider min-w-30">Type</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider">Status</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider">Source</th>
@@ -2064,6 +624,7 @@ export default function LeadsPage() {
                       </div>
                     </td>
                     <td><div className="w-24 h-4 bg-white/5 rounded" /></td>
+                    <td><div className="w-28 h-4 bg-white/5 rounded" /></td>
                     <td><div className="w-20 h-5 bg-white/5 rounded" /></td>
                     <td><div className="w-14 h-6 bg-white/5 rounded-full" /></td>
                     <td><div className="w-16 h-5 bg-white/5 rounded" /></td>
@@ -2079,17 +640,17 @@ export default function LeadsPage() {
                 ))
               ) : filteredLeads.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-16">
+                  <td colSpan={9} className="text-center py-16">
                     <div className="w-16 h-16 rounded-full bg-[#2B7FFF]/10 flex items-center justify-center mx-auto mb-4 border border-[#2B7FFF]/15">
                       <Users size={28} className="text-[#2B7FFF]/40" />
                     </div>
                     <p className="text-white/40 text-sm">No leads found</p>
                     <p className="text-white/25 text-xs mt-1">
-                      {debouncedSearch || readFilter !== "all" || statusFilterNew
+                      {debouncedSearch || readFilter !== "all" || currentTypeFilterValue !== "all"
                         ? "Try adjusting your search or filters"
                         : "Leads will appear here when customers submit inquiries"}
                     </p>
-                    {(debouncedSearch || readFilter !== "all" || statusFilterNew) && (
+                    {(debouncedSearch || readFilter !== "all" || currentTypeFilterValue !== "all") && (
                       <button onClick={handleResetFilters} className="text-[#2B7FFF] text-sm font-semibold mt-2 hover:underline cursor-pointer">
                         Clear all filters
                       </button>
@@ -2142,6 +703,17 @@ export default function LeadsPage() {
 
                       <td className="px-4 py-3 text-white/70 text-sm truncate max-w-40">
                         {lead.property?.title || "N/A"}
+                      </td>
+
+                      <td className="px-4 py-3">
+                        {lead.property?.propertyCode ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono font-bold rounded-lg bg-[#2B7FFF]/10 text-[#2B7FFF] border border-[#2B7FFF]/20">
+                            <Hash size={11} className="shrink-0" />
+                            {lead.property.propertyCode}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-white/20">—</span>
+                        )}
                       </td>
 
                       <td className="px-4 py-3">
@@ -2273,7 +845,7 @@ export default function LeadsPage() {
 
       {/* ===== LEAD DETAIL MODAL ===== */}
       <AnimatePresence>
-        {detailModalOpen && selectedLead && (
+        {detailModalOpen && (
           <motion.div
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
             initial={{ opacity: 0 }}
@@ -2296,135 +868,168 @@ export default function LeadsPage() {
             >
               <div className="h-1 w-full bg-linear-to-r from-[#2B7FFF] via-[#8b5cf6] to-[#2B7FFF] rounded-t-2xl" />
 
-              <div className="p-6">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-6">
+              {modalLoading ? (
+                <div className="p-6 space-y-4">
                   <div className="flex items-center gap-4">
-                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold uppercase shrink-0 ${!selectedLead.isRead ? "bg-[#2B7FFF] text-white shadow-lg shadow-[#2B7FFF]/20" : "bg-white/10 text-white/40"}`}>
-                      {selectedLead.name?.charAt(0) || "?"}
+                    <div className="w-14 h-14 rounded-2xl bg-white/5 animate-pulse" />
+                    <div className="flex-1 space-y-2">
+                      <div className="w-40 h-5 bg-white/5 rounded animate-pulse" />
+                      <div className="w-52 h-4 bg-white/5 rounded animate-pulse" />
                     </div>
-                    <div>
-                      <h2 className="text-xl font-bold text-white">{selectedLead.name || "N/A"}</h2>
-                      <p className="text-sm text-white/40 mt-0.5">{selectedLead.email || "No email"}</p>
-                      {selectedLead.phone && (
-                        <p className="text-sm text-white/40">{selectedLead.phone}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mt-4">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <div key={i} className="h-16 bg-white/5 rounded-xl animate-pulse" />
+                    ))}
+                  </div>
+                </div>
+              ) : selectedLead ? (
+                <div className="p-6">
+                  {/* Header */}
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold uppercase shrink-0 ${!selectedLead.isRead ? "bg-[#2B7FFF] text-white shadow-lg shadow-[#2B7FFF]/20" : "bg-white/10 text-white/40"}`}>
+                        {selectedLead.name?.charAt(0) || "?"}
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-bold text-white">{selectedLead.name || "N/A"}</h2>
+                        <p className="text-sm text-white/40 mt-0.5">{selectedLead.email || "No email"}</p>
+                        {selectedLead.phone && (
+                          <p className="text-sm text-white/40">{selectedLead.phone}</p>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setDetailModalOpen(false)}
+                      className="p-2 rounded-xl hover:bg-white/10 transition-colors cursor-pointer shrink-0"
+                    >
+                      <X size={20} className="text-white/50" />
+                    </button>
+                  </div>
+
+                  {/* Status badges */}
+                  <div className="flex flex-wrap items-center gap-2 mb-6">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full uppercase tracking-wider ${STATUS_CONFIG[selectedLead.status]?.color || "text-white"} ${STATUS_CONFIG[selectedLead.status]?.bg || "bg-white/10"} border ${STATUS_CONFIG[selectedLead.status]?.border || "border-white/10"}`}>
+                      {STATUS_CONFIG[selectedLead.status]?.icon}
+                      {STATUS_CONFIG[selectedLead.status]?.label || selectedLead.status || "N/A"}
+                    </span>
+                    <span className={`text-xs ${SOURCE_CONFIG[selectedLead.source]?.color || "text-gray-400"}`}>
+                      {SOURCE_CONFIG[selectedLead.source]?.label || selectedLead.source || "N/A"}
+                    </span>
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full uppercase tracking-wider ${selectedLead.isRead ? "text-gray-400 bg-gray-500/10 border border-gray-500/20" : "text-blue-400 bg-blue-500/15 border border-blue-500/25"}`}>
+                      <MailCheck size={12} />
+                      {selectedLead.isRead ? "Readed" : "New"}
+                    </span>
+                  </div>
+
+                  {/* Details Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 text-sm p-3 rounded-xl bg-white/3 border border-white/5">
+                        <User size={16} className="text-[#2B7FFF]/60 shrink-0" />
+                        <div>
+                          <p className="text-white/40 text-xs">Name</p>
+                          <p className="text-white font-medium">{selectedLead.name || "N/A"}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm p-3 rounded-xl bg-white/3 border border-white/5">
+                        <Mail size={16} className="text-[#2B7FFF]/60 shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-white/40 text-xs">Email</p>
+                          <p className="text-white font-medium break-all">{selectedLead.email || "N/A"}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm p-3 rounded-xl bg-white/3 border border-white/5">
+                        <Phone size={16} className="text-[#2B7FFF]/60 shrink-0" />
+                        <div>
+                          <p className="text-white/40 text-xs">Phone</p>
+                          <p className="text-white font-medium">{selectedLead.phone || "N/A"}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 text-sm p-3 rounded-xl bg-white/3 border border-white/5">
+                        <Home size={16} className="text-[#2B7FFF]/60 shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-white/40 text-xs">Property</p>
+                          <p className="text-white font-medium truncate">{selectedLead.property?.title || "N/A"}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 text-sm p-3 rounded-xl bg-white/3 border border-white/5">
+                        <Hash size={16} className="text-[#2B7FFF]/60 shrink-0" />
+                        <div>
+                          <p className="text-white/40 text-xs">Property Code</p>
+                          {selectedLead.property?.propertyCode ? (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-mono font-bold rounded-lg bg-[#2B7FFF]/10 text-[#2B7FFF] border border-[#2B7FFF]/20 mt-0.5">
+                              {selectedLead.property.propertyCode}
+                            </span>
+                          ) : (
+                            <p className="text-white/40 font-medium mt-0.5">N/A</p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 text-sm p-3 rounded-xl bg-white/3 border border-white/5">
+                        <Calendar size={16} className="text-[#2B7FFF]/60 shrink-0" />
+                        <div>
+                          <p className="text-white/40 text-xs">Created</p>
+                          <p className="text-white font-medium">{formatDate(selectedLead.createdAt)}</p>
+                        </div>
+                      </div>
+
+                      {selectedLead.readAt && (
+                        <div className="flex items-center gap-3 text-sm p-3 rounded-xl bg-white/3 border border-white/5">
+                          <MailCheck size={16} className="text-[#2B7FFF]/60 shrink-0" />
+                          <div>
+                            <p className="text-white/40 text-xs">Read At</p>
+                            <p className="text-white font-medium">{formatDate(selectedLead.readAt)}</p>
+                          </div>
+                        </div>
                       )}
                     </div>
                   </div>
-                  <button
-                    onClick={() => setDetailModalOpen(false)}
-                    className="p-2 rounded-xl hover:bg-white/10 transition-colors cursor-pointer shrink-0"
-                  >
-                    <X size={20} className="text-white/50" />
-                  </button>
-                </div>
 
-                {/* Status badges */}
-                <div className="flex flex-wrap items-center gap-2 mb-6">
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full uppercase tracking-wider ${STATUS_CONFIG[selectedLead.status]?.color || "text-white"} ${STATUS_CONFIG[selectedLead.status]?.bg || "bg-white/10"} border ${STATUS_CONFIG[selectedLead.status]?.border || "border-white/10"}`}>
-                    {STATUS_CONFIG[selectedLead.status]?.icon}
-                    {STATUS_CONFIG[selectedLead.status]?.label || selectedLead.status || "N/A"}
-                  </span>
-                  <span className={`text-xs ${SOURCE_CONFIG[selectedLead.source]?.color || "text-gray-400"}`}>
-                    {SOURCE_CONFIG[selectedLead.source]?.label || selectedLead.source || "N/A"}
-                  </span>
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full uppercase tracking-wider ${selectedLead.isRead ? "text-gray-400 bg-gray-500/10 border border-gray-500/20" : "text-blue-400 bg-blue-500/15 border border-blue-500/25"}`}>
-                    <MailCheck size={12} />
-                    {selectedLead.isRead ? "Readed" : "New"}
-                  </span>
-                </div>
-
-                {/* Details Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 text-sm p-3 rounded-xl bg-white/3 border border-white/5">
-                      <User size={16} className="text-[#2B7FFF]/60 shrink-0" />
-                      <div>
-                        <p className="text-white/40 text-xs">Name</p>
-                        <p className="text-white font-medium">{selectedLead.name || "N/A"}</p>
-                      </div>
+                  {/* Message */}
+                  {selectedLead.message && (
+                    <div className="mt-5 p-4 bg-white/3 rounded-xl border border-white/5">
+                      <p className="text-xs text-white/40 uppercase tracking-wider font-semibold mb-2">Message</p>
+                      <p className="text-white/80 text-sm leading-relaxed">{selectedLead.message}</p>
                     </div>
-                    <div className="flex items-center gap-3 text-sm p-3 rounded-xl bg-white/3 border border-white/5">
-                      <Mail size={16} className="text-[#2B7FFF]/60 shrink-0" />
-                      <div className="min-w-0">
-                        <p className="text-white/40 text-xs">Email</p>
-                        <p className="text-white font-medium break-all">{selectedLead.email || "N/A"}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm p-3 rounded-xl bg-white/3 border border-white/5">
-                      <Phone size={16} className="text-[#2B7FFF]/60 shrink-0" />
-                      <div>
-                        <p className="text-white/40 text-xs">Phone</p>
-                        <p className="text-white font-medium">{selectedLead.phone || "N/A"}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 text-sm p-3 rounded-xl bg-white/3 border border-white/5">
-                      <Home size={16} className="text-[#2B7FFF]/60 shrink-0" />
-                      <div className="min-w-0">
-                        <p className="text-white/40 text-xs">Property</p>
-                        <p className="text-white font-medium truncate">{selectedLead.property?.title || "N/A"}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm p-3 rounded-xl bg-white/3 border border-white/5">
-                      <Calendar size={16} className="text-[#2B7FFF]/60 shrink-0" />
-                      <div>
-                        <p className="text-white/40 text-xs">Created</p>
-                        <p className="text-white font-medium">{formatDate(selectedLead.createdAt)}</p>
-                      </div>
-                    </div>
-                    {selectedLead.readAt && (
-                      <div className="flex items-center gap-3 text-sm p-3 rounded-xl bg-white/3 border border-white/5">
-                        <MailCheck size={16} className="text-[#2B7FFF]/60 shrink-0" />
-                        <div>
-                          <p className="text-white/40 text-xs">Read At</p>
-                          <p className="text-white font-medium">{formatDate(selectedLead.readAt)}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Message */}
-                {selectedLead.message && (
-                  <div className="mt-5 p-4 bg-white/3 rounded-xl border border-white/5">
-                    <p className="text-xs text-white/40 uppercase tracking-wider font-semibold mb-2">Message</p>
-                    <p className="text-white/80 text-sm leading-relaxed">{selectedLead.message}</p>
-                  </div>
-                )}
-
-                {/* Actions */}
-                <div className="flex flex-wrap justify-end gap-3 mt-6 pt-5 border-t border-white/10">
-                  {!selectedLead.isRead && (
-                    <button
-                      onClick={() => handleMarkAsRead(selectedLead._id)}
-                      disabled={markingReadIds.has(selectedLead._id)}
-                      className="px-5 py-2.5 rounded-xl bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 transition-colors text-sm font-semibold flex items-center gap-2 cursor-pointer border border-emerald-500/20"
-                    >
-                      <MailCheck size={16} className={markingReadIds.has(selectedLead._id) ? "animate-pulse" : ""} />
-                      Mark as Read
-                    </button>
                   )}
-                  <button
-                    onClick={() => {
-                      setDetailModalOpen(false);
-                      setLeadToDelete(selectedLead);
-                      setDeleteDialogOpen(true);
-                    }}
-                    className="px-5 py-2.5 rounded-xl bg-red-500/15 text-red-400 hover:bg-red-500/25 transition-colors text-sm font-semibold flex items-center gap-2 cursor-pointer border border-red-500/20"
-                  >
-                    <Trash2 size={16} />
-                    Delete
-                  </button>
-                  <button
-                    onClick={() => setDetailModalOpen(false)}
-                    className="px-5 py-2.5 rounded-xl bg-white/5 text-white/60 hover:bg-white/10 transition-colors text-sm font-semibold cursor-pointer border border-white/10"
-                  >
-                    Close
-                  </button>
+
+                  {/* Actions */}
+                  <div className="flex flex-wrap justify-end gap-3 mt-6 pt-5 border-t border-white/10">
+                    {!selectedLead.isRead && (
+                      <button
+                        onClick={() => handleMarkAsRead(selectedLead._id)}
+                        disabled={markingReadIds.has(selectedLead._id)}
+                        className="px-5 py-2.5 rounded-xl bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 transition-colors text-sm font-semibold flex items-center gap-2 cursor-pointer border border-emerald-500/20"
+                      >
+                        <MailCheck size={16} className={markingReadIds.has(selectedLead._id) ? "animate-pulse" : ""} />
+                        Mark as Read
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        setDetailModalOpen(false);
+                        setLeadToDelete(selectedLead);
+                        setDeleteDialogOpen(true);
+                      }}
+                      className="px-5 py-2.5 rounded-xl bg-red-500/15 text-red-400 hover:bg-red-500/25 transition-colors text-sm font-semibold flex items-center gap-2 cursor-pointer border border-red-500/20"
+                    >
+                      <Trash2 size={16} />
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => setDetailModalOpen(false)}
+                      className="px-5 py-2.5 rounded-xl bg-white/5 text-white/60 hover:bg-white/10 transition-colors text-sm font-semibold cursor-pointer border border-white/10"
+                    >
+                      Close
+                    </button>
+                  </div>
                 </div>
-              </div>
+              ) : null}
             </motion.div>
           </motion.div>
         )}

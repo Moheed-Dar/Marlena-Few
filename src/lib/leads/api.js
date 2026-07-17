@@ -10,32 +10,30 @@ export const submitLead = async (formData) => {
   return response.data;
 };
 
-// ===== GET ALL (UPDATED TO ACCEPT OBJECT) =====
+// ===== GET ALL =====
 export const getAllLeads = async (params = {}) => {
-  // Object se values nikal le rahe hain, agar nahi mile toh default values
   const { 
     page = 1, 
     limit = 10, 
-    propertyId = "", 
-    isSearch = false, 
-    searchQuery = "",
     sortBy = "",
     sortOrder = "",
     status = "",
     source = "",
-    leadType = ""
+    leadType = "",
+    guideType = "" // ✅ FIX: guideType add kiya
   } = params;
 
   // URL build karna
   let url = `/api/leads/get-all?page=${page}&limit=${limit}`;
 
-  if (propertyId && propertyId.trim()) url += `&propertyId=${encodeURIComponent(propertyId)}`;
-  if (isSearch && searchQuery) url += `&isSearch=true&query=${encodeURIComponent(searchQuery)}`;
   if (sortBy) url += `&sortBy=${sortBy}`;
   if (sortOrder) url += `&sortOrder=${sortOrder}`;
   if (status) url += `&status=${status}`;
   if (source) url += `&source=${source}`;
   if (leadType) url += `&leadType=${leadType}`;
+  
+  // ✅ FIX: Agar guideType hai toh URL mein add karo
+  if (guideType) url += `&guideType=${guideType}`;
 
   const response = await api.get(url);
   return response.data;

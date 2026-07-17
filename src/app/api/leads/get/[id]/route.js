@@ -1,18 +1,16 @@
+// backend/app/api/leads/[id]/route.js
+
 import { NextResponse } from 'next/server';
 import dbConnect from '@/backend/lib/db';
 import Lead from '@/backend/models/lead';
-import Property from '@/backend/models/property';
 import mongoose from 'mongoose';
 
 export async function GET(request, { params }) {
   try {
-    // 1. Database Connect
     await dbConnect();
 
-    // 2. ID Nikalo (await lagaya hai - Next.js 15+ mein params Promise hai)
     const { id } = await params;
 
-    // 3. ID Valid Check Karo
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
         { success: false, message: "Invalid Lead ID format" },
@@ -20,13 +18,11 @@ export async function GET(request, { params }) {
       );
     }
 
-    // 4. Lead Fetch Karo With Property Details
+    // ✅ OPTIMIZED: Sirf wahi fields populate kar rahe hain jo Modal mein use ho rahe hain
     const lead = await Lead.findById(id)
-      .populate('property', 'title propertyCode city propertyType price priceType currency areaSize areaUnit location thumbnail images')
-      .populate('assignedTo', 'name email phone avatar')
-      .lean();
+      .populate('property', 'title propertyCode') // ❌ images, thumbnail, location hata diye
+      .lean(); // ❌ assignedTo hata diya (zaroorat nahi modal mein)
 
-    // 5. Lead Exist Check Karo
     if (!lead) {
       return NextResponse.json(
         { success: false, message: "Lead not found" },
@@ -34,7 +30,6 @@ export async function GET(request, { params }) {
       );
     }
 
-    // 6. Success Response
     return NextResponse.json(
       {
         success: true,

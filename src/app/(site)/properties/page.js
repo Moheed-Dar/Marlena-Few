@@ -177,8 +177,10 @@ export default function PropertiesPage() {
   const matchProperty = useCallback((p, words) => {
     const title = (p.title || "").toLowerCase();
     const location = (p.location || p.city || "").toLowerCase();
+    const code = (p.propertyCode || "").toLowerCase(); // ✅ ADDED: Property Code Search
+    
     return words.every(
-      (word) => title.includes(word) || location.includes(word),
+      (word) => title.includes(word) || location.includes(word) || code.includes(word) // ✅ ADDED: Check in code
     );
   }, []);
 
@@ -388,6 +390,15 @@ export default function PropertiesPage() {
               {property.title}
             </h3>
 
+            {/* ✅ ADDED: Property Code Badge in Grid Card */}
+            {property.propertyCode && (
+              <div className="mb-3">
+                <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-mono font-bold rounded-md bg-[#2B7FFF]/15 text-[#2B7FFF] border border-[#2B7FFF]/25">
+                  {property.propertyCode}
+                </span>
+              </div>
+            )}
+
             <div className="flex items-center gap-1.5 text-white/70 text-sm mb-4">
               <MapPin size={13} className="text-[#2B7FFF]/70 shrink-0" />
               <span className="truncate">
@@ -490,6 +501,12 @@ export default function PropertiesPage() {
                   {property.title}
                 </h3>
                 <div className="flex items-center gap-1.5 text-white/60 text-xs">
+                  {/* ✅ ADDED: Property Code in List Card */}
+                  {property.propertyCode && (
+                    <span className="inline-block font-mono text-[10px] font-bold text-[#2B7FFF]/80 bg-[#2B7FFF]/10 px-1.5 py-0.5 rounded mr-2">
+                      {property.propertyCode}
+                    </span>
+                  )}
                   <MapPin size={11} className="text-[#2B7FFF]/70" />
                   <span className="truncate">
                     {property.location || property.city}
@@ -603,7 +620,7 @@ export default function PropertiesPage() {
                       onFocus={() => {
                         if (searchInput.trim()) setShowSuggestions(true);
                       }}
-                      placeholder="Search by title or location..."
+                      placeholder="Search by title, location, or property code..." // ✅ UPDATED Placeholder
                       className="w-full pl-9 pr-20 py-3 text-sm bg-transparent text-white placeholder-white/30 focus:outline-none"
                       autoComplete="off"
                     />
@@ -706,6 +723,12 @@ export default function PropertiesPage() {
                                       query={searchInput}
                                     />
                                   </span>
+                                  {/* ✅ ADDED: Show Property Code in Suggestions */}
+                                  {property.propertyCode && (
+                                    <span className="ml-2 text-[10px] font-mono font-bold text-[#2B7FFF]/70 bg-[#2B7FFF]/10 px-1.5 py-0.5 rounded">
+                                      {property.propertyCode}
+                                    </span>
+                                  )}
                                 </div>
                               </div>
                               <div className="flex items-center gap-2.5 shrink-0">
@@ -766,7 +789,7 @@ export default function PropertiesPage() {
                           </p>
                         </div>
                       </motion.div>
-                    )}
+                    )} 
                 </AnimatePresence>
               </div>
 
@@ -864,7 +887,7 @@ export default function PropertiesPage() {
                   </span>
                 )}
                 {search && (
-                  <span className="flex items-center gap-1 px-2.5 py-1 bg-[#2B7FFF]/20 text-[#6BABFF] text-[11px] font-semibold rounded-full border border-[#2B7FFF]/25">
+                  <span className="flex items-center gap-1 px-2.5 py-1 bg-[#2B7BSD] text-[#6BABFF] text-[11px] font-semibold rounded-full border border-[#2B7FFF]/25">
                     &quot;{search.slice(0, 15)}&quot;
                     <button onClick={handleClearSearch}>
                       <X size={9} />

@@ -17,18 +17,14 @@ const contactSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    
-    // ⚠️ YEH 2 FIELDS MISSING THE JO MAINE ADD KIYE HAIN
     isRead: {
       type: Boolean,
-      default: false, // Naya contact aaye toh by default unread hoga
+      default: false,
     },
     readAt: {
       type: Date,
-      default: null, // Jab tak read nahi hoga tab tak null rahega
+      default: null,
     },
-    // ==========================================
-
     message: {
       type: String,
       required: [true, 'Message is required'],
@@ -36,8 +32,21 @@ const contactSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, // Yeh automatically createdAt aur updatedAt add kar dega
+    timestamps: true,
   }
 );
+
+// ============================================
+// INDEXES - Name, Email, Phone par
+// ============================================
+
+// Individual indexes - exact match, prefix search, sorting ke liye
+contactSchema.index({ name: 1 });
+contactSchema.index({ email: 1 });
+contactSchema.index({ phone: 1 });
+
+// Compound index - sabse zyada use hone wali query ke liye
+// isRead filter + createdAt sort → ye combination bahut fast hoga
+contactSchema.index({ isRead: 1, createdAt: -1 });
 
 export default mongoose.models.Contact || mongoose.model('Contact', contactSchema);

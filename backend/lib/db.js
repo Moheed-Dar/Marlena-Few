@@ -15,9 +15,9 @@ const connectDB = async () => {
   }
 };
 
-// process.on('warning', (warning) => {
-//   console.error('=== EXACT ERROR LOCATION ===');
-//   console.error(warning.stack);
-// });
+process.on('warning', (warning) => {
+  console.error('=== EXACT ERROR LOCATION ===');
+  console.error(warning.stack);
+});
 
 export default connectDB;

@@ -27,7 +27,7 @@ export async function PATCH(request, { params }) {
         isRead: true,
         readAt: new Date(),
       },
-      { new : true, runValidators: true }
+      { returnDocument: 'after',runValidators: true }
     ).lean();
 
     // Lead Exist Check
