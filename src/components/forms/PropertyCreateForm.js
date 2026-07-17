@@ -1,24 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { createProperty } from "@/lib/properties/api";
 import {
   X,
   Loader2,
-  Upload,
   ImagePlus,
-  Trash2,
-  MapPin,
+  Hash,
+  AlertCircle,
   Building2,
   DollarSign,
-  Bed,
-  Bath,
-  Maximize,
-  Tag,
+  MapPin,
+  Home,
+  Layers,
   Star,
   Eye,
+  Phone,
+  Mail,
+  User,
+  Image,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { createProperty } from "@/lib/properties/api";
 
 const PROPERTY_TYPES = [
   "house", "apartment", "villa", "penthouse",
@@ -47,10 +49,52 @@ const SUGGESTED_AMENITIES = [
   "BBQ Area", "Sauna", "Spa", "Steam Room",
 ];
 
+// ============================================
+// SECTION WRAPPER
+// ============================================
+function Section({ icon: Icon, title, children, optional }) {
+  return (
+    <div className="bg-white/2 rounded-2xl border border-white/6 p-5 sm:p-6">
+      <div className="flex items-center gap-2.5 mb-5">
+        <div className="w-8 h-8 rounded-lg bg-[#2B7FFF]/10 flex items-center justify-center shrink-0">
+          <Icon size={15} className="text-[#2B7FFF]" />
+        </div>
+        <div>
+          <h3 className="text-sm font-bold text-white">{title}</h3>
+          {optional && (
+            <span className="text-[10px] text-white">Optional</span>
+          )}
+        </div>
+      </div>
+      <div className="space-y-4">{children}</div>
+    </div>
+  );
+}
+
+// ============================================
+// FIELD WRAPPER
+// ============================================
+function Field({ label, required, children, hint }) {
+  return (
+    <div>
+      <label className="block text-[11px] font-semibold text-white uppercase tracking-wider mb-1.5">
+        {label}{" "}
+        {required && <span className="text-red-400/80 normal-case"> *</span>}
+      </label>
+      {children}
+      {hint && (
+        <p className="text-white text-[10px] mt-1">{hint}</p>
+      )}
+    </div>
+  );
+}
+
+// ============================================
+// MAIN COMPONENT
+// ============================================
 export default function PropertyCreateForm({ onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [step, setStep] = useState(1);
 
   const [images, setImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
@@ -82,18 +126,16 @@ export default function PropertyCreateForm({ onClose, onSuccess }) {
     contactEmail: "",
     features: [],
     amenities: [],
+    propertyCode: "",
   });
 
   // ============================================
-  // HANDLE CHANGE
+  // HANDLERS
   // ============================================
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  // ============================================
-  // TOGGLE FEATURE / AMENITY
-  // ============================================
   const toggleItem = (field, item) => {
     setForm((prev) => {
       const arr = prev[field];
@@ -104,9 +146,6 @@ export default function PropertyCreateForm({ onClose, onSuccess }) {
     });
   };
 
-  // ============================================
-  // IMAGE HANDLING
-  // ============================================
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
@@ -121,8 +160,8 @@ export default function PropertyCreateForm({ onClose, onSuccess }) {
 
     files.forEach((file) => {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        newPreviews.push(e.target.result);
+      reader.onload = (ev) => {
+        newPreviews.push(ev.target.result);
         setImagePreviews([...newPreviews]);
       };
       reader.readAsDataURL(file);
@@ -138,19 +177,33 @@ export default function PropertyCreateForm({ onClose, onSuccess }) {
   };
 
   // ============================================
-  // SUBMIT — Uses lib/api.js → /api/properties/create
+  // SUBMIT
   // ============================================
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    // Basic validation
-    if (!form.title || !form.description || !form.price || !form.location || !form.city || !form.propertyType) {
-      setError("Please fill all required fields");
+    const requiredFields = [
+      { key: "title", label: "Title" },
+      { key: "description", label: "Description" },
+      { key: "price", label: "Price" },
+      { key: "location", label: "Location" },
+      { key: "city", label: "City" },
+      { key: "propertyType", label: "Property Type" },
+    ];
+
+    const missingFields = requiredFields.filter(
+      (f) => !form[f.key]?.toString().trim()
+    );
+
+    if (missingFields.length > 0) {
+      setError(
+        `Please fill: ${missingFields.map((f) => f.label).join(", ")}`
+      );
       return;
     }
 
-    if (form.description.length < 20) {
+    if (form.description.trim().length < 20) {
       setError("Description must be at least 20 characters");
       return;
     }
@@ -158,56 +211,59 @@ export default function PropertyCreateForm({ onClose, onSuccess }) {
     setLoading(true);
 
     try {
-      const formData = new FormData();
+      const fd = new FormData();
 
-      // Text fields
-      formData.append("title", form.title);
-      formData.append("description", form.description);
-      formData.append("price", form.price);
-      formData.append("priceType", form.priceType);
-      formData.append("currency", form.currency);
-      formData.append("location", form.location);
-      formData.append("city", form.city);
-      formData.append("area", form.area);
-      formData.append("address", form.address);
-      formData.append("latitude", form.latitude);
-      formData.append("longitude", form.longitude);
-      formData.append("propertyType", form.propertyType);
-      formData.append("bedrooms", form.bedrooms || 0);
-      formData.append("bathrooms", form.bathrooms || 0);
-      formData.append("kitchens", form.kitchens || 0);
-      formData.append("areaSize", form.areaSize || 0);
-      formData.append("areaUnit", form.areaUnit);
-      formData.append("floors", form.floors || 0);
-      formData.append("yearBuilt", form.yearBuilt);
-      formData.append("isFeatured", String(form.isFeatured));
-      formData.append("isPublished", String(form.isPublished));
-      formData.append("contactName", form.contactName);
-      formData.append("contactPhone", form.contactPhone);
-      formData.append("contactEmail", form.contactEmail);
+      fd.append("title", form.title.trim());
+      fd.append("description", form.description.trim());
+      fd.append("price", String(form.price));
+      fd.append("priceType", form.priceType);
+      fd.append("currency", form.currency);
+      fd.append("location", form.location.trim());
+      fd.append("city", form.city.trim());
+      fd.append("area", (form.area || "").trim());
+      fd.append("address", (form.address || "").trim());
+      fd.append("latitude", form.latitude || "");
+      fd.append("longitude", form.longitude || "");
+      fd.append("propertyType", form.propertyType);
+      fd.append("bedrooms", String(form.bedrooms || 0));
+      fd.append("bathrooms", String(form.bathrooms || 0));
+      fd.append("kitchens", String(form.kitchens || 0));
+      fd.append("floors", String(form.floors || 0));
+      fd.append("areaSize", String(form.areaSize || 0));
+      fd.append("areaUnit", form.areaUnit);
+      fd.append("yearBuilt", form.yearBuilt || "");
+      fd.append("isFeatured", String(form.isFeatured));
+      fd.append("isPublished", String(form.isPublished));
+      fd.append("contactName", (form.contactName || "").trim());
+      fd.append("contactPhone", (form.contactPhone || "").trim());
+      fd.append("contactEmail", (form.contactEmail || "").trim());
+      fd.append("features", JSON.stringify(form.features || []));
+      fd.append("amenities", JSON.stringify(form.amenities || []));
+      fd.append("propertyCode", (form.propertyCode || "").trim());
 
-      // JSON arrays
-      formData.append("features", JSON.stringify(form.features));
-      formData.append("amenities", JSON.stringify(form.amenities));
+      if (images.length > 0) {
+        images.forEach((img) => {
+          fd.append("images", img);
+        });
+      }
 
-      // Images
-      images.forEach((img) => {
-        formData.append("images", img);
-      });
-
-      // ✅ CORRECT: Uses lib/api.js which calls /api/properties/create
-      const res = await createProperty(formData);
+      const res = await createProperty(fd);
 
       if (res.success) {
         onSuccess();
       } else {
-        setError(res.message || "Failed to create property");
-        if (res.errors) {
-          setError(res.errors.join(", "));
-        }
+        const errorMsg = res.errors
+          ? res.errors.map((err) => err.message || err).join(", ")
+          : res.message || "Failed to create property";
+        setError(errorMsg);
       }
     } catch (err) {
-      const msg = err?.response?.data?.message || err?.message || "Something went wrong";
+      const msg =
+        err?.response?.data?.errors
+          ? err.response.data.errors.map((e) => e.message || e).join(", ")
+          : err?.response?.data?.message ||
+            err?.message ||
+            "Something went wrong";
       setError(msg);
     } finally {
       setLoading(false);
@@ -215,255 +271,418 @@ export default function PropertyCreateForm({ onClose, onSuccess }) {
   };
 
   // ============================================
-  // INPUT CLASS
+  // CLASSES
   // ============================================
   const inputClass =
-    "w-full bg-[#1b3454] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-[#2B7FFF]/40 focus:ring-2 focus:ring-[#2B7FFF]/10 transition-all";
+    "w-full bg-[#0f2240] border border-white/[0.08] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/60 outline-none focus:border-[#2B7FFF]/40 focus:ring-2 focus:ring-[#2B7FFF]/10 transition-all";
 
   const selectClass =
-    "w-full bg-[#1b3454] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-[#2B7FFF]/40 focus:ring-2 focus:ring-[#2B7FFF]/10 transition-all appearance-none";
+    "w-full bg-[#0f2240] border border-white/[0.08] rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-[#2B7FFF]/40 focus:ring-2 focus:ring-[#2B7FFF]/10 transition-all appearance-none";
+
+  const optionStyle = { backgroundColor: "#0f2240" };
 
   // ============================================
   // RENDER
   // ============================================
   return (
-    <div className="fixed inset-0 z-9999 flex items-start justify-center p-4 pt-8 overflow-y-auto">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-9999 bg-[#040d1a]/95"
+      onClick={onClose}
+    >
+      {/* ===== MAIN CONTAINER ===== */}
       <motion.div
-        initial={{ opacity: 0, y: 30, scale: 0.97 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 30, scale: 0.97 }}
-        className="relative bg-[#0d1f3c] rounded-2xl border border-white/10 w-full max-w-3xl shadow-2xl shadow-black/50 mb-8"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 10 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className="relative z-10 flex flex-col h-full bg-[#081730]"
+        onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
-          <div>
-            <h2 className="text-lg font-bold text-white">Add New Property</h2>
-            <p className="text-white/40 text-xs mt-0.5">Fill in the property details</p>
+        {/* ===== STICKY HEADER ===== */}
+        <div className="shrink-0 border-b border-white/6 bg-[#081730]">
+          <div className="flex items-center justify-between px-6 lg:px-8 h-16">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[#2B7FFF]/10 flex items-center justify-center">
+                <Building2 size={18} className="text-[#2B7FFF]" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-white">
+                  Add New Property
+                </h2>
+                <p className="text-white text-[11px] -mt-0.5">
+                  Fill in all the details below
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-9 h-9 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors"
+            >
+              <X size={16} className="text-white" />
+            </button>
           </div>
-          <button onClick={onClose} className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-white/5 transition-colors">
-            <X size={18} className="text-white/50" />
-          </button>
+
+          {/* Error Bar */}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="px-6 lg:px-8 pb-3"
+            >
+              <div className="px-4 py-2.5 bg-red-500/10 border border-red-500/15 rounded-xl flex items-center gap-3">
+                <AlertCircle
+                  size={15}
+                  className="text-red-400 shrink-0"
+                />
+                <p className="text-red-300 text-xs flex-1 wrap-break-word">
+                  {error}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setError("")}
+                  className="shrink-0 p-0.5 hover:bg-red-500/20 rounded-lg transition-colors"
+                >
+                  <X size={13} className="text-red-400" />
+                </button>
+              </div>
+            </motion.div>
+          )}
         </div>
 
-        {/* Error */}
-        {error && (
-          <div className="mx-6 mt-4 px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl">
-            <p className="text-red-400 text-sm">{error}</p>
-          </div>
-        )}
+        {/* ===== SCROLLABLE CONTENT ===== */}
+        <div className="flex-1 overflow-y-auto overscroll-contain will-change-transform">
+          <form
+            id="propertyCreateForm"
+            onSubmit={handleSubmit}
+            className="px-6 lg:px-8 py-6 space-y-5 max-w-6xl mx-auto"
+          >
+            {/* ============================= */}
+            {/* SECTION: BASIC INFORMATION    */}
+            {/* ============================= */}
+            <Section icon={Building2} title="Basic Information">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <Field label="Property Code (Optional)" hint="Auto-generated if left empty">
+                  <div className="relative">
+                    <Hash
+                      size={14}
+                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/60"
+                    />
+                    <input
+                      type="text"
+                      value={form.propertyCode}
+                      onChange={(e) =>
+                        handleChange("propertyCode", e.target.value)
+                      }
+                      placeholder="Enter property code or leave empty"
+                      className={`${inputClass} pl-9`}
+                    />
+                  </div>
+                </Field>
 
-        {/* Step Indicators */}
-        <div className="px-6 pt-5">
-          <div className="flex items-center gap-2 mb-6">
-            {[1, 2, 3].map((s) => (
-              <button
-                key={s}
-                onClick={() => setStep(s)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
-                  step === s
-                    ? "bg-[#2B7FFF]/15 text-[#2B7FFF] border border-[#2B7FFF]/25"
-                    : "text-white/30 hover:text-white/50 border border-transparent hover:bg-white/5"
-                }`}
-              >
-                <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                  step === s ? "bg-[#2B7FFF] text-white" : "bg-white/10 text-white/40"
-                }`}>
-                  {s}
-                </span>
-                {s === 1 && "Basic"}
-                {s === 2 && "Details"}
-                {s === 3 && "Media"}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="px-6 pb-6">
-          {/* ===== STEP 1: BASIC INFO ===== */}
-          {step === 1 && (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">
-                  Title <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={form.title}
-                  onChange={(e) => handleChange("title", e.target.value)}
-                  placeholder="e.g. 5 Marla House for Sale in DHA Phase 5"
-                  className={inputClass}
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">
-                  Description <span className="text-red-400">*</span>
-                </label>
-                <textarea
-                  value={form.description}
-                  onChange={(e) => handleChange("description", e.target.value)}
-                  placeholder="Describe the property in detail..."
-                  rows={5}
-                  className={`${inputClass} resize-none`}
-                />
-                <p className="text-white/20 text-[10px] mt-1">{form.description.length}/5000 characters</p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">
-                    Price <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    value={form.price}
-                    onChange={(e) => handleChange("price", e.target.value)}
-                    placeholder="5000000"
-                    className={inputClass}
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">Type</label>
+                <Field label="Property Type" required>
                   <select
-                    value={form.priceType}
-                    onChange={(e) => handleChange("priceType", e.target.value)}
+                    value={form.propertyType}
+                    onChange={(e) =>
+                      handleChange("propertyType", e.target.value)
+                    }
                     className={selectClass}
                   >
-                    {PRICE_TYPES.map((t) => (
-                      <option key={t} value={t} style={{ backgroundColor: "#1b3454" }} className="capitalize">
+                    <option value="" style={optionStyle}>
+                      Select property type
+                    </option>
+                    {PROPERTY_TYPES.map((t) => (
+                      <option
+                        key={t}
+                        value={t}
+                        style={optionStyle}
+                        className="capitalize"
+                      >
                         {t}
                       </option>
                     ))}
                   </select>
+                </Field>
+              </div>
+
+              <Field label="Title" required>
+                <input
+                  type="text"
+                  value={form.title}
+                  onChange={(e) => handleChange("title", e.target.value)}
+                  placeholder="Enter property title"
+                  className={inputClass}
+                />
+              </Field>
+
+              <Field label="Description" required>
+                <textarea
+                  value={form.description}
+                  onChange={(e) =>
+                    handleChange("description", e.target.value)
+                  }
+                  placeholder="Describe the property in detail"
+                  rows={4}
+                  className={`${inputClass} resize-none`}
+                />
+                <div className="flex justify-between mt-1">
+                  <p className="text-white text-[10px]">Minimum 20 characters</p>
+                  <p className="text-white text-[10px]">
+                    {form.description.length}/5000
+                  </p>
                 </div>
-                <div>
-                  <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">Currency</label>
+              </Field>
+            </Section>
+
+            {/* ============================= */}
+            {/* SECTION: PRICING              */}
+            {/* ============================= */}
+            <Section icon={DollarSign} title="Pricing">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <Field label="Price" required>
+                  <input
+                    type="number"
+                    value={form.price}
+                    onChange={(e) => handleChange("price", e.target.value)}
+                    placeholder="Enter price"
+                    className={inputClass}
+                  />
+                </Field>
+
+                <Field label="Price Type">
+                  <select
+                    value={form.priceType}
+                    onChange={(e) =>
+                      handleChange("priceType", e.target.value)
+                    }
+                    className={selectClass}
+                  >
+                    {PRICE_TYPES.map((t) => (
+                      <option
+                        key={t}
+                        value={t}
+                        style={optionStyle}
+                        className="capitalize"
+                      >
+                        {t}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+
+                <Field label="Currency">
                   <select
                     value={form.currency}
-                    onChange={(e) => handleChange("currency", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("currency", e.target.value)
+                    }
                     className={selectClass}
                   >
                     {CURRENCIES.map((c) => (
-                      <option key={c} value={c} style={{ backgroundColor: "#1b3454" }}>
+                      <option key={c} value={c} style={optionStyle}>
                         {c}
                       </option>
                     ))}
                   </select>
-                </div>
+                </Field>
               </div>
+            </Section>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">
-                    Location <span className="text-red-400">*</span>
-                  </label>
+            {/* ============================= */}
+            {/* SECTION: LOCATION             */}
+            {/* ============================= */}
+            <Section icon={MapPin} title="Location">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <Field label="Location" required>
                   <input
                     type="text"
                     value={form.location}
-                    onChange={(e) => handleChange("location", e.target.value)}
-                    placeholder="e.g. DHA Phase 5, Lahore"
+                    onChange={(e) =>
+                      handleChange("location", e.target.value)
+                    }
+                    placeholder="Enter location"
                     className={inputClass}
                   />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">
-                    City <span className="text-red-400">*</span>
-                  </label>
+                </Field>
+
+                <Field label="City" required>
                   <input
                     type="text"
                     value={form.city}
                     onChange={(e) => handleChange("city", e.target.value)}
-                    placeholder="e.g. Lahore"
+                    placeholder="Enter city name"
                     className={inputClass}
                   />
-                </div>
+                </Field>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">
-                  Property Type <span className="text-red-400">*</span>
-                </label>
-                <select
-                  value={form.propertyType}
-                  onChange={(e) => handleChange("propertyType", e.target.value)}
-                  className={selectClass}
-                >
-                  <option value="" style={{ backgroundColor: "#1b3454" }}>Select type</option>
-                  {PROPERTY_TYPES.map((t) => (
-                    <option key={t} value={t} style={{ backgroundColor: "#1b3454" }} className="capitalize">
-                      {t}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          )}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <Field label="Area / Society">
+                  <input
+                    type="text"
+                    value={form.area}
+                    onChange={(e) => handleChange("area", e.target.value)}
+                    placeholder="Enter area or society name"
+                    className={inputClass}
+                  />
+                </Field>
 
-          {/* ===== STEP 2: DETAILS ===== */}
-          {step === 2 && (
-            <div className="space-y-4">
+                <Field label="Full Address">
+                  <input
+                    type="text"
+                    value={form.address}
+                    onChange={(e) => handleChange("address", e.target.value)}
+                    placeholder="Enter full address"
+                    className={inputClass}
+                  />
+                </Field>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Field label="Latitude (Optional)" hint="For map pin">
+                  <input
+                    type="number"
+                    step="any"
+                    value={form.latitude}
+                    onChange={(e) =>
+                      handleChange("latitude", e.target.value)
+                    }
+                    placeholder="Enter latitude"
+                    className={inputClass}
+                  />
+                </Field>
+
+                <Field label="Longitude (Optional)" hint="For map pin">
+                  <input
+                    type="number"
+                    step="any"
+                    value={form.longitude}
+                    onChange={(e) =>
+                      handleChange("longitude", e.target.value)
+                    }
+                    placeholder="Enter longitude"
+                    className={inputClass}
+                  />
+                </Field>
+              </div>
+            </Section>
+
+            {/* ============================= */}
+            {/* SECTION: PROPERTY DETAILS     */}
+            {/* ============================= */}
+            <Section icon={Home} title="Property Details" optional>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div>
-                  <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">Bedrooms</label>
-                  <input type="number" value={form.bedrooms} onChange={(e) => handleChange("bedrooms", e.target.value)} placeholder="0" className={inputClass} />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">Bathrooms</label>
-                  <input type="number" value={form.bathrooms} onChange={(e) => handleChange("bathrooms", e.target.value)} placeholder="0" className={inputClass} />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">Kitchens</label>
-                  <input type="number" value={form.kitchens} onChange={(e) => handleChange("kitchens", e.target.value)} placeholder="0" className={inputClass} />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">Floors</label>
-                  <input type="number" value={form.floors} onChange={(e) => handleChange("floors", e.target.value)} placeholder="0" className={inputClass} />
-                </div>
+                <Field label="Bedrooms">
+                  <input
+                    type="number"
+                    value={form.bedrooms}
+                    onChange={(e) =>
+                      handleChange("bedrooms", e.target.value)
+                    }
+                    placeholder="Enter number of bedrooms"
+                    className={inputClass}
+                  />
+                </Field>
+
+                <Field label="Bathrooms">
+                  <input
+                    type="number"
+                    value={form.bathrooms}
+                    onChange={(e) =>
+                      handleChange("bathrooms", e.target.value)
+                    }
+                    placeholder="Enter number of bathrooms"
+                    className={inputClass}
+                  />
+                </Field>
+
+                <Field label="Kitchens">
+                  <input
+                    type="number"
+                    value={form.kitchens}
+                    onChange={(e) =>
+                      handleChange("kitchens", e.target.value)
+                    }
+                    placeholder="Enter number of kitchens"
+                    className={inputClass}
+                  />
+                </Field>
+
+                <Field label="Floors">
+                  <input
+                    type="number"
+                    value={form.floors}
+                    onChange={(e) =>
+                      handleChange("floors", e.target.value)
+                    }
+                    placeholder="Enter number of floors"
+                    className={inputClass}
+                  />
+                </Field>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">Area Size</label>
-                  <input type="number" value={form.areaSize} onChange={(e) => handleChange("areaSize", e.target.value)} placeholder="0" className={inputClass} />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">Area Unit</label>
-                  <select value={form.areaUnit} onChange={(e) => handleChange("areaUnit", e.target.value)} className={selectClass}>
+                <Field label="Area Size">
+                  <input
+                    type="number"
+                    value={form.areaSize}
+                    onChange={(e) =>
+                      handleChange("areaSize", e.target.value)
+                    }
+                    placeholder="Enter area size"
+                    className={inputClass}
+                  />
+                </Field>
+
+                <Field label="Area Unit">
+                  <select
+                    value={form.areaUnit}
+                    onChange={(e) =>
+                      handleChange("areaUnit", e.target.value)
+                    }
+                    className={selectClass}
+                  >
                     {AREA_UNITS.map((u) => (
-                      <option key={u} value={u} style={{ backgroundColor: "#1b3454" }}>{u}</option>
+                      <option key={u} value={u} style={optionStyle}>
+                        {u}
+                      </option>
                     ))}
                   </select>
-                </div>
-                <div>
-                  <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">Year Built</label>
-                  <input type="number" value={form.yearBuilt} onChange={(e) => handleChange("yearBuilt", e.target.value)} placeholder="2024" className={inputClass} />
-                </div>
-              </div>
+                </Field>
 
-              <div>
-                <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">Address</label>
-                <input type="text" value={form.address} onChange={(e) => handleChange("address", e.target.value)} placeholder="Full address..." className={inputClass} />
+                <Field label="Year Built">
+                  <input
+                    type="number"
+                    value={form.yearBuilt}
+                    onChange={(e) =>
+                      handleChange("yearBuilt", e.target.value)
+                    }
+                    placeholder="Enter year built"
+                    className={inputClass}
+                  />
+                </Field>
               </div>
+            </Section>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">Latitude</label>
-                  <input type="number" step="any" value={form.latitude} onChange={(e) => handleChange("latitude", e.target.value)} placeholder="31.5204" className={inputClass} />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">Longitude</label>
-                  <input type="number" step="any" value={form.longitude} onChange={(e) => handleChange("longitude", e.target.value)} placeholder="74.3587" className={inputClass} />
-                </div>
-              </div>
-
+            {/* ============================= */}
+            {/* SECTION: FEATURES & AMENITIES */}
+            {/* ============================= */}
+            <Section icon={Layers} title="Features & Amenities" optional>
               {/* Features */}
               <div>
-                <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2">
-                  Features ({form.features.length} selected)
-                </label>
+                <div className="flex items-center justify-between mb-2.5">
+                  <span className="text-xs font-semibold text-white">
+                    Features
+                  </span>
+                  <span className="text-[10px] text-white bg-white/5 px-2 py-0.5 rounded-full">
+                    {form.features.length} selected
+                  </span>
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {SUGGESTED_FEATURES.map((item) => (
                     <button
@@ -473,7 +692,7 @@ export default function PropertyCreateForm({ onClose, onSuccess }) {
                       className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                         form.features.includes(item)
                           ? "bg-[#2B7FFF]/15 text-[#2B7FFF] border border-[#2B7FFF]/25"
-                          : "bg-white/5 text-white/40 border border-white/10 hover:bg-white/10"
+                          : "bg-white/3 text-white border border-white/6 hover:bg-white/6 hover:text-white"
                       }`}
                     >
                       {item}
@@ -482,11 +701,19 @@ export default function PropertyCreateForm({ onClose, onSuccess }) {
                 </div>
               </div>
 
+              {/* Divider */}
+              <div className="border-t border-white/4" />
+
               {/* Amenities */}
               <div>
-                <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2">
-                  Amenities ({form.amenities.length} selected)
-                </label>
+                <div className="flex items-center justify-between mb-2.5">
+                  <span className="text-xs font-semibold text-white">
+                    Amenities
+                  </span>
+                  <span className="text-[10px] text-white bg-white/5 px-2 py-0.5 rounded-full">
+                    {form.amenities.length} selected
+                  </span>
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {SUGGESTED_AMENITIES.map((item) => (
                     <button
@@ -496,7 +723,7 @@ export default function PropertyCreateForm({ onClose, onSuccess }) {
                       className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                         form.amenities.includes(item)
                           ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/25"
-                          : "bg-white/5 text-white/40 border border-white/10 hover:bg-white/10"
+                          : "bg-white/3 text-white border border-white/6 hover:bg-white/6 hover:text-white"
                       }`}
                     >
                       {item}
@@ -506,127 +733,211 @@ export default function PropertyCreateForm({ onClose, onSuccess }) {
               </div>
 
               {/* Toggles */}
-              <div className="flex items-center gap-6">
-                <label className="flex items-center gap-2.5 cursor-pointer">
-                  <div
-                    onClick={() => handleChange("isFeatured", !form.isFeatured)}
-                    className={`w-10 h-5.5 rounded-full transition-colors relative cursor-pointer ${form.isFeatured ? "bg-[#2B7FFF]" : "bg-white/10"}`}
+              <div className="flex items-center gap-8 pt-2">
+                <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleChange("isFeatured", !form.isFeatured)
+                    }
+                    className={`relative w-11 h-6 rounded-full transition-colors ${
+                      form.isFeatured ? "bg-[#2B7FFF]" : "bg-white/10"
+                    }`}
                   >
-                    <div className={`absolute top-0.5 w-4.5 h-4.5 rounded-full bg-white shadow transition-transform ${form.isFeatured ? "translate-x-5" : "translate-x-0.5"}`} />
+                    <span
+                      className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
+                        form.isFeatured ? "translate-x-5" : "translate-x-0"
+                      }`}
+                    />
+                  </button>
+                  <div className="flex items-center gap-1.5">
+                    <Star size={12} className="text-white" />
+                    <span className="text-xs text-white">Featured</span>
                   </div>
-                  <span className="text-xs text-white/50">Featured</span>
                 </label>
-                <label className="flex items-center gap-2.5 cursor-pointer">
-                  <div
-                    onClick={() => handleChange("isPublished", !form.isPublished)}
-                    className={`w-10 h-5.5 rounded-full transition-colors relative cursor-pointer ${form.isPublished ? "bg-[#2B7FFF]" : "bg-white/10"}`}
+
+                <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleChange("isPublished", !form.isPublished)
+                    }
+                    className={`relative w-11 h-6 rounded-full transition-colors ${
+                      form.isPublished ? "bg-[#2B7FFF]" : "bg-white/10"
+                    }`}
                   >
-                    <div className={`absolute top-0.5 w-4.5 h-4.5 rounded-full bg-white shadow transition-transform ${form.isPublished ? "translate-x-5" : "translate-x-0.5"}`} />
+                    <span
+                      className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
+                        form.isPublished ? "translate-x-5" : "translate-x-0"
+                      }`}
+                    />
+                  </button>
+                  <div className="flex items-center gap-1.5">
+                    <Eye size={12} className="text-white" />
+                    <span className="text-xs text-white">Published</span>
                   </div>
-                  <span className="text-xs text-white/50">Published</span>
                 </label>
               </div>
-            </div>
-          )}
+            </Section>
 
-          {/* ===== STEP 3: IMAGES + CONTACT ===== */}
-          {step === 3 && (
-            <div className="space-y-4">
-              {/* Image Upload */}
-              <div>
-                <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2">
-                  Images ({images.length}/10)
-                </label>
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                  {imagePreviews.map((src, i) => (
-                    <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-white/10 group">
-                      <img src={src} alt="" className="w-full h-full object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(i)}
-                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-red-500/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X size={12} className="text-white" />
-                      </button>
-                    </div>
-                  ))}
-                  {images.length < 10 && (
-                    <label className="aspect-square rounded-xl border-2 border-dashed border-white/10 hover:border-[#2B7FFF]/30 flex flex-col items-center justify-center cursor-pointer transition-colors">
-                      <ImagePlus size={20} className="text-white/20 mb-1" />
-                      <span className="text-[10px] text-white/20">Add</span>
-                      <input type="file" accept="image/*" multiple onChange={handleImageChange} className="hidden" />
-                    </label>
-                  )}
-                </div>
+            {/* ============================= */}
+            {/* SECTION: IMAGES               */}
+            {/* ============================= */}
+            <Section icon={Image} title="Images" optional>
+              <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-6 gap-3">
+                {imagePreviews.map((src, i) => (
+                  <div
+                    key={i}
+                    className="relative aspect-square rounded-xl overflow-hidden border border-white/8 group"
+                  >
+                    <img
+                      src={src}
+                      alt={`Preview ${i + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(i)}
+                      className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-red-500/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                    >
+                      <X size={11} className="text-white" />
+                    </button>
+                    {i === 0 && (
+                      <span className="absolute bottom-1.5 left-1.5 px-2 py-0.5 bg-[#2B7FFF]/90 text-white text-[8px] font-bold rounded-md uppercase tracking-wider shadow-lg">
+                        Cover
+                      </span>
+                    )}
+                  </div>
+                ))}
+
+                {images.length < 10 && (
+                  <label className="aspect-square rounded-xl border-2 border-dashed border-white/8 hover:border-[#2B7FFF]/30 flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-white/2">
+                    <ImagePlus size={22} className="text-white/60 mb-1" />
+                    <span className="text-[10px] text-white font-medium">
+                      Add
+                    </span>
+                    <span className="text-[9px] text-white">
+                      {images.length}/10
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                  </label>
+                )}
               </div>
+              <p className="text-white text-[10px] mt-2">
+                First image will be used as cover. Max 10 images, JPG/PNG/WebP.
+              </p>
+            </Section>
 
-              {/* Contact Info */}
+            {/* ============================= */}
+            {/* SECTION: CONTACT INFORMATION  */}
+            {/* ============================= */}
+            <Section icon={Phone} title="Contact Information" optional>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">Contact Name</label>
-                  <input type="text" value={form.contactName} onChange={(e) => handleChange("contactName", e.target.value)} placeholder="Agent name" className={inputClass} />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">Contact Phone</label>
-                  <input type="tel" value={form.contactPhone} onChange={(e) => handleChange("contactPhone", e.target.value)} placeholder="+92 300 1234567" className={inputClass} />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">Contact Email</label>
-                  <input type="email" value={form.contactEmail} onChange={(e) => handleChange("contactEmail", e.target.value)} placeholder="agent@example.com" className={inputClass} />
-                </div>
-              </div>
-            </div>
-          )}
+                <Field label="Contact Name">
+                  <div className="relative">
+                    <User
+                      size={14}
+                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/60"
+                    />
+                    <input
+                      type="text"
+                      value={form.contactName}
+                      onChange={(e) =>
+                        handleChange("contactName", e.target.value)
+                      }
+                      placeholder="Enter contact name"
+                      className={`${inputClass} pl-9`}
+                    />
+                  </div>
+                </Field>
 
-          {/* Buttons */}
-          <div className="flex items-center justify-between mt-6 pt-5 border-t border-white/10">
-            <div>
-              {step > 1 && (
-                <button
-                  type="button"
-                  onClick={() => setStep(step - 1)}
-                  className="px-5 py-2.5 border border-white/10 text-white/50 text-sm font-semibold rounded-xl hover:bg-white/5 transition-colors"
-                >
-                  Back
-                </button>
-              )}
-            </div>
-            <div className="flex items-center gap-3">
+                <Field label="Contact Phone">
+                  <div className="relative">
+                    <Phone
+                      size={14}
+                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/60"
+                    />
+                    <input
+                      type="tel"
+                      value={form.contactPhone}
+                      onChange={(e) =>
+                        handleChange("contactPhone", e.target.value)
+                      }
+                      placeholder="Enter phone number"
+                      className={`${inputClass} pl-9`}
+                    />
+                  </div>
+                </Field>
+
+                <Field label="Contact Email">
+                  <div className="relative">
+                    <Mail
+                      size={14}
+                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/60"
+                    />
+                    <input
+                      type="email"
+                      value={form.contactEmail}
+                      onChange={(e) =>
+                        handleChange("contactEmail", e.target.value)
+                      }
+                      placeholder="Enter email address"
+                      className={`${inputClass} pl-9`}
+                    />
+                  </div>
+                </Field>
+              </div>
+            </Section>
+
+            {/* Bottom spacing for sticky footer */}
+            <div className="h-24" />
+          </form>
+        </div>
+
+        {/* ===== STICKY FOOTER ===== */}
+        <div className="shrink-0 border-t border-white/6 bg-[#081730] shadow-[0_-4px_20px_rgba(0,0,0,0.3)]">
+          <div className="flex items-center justify-between px-6 lg:px-8 h-16 max-w-6xl mx-auto">
+            <p className="text-white text-xs hidden sm:block">
+              <span className="text-red-400/60">*</span> Required fields
+            </p>
+
+            <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-5 py-2.5 border border-white/10 text-white/50 text-sm font-semibold rounded-xl hover:bg-white/5 transition-colors"
+                className="px-5 py-2.5 border border-white/10 text-white text-sm font-semibold rounded-xl hover:bg-white/5 transition-colors"
               >
                 Cancel
               </button>
-              {step < 3 ? (
-                <button
-                  type="button"
-                  onClick={() => setStep(step + 1)}
-                  className="px-5 py-2.5 bg-[#2B7FFF] hover:bg-[#4D94FF] text-white text-sm font-semibold rounded-xl transition-colors"
-                >
-                  Next
-                </button>
-              ) : (
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-[#2B7FFF] hover:bg-[#4D94FF] disabled:opacity-50 text-white text-sm font-semibold rounded-xl transition-colors"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 size={16} className="animate-spin" />
-                      Creating...
-                    </>
-                  ) : (
-                    "Create Property"
-                  )}
-                </button>
-              )}
+
+              <button
+                type="submit"
+                form="propertyCreateForm"
+                disabled={loading}
+                className="flex items-center gap-2 px-7 py-2.5 bg-[#2B7FFF] hover:bg-[#4D94FF] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-[#2B7FFF]/20 hover:shadow-[#2B7FFF]/30"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    Creating Property...
+                  </>
+                ) : (
+                  <>
+                    <Building2 size={15} />
+                    Create Property
+                  </>
+                )}
+              </button>
             </div>
           </div>
-        </form>
+        </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }

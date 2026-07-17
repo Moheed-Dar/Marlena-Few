@@ -17,6 +17,7 @@ import {
   Menu,
   X,
   LayoutDashboard,
+  RefreshCw,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Playfair_Display, Inter } from "next/font/google";
@@ -78,6 +79,9 @@ export default function AdminDashboardPage() {
     contacts: 0,
   });
 
+  // ---- Refresh State ----
+  const [refreshing, setRefreshing] = useState(false);
+
   // ---- Auth check ----
   useEffect(() => {
     const storedUser = getStoredUser();
@@ -90,29 +94,36 @@ export default function AdminDashboardPage() {
   }, [router]);
 
   // ---- Fetch Stats ----
+  const fetchStats = useCallback(async () => {
+    try {
+      const [propRes, leadRes, contactRes] = await Promise.all([
+        getAllProperties(1, 1),
+        getAllLeads(1, 1),
+        getAllContacts(1, 1),
+      ]);
+
+      setStats({
+        properties: propRes?.totalCount || propRes?.total || 0,
+        leads: leadRes?.totalCount || leadRes?.total || 0,
+        contacts: contactRes?.totalCount || contactRes?.total || 0,
+      });
+    } catch (error) {
+      console.error("Failed to fetch stats", error);
+    }
+  }, []);
+
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const [propRes, leadRes, contactRes] = await Promise.all([
-          getAllProperties(1, 1),
-          getAllLeads(1, 1),
-          getAllContacts(1, 1),
-        ]);
-
-        setStats({
-          properties: propRes?.totalCount || propRes?.total || 0,
-          leads: leadRes?.totalCount || leadRes?.total || 0,
-          contacts: contactRes?.totalCount || contactRes?.total || 0,
-        });
-      } catch (error) {
-        console.error("Failed to fetch stats", error);
-      }
-    };
-
     if (user) {
       fetchStats();
     }
-  }, [user]);
+  }, [user, fetchStats]);
+
+  // ---- Refresh Handler ----
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchStats();
+    setTimeout(() => setRefreshing(false), 600);
+  };
 
   const handleLogout = useCallback(async () => {
     setLoggingOut(true);
@@ -204,8 +215,6 @@ export default function AdminDashboardPage() {
     <div
       className={`min-h-screen bg-[#13273f] flex ${inter.variable} font-(family-name:--font-inter) relative overflow-hidden`}
     >
-
-
       {/* ===== DESKTOP SIDEBAR ===== */}
       <aside className="hidden lg:flex flex-col w-64 bg-[#1b3454]/95 backdrop-blur-sm border-r border-white/10 shrink-0 relative z-10">
         <div className="h-16 flex items-center gap-2.5 px-5 border-b border-white/10">
@@ -339,7 +348,6 @@ export default function AdminDashboardPage() {
               {TABS.find((t) => t.id === activeTab)?.label || "Dashboard"}
             </h2>
           </div>
-
         </header>
 
         {/* Page Content */}
@@ -397,6 +405,23 @@ export default function AdminDashboardPage() {
                     </motion.div>
                   );
                 })}
+              </div>
+
+              {/* ===== REFRESH BUTTON ===== */}
+              <div className="mt-5">
+                <button
+                  onClick={handleRefresh}
+                  disabled={refreshing}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <RefreshCw
+                    size={15}
+                    className={`transition-transform duration-500 ${
+                      refreshing ? "animate-spin" : ""
+                    }`}
+                  />
+                  {refreshing ? "Refreshing..." : "Refresh Stats"}
+                </button>
               </div>
             </>
           ) : (

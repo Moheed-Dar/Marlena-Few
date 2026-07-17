@@ -12,12 +12,17 @@ import {
   ChevronRight,
   Building2,
   X,
+  RefreshCw,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Playfair_Display, Inter } from "next/font/google";
-import { getAllProperties, deleteProperty } from "@/lib/properties/api";
+import {
+  getAllProperties,
+  deleteProperty,
+} from "@/lib/properties/api";
 import PropertyCreateForm from "@/components/forms/PropertyCreateForm";
 import PropertyUpdateForm from "@/components/forms/PropertyUpdateForm";
+import PropertyDetailView from "@/components/forms/PropertyDetailView";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -42,12 +47,14 @@ const getSafeImg = (img) => {
 export default function AdminPropertiesPage() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null);
+  const [viewPropertyId, setViewPropertyId] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
@@ -57,25 +64,40 @@ export default function AdminPropertiesPage() {
   // ============================================
   // FETCH PROPERTIES
   // ============================================
-  const fetchProperties = useCallback(async (page = 1) => {
-    try {
-      setLoading(true);
-      const res = await getAllProperties(page, limit, "", false, "");
-      setProperties(res.data || []);
-      setTotalPages(res.pagination?.totalPages || 1);
-      setCurrentPage(page);
-    } catch (error) {
-      console.error("Failed to fetch properties:", error);
-      setProperties([]);
-      setTotalPages(1);
-    } finally {
-      setLoading(false);
-    }
-  }, [limit]);
+  const fetchProperties = useCallback(
+    async (page = 1, isRefresh = false) => {
+      try {
+        if (isRefresh) {
+          setRefreshing(true);
+        } else {
+          setLoading(true);
+        }
+        const res = await getAllProperties(page, limit, "", false, "");
+        setProperties(res.data || []);
+        setTotalPages(res.pagination?.totalPages || 1);
+        setCurrentPage(page);
+      } catch (error) {
+        console.error("Failed to fetch properties:", error);
+        setProperties([]);
+        setTotalPages(1);
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
+      }
+    },
+    [limit]
+  );
 
   useEffect(() => {
     fetchProperties(1);
   }, [fetchProperties]);
+
+  // ============================================
+  // REFRESH HANDLER
+  // ============================================
+  const handleRefresh = () => {
+    fetchProperties(currentPage, true);
+  };
 
   // ============================================
   // CLIENT-SIDE SEARCH
@@ -88,7 +110,31 @@ export default function AdminPropertiesPage() {
   );
 
   // ============================================
-  // DELETE HANDLER
+  // ROW CLICK — OPEN DETAIL VIEW
+  // ============================================
+  const handleRowClick = (property) => {
+    setViewPropertyId(property._id);
+  };
+
+  // ============================================
+  // EDIT FROM DETAIL VIEW
+  // ============================================
+  const handleEditFromDetail = (property) => {
+    setViewPropertyId(null);
+    setSelectedProperty(property);
+    setShowUpdateModal(true);
+  };
+
+  // ============================================
+  // DELETE FROM DETAIL VIEW
+  // ============================================
+  const handleDeletedFromDetail = (id) => {
+    setProperties((prev) => prev.filter((p) => p._id !== id));
+    setViewPropertyId(null);
+  };
+
+  // ============================================
+  // DELETE HANDLER (table)
   // ============================================
   const handleDelete = async () => {
     if (!deleteConfirm) return;
@@ -97,7 +143,9 @@ export default function AdminPropertiesPage() {
 
     try {
       await deleteProperty(deleteConfirm._id);
-      setProperties((prev) => prev.filter((p) => p._id !== deleteConfirm._id));
+      setProperties((prev) =>
+        prev.filter((p) => p._id !== deleteConfirm._id)
+      );
       setDeleteConfirm(null);
     } catch (error) {
       const msg =
@@ -137,12 +185,27 @@ export default function AdminPropertiesPage() {
             Manage all your property listings
           </p>
         </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#2B7FFF] hover:bg-[#4D94FF] text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-[#2B7FFF]/25"
-        >
-          <Plus size={16} /> Add Property
-        </button>
+        <div className="flex items-center gap-2.5">
+          {/* ✅ REFRESH BUTTON */}
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing || loading}
+            className="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/5 hover:border-white/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            title="Refresh"
+          >
+            <RefreshCw
+              size={16}
+              className={refreshing ? "animate-spin" : ""}
+            />
+          </button>
+
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#2B7FFF] hover:bg-[#4D94FF] text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-[#2B7FFF]/25"
+          >
+            <Plus size={16} /> Add Property
+          </button>
+        </div>
       </div>
 
       {/* Search */}
@@ -172,7 +235,8 @@ export default function AdminPropertiesPage() {
       {!loading && (
         <div className="flex items-center gap-4 mb-5">
           <span className="text-white/30 text-xs">
-            Showing {filteredProperties.length} of {properties.length} properties
+            Showing {filteredProperties.length} of {properties.length}{" "}
+            properties
           </span>
           {searchTerm && (
             <span className="text-[#2B7FFF]/70 text-xs">
@@ -186,8 +250,13 @@ export default function AdminPropertiesPage() {
       {loading ? (
         <div className="flex items-center justify-center py-20">
           <div className="flex flex-col items-center gap-3">
-            <Loader2 size={28} className="animate-spin text-[#2B7FFF]/50" />
-            <span className="text-white/25 text-xs">Loading properties...</span>
+            <Loader2
+              size={28}
+              className="animate-spin text-[#2B7FFF]/50"
+            />
+            <span className="text-white/25 text-xs">
+              Loading properties...
+            </span>
           </div>
         </div>
       ) : filteredProperties.length === 0 ? (
@@ -259,7 +328,9 @@ export default function AdminPropertiesPage() {
                     return (
                       <tr
                         key={property._id}
-                        className="hover:bg-white/3 transition-colors group"
+                        /* ✅ CLICKABLE ROW */
+                        onClick={() => handleRowClick(property)}
+                        className="hover:bg-white/3 transition-colors group cursor-pointer"
                       >
                         <td className="px-4 py-3.5 text-white/30 text-xs">
                           {(currentPage - 1) * limit + index + 1}
@@ -277,7 +348,7 @@ export default function AdminPropertiesPage() {
                               />
                             </div>
                             <div className="min-w-0">
-                              <p className="text-white font-medium text-sm truncate max-w-55">
+                              <p className="text-white font-medium text-sm truncate max-w-55 group-hover:text-[#2B7FFF] transition-colors">
                                 {property.title}
                               </p>
                               <p className="text-white/25 text-[11px] truncate max-w-55">
@@ -330,14 +401,18 @@ export default function AdminPropertiesPage() {
                               Yes
                             </span>
                           ) : (
-                            <span className="text-white/15 text-xs">No</span>
+                            <span className="text-white/15 text-xs">
+                              No
+                            </span>
                           )}
                         </td>
 
                         <td className="px-4 py-3.5 text-right">
                           <div className="flex items-center justify-end gap-1.5">
                             <button
-                              onClick={() => {
+                              /* ✅ STOP PROPAGATION — don't open detail */
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setSelectedProperty(property);
                                 setShowUpdateModal(true);
                               }}
@@ -347,7 +422,9 @@ export default function AdminPropertiesPage() {
                               <Edit size={15} />
                             </button>
                             <button
-                              onClick={() => {
+                              /* ✅ STOP PROPAGATION — don't open detail */
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setDeleteConfirm(property);
                                 setDeleteError("");
                               }}
@@ -377,7 +454,10 @@ export default function AdminPropertiesPage() {
                 <ChevronLeft size={18} />
               </button>
 
-              {Array.from({ length: totalPages }, (_, i) => i + 1)
+              {Array.from(
+                { length: totalPages },
+                (_, i) => i + 1
+              )
                 .filter(
                   (p) =>
                     p === 1 ||
@@ -448,6 +528,18 @@ export default function AdminPropertiesPage() {
         )}
       </AnimatePresence>
 
+      {/* ===== PROPERTY DETAIL VIEW ===== */}
+      <AnimatePresence>
+        {viewPropertyId && (
+          <PropertyDetailView
+            propertyId={viewPropertyId}
+            onClose={() => setViewPropertyId(null)}
+            onEdit={handleEditFromDetail}
+            onDeleted={handleDeletedFromDetail}
+          />
+        )}
+      </AnimatePresence>
+
       {/* ===== DELETE CONFIRMATION ===== */}
       <AnimatePresence>
         {deleteConfirm && (
@@ -456,7 +548,7 @@ export default function AdminPropertiesPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/70"
               onClick={() => {
                 if (!deleting) {
                   setDeleteConfirm(null);
@@ -494,7 +586,9 @@ export default function AdminPropertiesPage() {
               </p>
               <p className="text-white/25 text-xs mb-5">
                 {deleteConfirm.propertyCode && (
-                  <span className="font-mono">{deleteConfirm.propertyCode}</span>
+                  <span className="font-mono">
+                    {deleteConfirm.propertyCode}
+                  </span>
                 )}
                 {" · "}
                 {deleteConfirm.currency === "PKR" ? "Rs" : "$"}{" "}
