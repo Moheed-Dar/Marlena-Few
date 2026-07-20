@@ -72,7 +72,7 @@ export default function AdminPropertiesPage() {
         } else {
           setLoading(true);
         }
-        const res = await getAllProperties(page, limit, "", false, "");
+        const res = await getAllProperties(page, limit, "", false, "all");
         setProperties(res.data || []);
         setTotalPages(res.pagination?.totalPages || 1);
         setCurrentPage(page);

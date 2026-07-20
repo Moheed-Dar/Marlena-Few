@@ -73,6 +73,57 @@ const PLACEHOLDER =
   "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80";
 
 // ============================================
+// STATUS COLOR HELPER (LIGHT VERSION)
+// ============================================
+const getStatusStyles = (status) => {
+  const s = (status || "").toLowerCase().trim();
+  switch (s) {
+    case "available":
+      return "bg-emerald-500/15 text-emerald-300 border border-emerald-400/15";
+    case "sold":
+      return "bg-red-500/15 text-red-300 border border-red-400/15";
+    case "rented":
+      return "bg-amber-500/15 text-amber-300 border border-amber-400/15";
+    case "pending":
+      return "bg-yellow-400/15 text-yellow-200 border border-yellow-300/15";
+    case "reserved":
+      return "bg-purple-500/15 text-purple-300 border border-purple-400/15";
+    case "under construction":
+      return "bg-sky-500/15 text-sky-300 border border-sky-400/15";
+    case "off plan":
+      return "bg-indigo-500/15 text-indigo-300 border border-indigo-400/15";
+    case "new":
+      return "bg-teal-500/15 text-teal-300 border border-teal-400/15";
+    default:
+      return "bg-gray-500/15 text-gray-300 border border-gray-400/15";
+  }
+};
+
+const getStatusDotColor = (status) => {
+  const s = (status || "").toLowerCase().trim();
+  switch (s) {
+    case "available":
+      return "bg-emerald-400";
+    case "sold":
+      return "bg-red-400";
+    case "rented":
+      return "bg-amber-400";
+    case "pending":
+      return "bg-yellow-400";
+    case "reserved":
+      return "bg-purple-400";
+    case "under construction":
+      return "bg-sky-400";
+    case "off plan":
+      return "bg-indigo-400";
+    case "new":
+      return "bg-teal-400";
+    default:
+      return "bg-gray-400";
+  }
+};
+
+// ============================================
 // HIGHLIGHT MATCHED TEXT
 // ============================================
 const HighlightText = ({ text, query }) => {
@@ -177,10 +228,9 @@ export default function PropertiesPage() {
   const matchProperty = useCallback((p, words) => {
     const title = (p.title || "").toLowerCase();
     const location = (p.location || p.city || "").toLowerCase();
-    const code = (p.propertyCode || "").toLowerCase(); // ✅ ADDED: Property Code Search
-    
+    const code = (p.propertyCode || "").toLowerCase();
     return words.every(
-      (word) => title.includes(word) || location.includes(word) || code.includes(word) // ✅ ADDED: Check in code
+      (word) => title.includes(word) || location.includes(word) || code.includes(word)
     );
   }, []);
 
@@ -272,9 +322,6 @@ export default function PropertiesPage() {
     setSortOrder("desc");
   };
 
-  // ============================================
-  // REFRESH HANDLER
-  // ============================================
   const handleRefresh = () => {
     fetchProperties(page);
   };
@@ -332,6 +379,7 @@ export default function PropertiesPage() {
           <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-black/10 pointer-events-none" />
           <div className="absolute inset-0 bg-linear-to-r from-black/30 via-transparent to-transparent pointer-events-none" />
 
+          {/* Top badges — Status REMOVED from here */}
           <div className="absolute top-4 left-4 right-4 flex items-start justify-between z-10">
             <div className="flex flex-wrap gap-2">
               {property.isFeatured && (
@@ -390,7 +438,6 @@ export default function PropertiesPage() {
               {property.title}
             </h3>
 
-            {/* ✅ ADDED: Property Code Badge in Grid Card */}
             {property.propertyCode && (
               <div className="mb-3">
                 <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-mono font-bold rounded-md bg-[#2B7FFF]/15 text-[#2B7FFF] border border-[#2B7FFF]/25">
@@ -412,11 +459,12 @@ export default function PropertiesPage() {
                   {property.currency === "PKR" ? "Rs" : "$"}{" "}
                   {Number(property.price)?.toLocaleString()}
                 </p>
-                <div className="flex items-center gap-2 mt-1">
+                {/* ONLY bottom status badge — lighter bg + rounded-md */}
+                <div className="flex items-center gap-2 mt-1.5">
                   <span
-                    className={`inline-block w-2 h-2 rounded-full ${property.status === "available" ? "bg-emerald-400" : property.status === "sold" ? "bg-red-400" : "bg-[#2B7FFF]"}`}
-                  />
-                  <span className="text-white/60 text-xs capitalize">
+                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-semibold rounded-md capitalize backdrop-blur-sm ${getStatusStyles(property.status)}`}
+                  >
+                    <span className={`inline-block w-1.5 h-1.5 rounded-full ${getStatusDotColor(property.status)}`} />
                     {property.status}
                   </span>
                   {property.viewsCount > 0 && (
@@ -475,9 +523,11 @@ export default function PropertiesPage() {
               <span className="px-2 py-0.5 bg-white/15 backdrop-blur-md text-white/90 text-[9px] font-bold rounded-full uppercase tracking-wider border border-white/10">
                 {property.priceType}
               </span>
+              {/* Lighter + rounded-md status badge */}
               <span
-                className={`px-2 py-0.5 text-[9px] font-bold rounded-full uppercase tracking-wider ${property.status === "available" ? "bg-emerald-500/90 text-white" : "bg-red-500/90 text-white"}`}
+                className={`inline-flex items-center gap-1 px-2 py-0.5 text-[9px] font-semibold rounded-md capitalize backdrop-blur-sm ${getStatusStyles(property.status)}`}
               >
+                <span className={`inline-block w-1 h-1 rounded-full ${getStatusDotColor(property.status)}`} />
                 {property.status}
               </span>
             </div>
@@ -501,7 +551,6 @@ export default function PropertiesPage() {
                   {property.title}
                 </h3>
                 <div className="flex items-center gap-1.5 text-white/60 text-xs">
-                  {/* ✅ ADDED: Property Code in List Card */}
                   {property.propertyCode && (
                     <span className="inline-block font-mono text-[10px] font-bold text-[#2B7FFF]/80 bg-[#2B7FFF]/10 px-1.5 py-0.5 rounded mr-2">
                       {property.propertyCode}
@@ -599,9 +648,7 @@ export default function PropertiesPage() {
 
           {/* ===== SEARCH BAR + CONTROLS ===== */}
           <div className="flex flex-col gap-3">
-            {/* Row 1: Search + Controls */}
             <div className="flex flex-wrap items-center gap-3">
-              {/* Search Bar (slightly smaller) */}
               <div className="relative flex-1 min-w-45">
                 <form onSubmit={handleSearch}>
                   <div className="relative flex items-center bg-white/10 border border-white/15 rounded-2xl focus-within:border-[#2B7FFF]/50 focus-within:ring-2 focus-within:ring-[#2B7FFF]/20 transition-all">
@@ -620,11 +667,10 @@ export default function PropertiesPage() {
                       onFocus={() => {
                         if (searchInput.trim()) setShowSuggestions(true);
                       }}
-                      placeholder="Search by title, location, or property code..." // ✅ UPDATED Placeholder
+                      placeholder="Search by title, location, or property code..."
                       className="w-full pl-9 pr-20 py-3 text-sm bg-transparent text-white placeholder-white/30 focus:outline-none"
                       autoComplete="off"
                     />
-                    {/* Clear button */}
                     {searchInput && (
                       <button
                         type="button"
@@ -638,7 +684,6 @@ export default function PropertiesPage() {
                         />
                       </button>
                     )}
-                    {/* Submit button with Search icon */}
                     <button
                       type="submit"
                       className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-[#2B7FFF] text-white rounded-xl hover:bg-[#4D94FF] transition-colors shadow-lg shadow-[#2B7FFF]/25"
@@ -649,7 +694,6 @@ export default function PropertiesPage() {
                   </div>
                 </form>
 
-                {/* Suggestions */}
                 <AnimatePresence>
                   {showSuggestions && suggestions.length > 0 && (
                     <motion.div
@@ -723,7 +767,6 @@ export default function PropertiesPage() {
                                       query={searchInput}
                                     />
                                   </span>
-                                  {/* ✅ ADDED: Show Property Code in Suggestions */}
                                   {property.propertyCode && (
                                     <span className="ml-2 text-[10px] font-mono font-bold text-[#2B7FFF]/70 bg-[#2B7FFF]/10 px-1.5 py-0.5 rounded">
                                       {property.propertyCode}
@@ -736,6 +779,7 @@ export default function PropertiesPage() {
                                   {property.currency === "PKR" ? "Rs" : "$"}{" "}
                                   {Number(property.price)?.toLocaleString()}
                                 </span>
+                                <span className={`inline-block w-2 h-2 rounded-full ${getStatusDotColor(property.status)}`} title={property.status} />
                                 <div className="w-6 h-6 rounded-md bg-[#2B7FFF]/10 flex items-center justify-center">
                                   <ArrowUpRight
                                     size={11}
@@ -789,17 +833,15 @@ export default function PropertiesPage() {
                           </p>
                         </div>
                       </motion.div>
-                    )} 
+                    )}
                 </AnimatePresence>
               </div>
 
-              {/* Total Count Badge */}
               <div className="shrink-0 px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full border border-white/10 text-white/80 text-xs font-medium whitespace-nowrap">
                 {filteredProperties.length}{" "}
                 {filteredProperties.length === 1 ? "property" : "properties"}
               </div>
 
-              {/* Refresh */}
               <button
                 onClick={handleRefresh}
                 disabled={loading}
@@ -812,7 +854,6 @@ export default function PropertiesPage() {
                 />
               </button>
 
-              {/* Filters Toggle */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className={`flex items-center gap-2 px-3 py-2.5 text-xs font-semibold rounded-xl transition-colors shrink-0 ${
@@ -830,7 +871,6 @@ export default function PropertiesPage() {
                 )}
               </button>
 
-              {/* Grid/List Toggle */}
               <div className="flex items-center bg-white/10 rounded-xl p-1 border border-white/10 shrink-0">
                 <button
                   onClick={() => setViewMode("grid")}
@@ -846,7 +886,6 @@ export default function PropertiesPage() {
                 </button>
               </div>
 
-              {/* Sort Dropdown */}
               <DarkSelect
                 className="w-36 shrink-0"
                 value={`${sortBy}-${sortOrder}`}
@@ -867,7 +906,6 @@ export default function PropertiesPage() {
               />
             </div>
 
-            {/* Row 2: Active filter chips */}
             {hasActiveFilters && (
               <div className="flex flex-wrap items-center gap-2 mt-1">
                 {propertyType !== "all" && (
@@ -887,7 +925,7 @@ export default function PropertiesPage() {
                   </span>
                 )}
                 {search && (
-                  <span className="flex items-center gap-1 px-2.5 py-1 bg-[#2B7BSD] text-[#6BABFF] text-[11px] font-semibold rounded-full border border-[#2B7FFF]/25">
+                  <span className="flex items-center gap-1 px-2.5 py-1 bg-[#2B7FFF]/20 text-[#6BABFF] text-[11px] font-semibold rounded-full border border-[#2B7FFF]/25">
                     &quot;{search.slice(0, 15)}&quot;
                     <button onClick={handleClearSearch}>
                       <X size={9} />
@@ -906,7 +944,7 @@ export default function PropertiesPage() {
         </div>
       </div>
 
-      {/* ===== FILTER PANEL (collapsible) ===== */}
+      {/* ===== FILTER PANEL ===== */}
       <AnimatePresence>
         {showFilters && (
           <motion.div

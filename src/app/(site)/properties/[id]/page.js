@@ -982,7 +982,6 @@
 //   );
 // }
 
-
 // "use client";
 
 // import { useState, useEffect, useRef } from "react";
@@ -1920,30 +1919,6 @@
 //   );
 // }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -2118,9 +2093,7 @@ export default function PropertyDetailPage() {
         <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
           <X size={32} className="text-white/40" />
         </div>
-        <h2 className="text-xl font-bold text-white">
-          Property Not Found
-        </h2>
+        <h2 className="text-xl font-bold text-white">Property Not Found</h2>
         <p className="text-white/50 text-sm text-center max-w-sm">{error}</p>
         <Link
           href="/properties"
@@ -2188,13 +2161,7 @@ export default function PropertyDetailPage() {
                 </span>
               )}
               <span
-                className={`inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 text-[10px] sm:text-[11px] font-bold rounded-full border backdrop-blur-sm ${
-                  property.status === "available"
-                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
-                    : property.status === "sold"
-                      ? "bg-red-500/20 text-red-300 border-red-500/30"
-                      : "bg-blue-500/20 text-blue-300 border-blue-500/30"
-                }`}
+                className={`inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 text-[10px] sm:text-[11px] font-bold rounded-full border backdrop-blur-sm ${property.status === "available" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" : property.status === "sold" ? "bg-red-500/20 text-red-300 border-red-500/30" : property.status === "rented" ? "bg-amber-500/20 text-amber-300 border-amber-500/30" : property.status === "pending" ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/30" : property.status === "reserved" ? "bg-purple-500/20 text-purple-300 border-purple-500/30" : property.status === "under construction" ? "bg-sky-500/20 text-sky-300 border-sky-500/30" : property.status === "off plan" ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" : property.status === "new" ? "bg-teal-500/20 text-teal-300 border-teal-500/30" : "bg-blue-500/20 text-blue-300 border-blue-500/30"}`}
               >
                 <ShieldCheck size={10} />
                 {property.status}
@@ -2413,7 +2380,10 @@ export default function PropertyDetailPage() {
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-6"
                 }`}
-                style={{ transitionDelay: "50ms", transitionProperty: "opacity, transform" }}
+                style={{
+                  transitionDelay: "50ms",
+                  transitionProperty: "opacity, transform",
+                }}
               >
                 <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-2 text-[11px] sm:text-xs text-white/60">
                   <span className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-[#2B7FFF]/15 rounded-full text-[#8DC5FF] font-semibold border border-[#2B7FFF]/25">
@@ -2434,7 +2404,7 @@ export default function PropertyDetailPage() {
                           month: "short",
                           day: "numeric",
                           year: "numeric",
-                        }
+                        },
                       )}
                     </span>
                   )}
@@ -2449,7 +2419,10 @@ export default function PropertyDetailPage() {
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-6"
               }`}
-              style={{ transitionDelay: "100ms", transitionProperty: "opacity, transform" }}
+              style={{
+                transitionDelay: "100ms",
+                transitionProperty: "opacity, transform",
+              }}
             >
               {property.bedrooms > 0 && (
                 <div className="flex items-center gap-2.5 sm:gap-3 bg-[#1b3454] rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-white/10 hover:border-[#2B7FFF]/30 transition-all group">
@@ -2524,7 +2497,10 @@ export default function PropertyDetailPage() {
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-6"
                 }`}
-                style={{ transitionDelay: "150ms", transitionProperty: "opacity, transform" }}
+                style={{
+                  transitionDelay: "150ms",
+                  transitionProperty: "opacity, transform",
+                }}
               >
                 <div className="bg-[#1b3454] rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-7 border border-white/10">
                   <h3 className="text-lg sm:text-xl text-white mb-1">
@@ -2553,7 +2529,10 @@ export default function PropertyDetailPage() {
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-6"
                 }`}
-                style={{ transitionDelay: "200ms", transitionProperty: "opacity, transform" }}
+                style={{
+                  transitionDelay: "200ms",
+                  transitionProperty: "opacity, transform",
+                }}
               >
                 <div className="bg-[#1b3454] md:block hidden rounded-2xl p-5 sm:p-7 border border-white/10">
                   <h3 className="text-lg sm:text-xl text-white mb-1">
@@ -2591,7 +2570,10 @@ export default function PropertyDetailPage() {
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-6"
                 }`}
-                style={{ transitionDelay: "250ms", transitionProperty: "opacity, transform" }}
+                style={{
+                  transitionDelay: "250ms",
+                  transitionProperty: "opacity, transform",
+                }}
               >
                 <div className="bg-[#1b3454] rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-7 border border-white/10">
                   <h3 className="text-lg sm:text-xl text-white mb-1">
@@ -2621,7 +2603,10 @@ export default function PropertyDetailPage() {
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-6"
                 }`}
-                style={{ transitionDelay: "300ms", transitionProperty: "opacity, transform" }}
+                style={{
+                  transitionDelay: "300ms",
+                  transitionProperty: "opacity, transform",
+                }}
               >
                 <div className="bg-[#1b3454] rounded-xl sm:rounded-2xl border border-white/10 overflow-hidden">
                   {/* Price Header */}
@@ -2673,7 +2658,10 @@ export default function PropertyDetailPage() {
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-6"
                   }`}
-                  style={{ transitionDelay: "350ms", transitionProperty: "opacity, transform" }}
+                  style={{
+                    transitionDelay: "350ms",
+                    transitionProperty: "opacity, transform",
+                  }}
                 >
                   <div className="bg-[#1b3454] rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-white/10">
                     <h4 className="text-[8px] sm:text-[9px] font-bold text-white/50 uppercase tracking-[0.25em] mb-2.5 sm:mb-3">
@@ -2711,7 +2699,10 @@ export default function PropertyDetailPage() {
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-6"
                 }`}
-                style={{ transitionDelay: "400ms", transitionProperty: "opacity, transform" }}
+                style={{
+                  transitionDelay: "400ms",
+                  transitionProperty: "opacity, transform",
+                }}
               >
                 <div className="bg-[#1b3454] rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-white/10">
                   <h4 className="text-[8px] sm:text-[9px] font-bold text-white/50 uppercase tracking-[0.25em] mb-2.5 sm:mb-3">
@@ -2763,7 +2754,10 @@ export default function PropertyDetailPage() {
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-6"
                 }`}
-                style={{ transitionDelay: "450ms", transitionProperty: "opacity, transform" }}
+                style={{
+                  transitionDelay: "450ms",
+                  transitionProperty: "opacity, transform",
+                }}
               >
                 <div className="bg-[rgba(43,127,255,0.1)] rounded-xl sm:rounded-2xl p-3.5 sm:p-4 border border-[rgba(43,127,255,0.2)]">
                   <div className="flex items-center gap-2.5 sm:gap-3">
