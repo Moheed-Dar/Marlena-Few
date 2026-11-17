@@ -450,7 +450,7 @@ import {
   Loader2,
   Heart,
 } from "lucide-react";
-import { submitLead } from "@/lib/api";
+import { submitLead } from "@/lib/leads/api";
 import { Playfair_Display, Inter } from "next/font/google";
 
 const playfair = Playfair_Display({
@@ -636,7 +636,7 @@ export default function LeadForm({
             />
 
             {/* Container — items-start = always from top */}
-            <div className="fixed inset-0 z-[1001] flex items-start justify-center overflow-y-auto">
+            <div className="fixed inset-0 z-1001 flex items-start justify-center overflow-y-auto">
               <motion.div
                 initial={{ y: "-100%", opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -727,7 +727,7 @@ export default function LeadForm({
                         {/* Name */}
                         <div>
                           <label className="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mb-1 sm:mb-1.5">
-                            <User size={9} className="sm:w-[10px] sm:h-[10px]" />
+                            <User size={9} className="sm:w-2.5 sm:h-2.5" />
                             Full Name <span className="text-[#2B7FFF]">*</span>
                           </label>
                           <input
@@ -745,7 +745,7 @@ export default function LeadForm({
                         {/* Phone */}
                         <div>
                           <label className="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mb-1 sm:mb-1.5">
-                            <Phone size={9} className="sm:w-[10px] sm:h-[10px]" />
+                            <Phone size={9} className="sm:w-2.5 sm:h-2.5" />
                             Phone <span className="text-[#2B7FFF]">*</span>
                           </label>
                           <input
@@ -762,7 +762,7 @@ export default function LeadForm({
                         {/* Email */}
                         <div>
                           <label className="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mb-1 sm:mb-1.5">
-                            <Mail size={9} className="sm:w-[10px] sm:h-[10px]" />
+                            <Mail size={9} className="sm:w-2.5 sm:h-2.5" />
                             Email <span className="text-[#2B7FFF]">*</span>
                           </label>
                           <input
@@ -779,7 +779,7 @@ export default function LeadForm({
                         {/* Message */}
                         <div>
                           <label className="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mb-1 sm:mb-1.5">
-                            <MessageSquare size={9} className="sm:w-[10px] sm:h-[10px]" />
+                            <MessageSquare size={9} className="sm:w-2.5 sm:h-2.5" />
                             Message
                           </label>
                           <textarea
